@@ -9,10 +9,12 @@
 
     <Grid>
         <StackPanel x:Name="TitleBar" Orientation="Horizontal" Height="44" VerticalAlignment="Top" Spacing="16" Margin="6, 10, 0, 0">
-            <Image x:Name="AppIcon" Width="44" Height="44" Source="/Assets/a.png"/>
+            <Image x:Name="AppIcon" Width="44" Height="44" Source="/Assets/AppIcon.png"/>
             <TextBlock x:Name="AppTitle" VerticalAlignment="Center" FontSize="18">WOA Device Manager</TextBlock>
         </StackPanel>
-        <StackPanel Margin="20, 65, 20, 44" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E"></StackPanel>
-        <Grid Margin="20, 65, 20, 44" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
+        <Grid Margin="20, 65, 20, 20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
+        <StackPanel Margin="20, 65, 20, 20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16">
+            <TextBlock x:Name="DebugInfo" TextWrapping="Wrap"></TextBlock>
+        </StackPanel>
     </Grid>
 </Page>

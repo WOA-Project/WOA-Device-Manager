@@ -12,10 +12,10 @@
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\a.png" />
+    <Content Remove="Assets\AppIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Assets\a.png" />
+    <None Remove="Assets\AppIcon.png" />
     <None Remove="Pages\MainPage.xaml" />
   </ItemGroup>
 
@@ -44,7 +44,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\a.png">
+    <Resource Include="Assets\AppIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

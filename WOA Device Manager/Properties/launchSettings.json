@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "WOA Device Manager (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "WOA Device Manager (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

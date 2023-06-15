@@ -20,20 +20,31 @@ namespace WOADeviceManager.Pages
 {
     public sealed partial class MainPage : Page
     {
+        Device device = null;
 
         public MainPage()
         {
             InitializeComponent();
 
-            DeviceManager.Instance.DeviceFoundEvent += DeviceManager_DeviceFoundEvent;
+            DeviceManager.Instance.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
+            DeviceManager.Instance.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
         }
 
-        private void DeviceManager_DeviceFoundEvent(DeviceWatcher sender, Device device)
+        private void Instance_DeviceDisconnectedEvent(DeviceWatcher sender, Device device)
         {
-            // TODO: You stopped here last time. Event gets called only at launch and doesn't get called when a device is plugged...
-
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
-                DebugInfo.Text = $"{device.DeviceName} Found!";
+                this.device = device;
+                DebugInfo.Text = $"{device.DeviceName} Disconnected";
+                Bindings.Update();
+            });
+        }
+
+        private void DeviceManager_DeviceConnectedEvent(DeviceWatcher sender, Device device)
+        {
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
+                this.device = device;
+                DebugInfo.Text = $"{device.DeviceName} Connected";
+                Bindings.Update();
             });
         }
     }

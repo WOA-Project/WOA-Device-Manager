@@ -11,7 +11,7 @@ namespace WOADeviceManager
     {
         public enum DeviceStateType
         {
-            ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT
+            ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT, DISCONNECTED
         }
 
         public Device() { }
@@ -20,5 +20,29 @@ namespace WOADeviceManager
         public string DeviceName { get; set; }
         public DeviceStateType DeviceState { get; set; }
         public DeviceInformation DeviceInformation { get; set; }
+        public DeviceInformationUpdate LastDeviceInformationUpdate { get; set; }
+
+        public string DeviceStateLocalized
+        {
+            get
+            {
+                switch (DeviceState) {
+                    case DeviceStateType.ANDROID:
+                        return "Android";
+                    case DeviceStateType.ANDROID_ADB_ENABLED:
+                        return "Android (ADB Connected)";
+                    case DeviceStateType.WINDOWS:
+                        return "Windows";
+                    case DeviceStateType.BOOTLOADER:
+                        return "Bootloader";
+                    case DeviceStateType.FASTBOOT:
+                        return "Fastboot";
+                    case DeviceStateType.DISCONNECTED:
+                        return "Disconnected";
+                    default:
+                        return null;
+                }
+            }
+        }
     }
 }

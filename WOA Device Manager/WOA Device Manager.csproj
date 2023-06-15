@@ -10,9 +10,10 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
+    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\AppIcon.png" />
+    <Content Remove="Assets\sd_frame.png" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\AppIcon.png" />
@@ -44,9 +45,9 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\AppIcon.png">
+    <Content Update="Assets\AppIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\MainPage.xaml">

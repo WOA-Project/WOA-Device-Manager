@@ -4,44 +4,92 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using WOADeviceManager.Helpers;
 
 namespace WOADeviceManager
 {
     public class Device
     {
-        public enum DeviceStateType
+        public enum DeviceState
         {
             ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT, DISCONNECTED
         }
 
         public Device() { }
 
-        public string DeviceId { get; set; }
-        public string DeviceName { get; set; }
-        public DeviceStateType DeviceState { get; set; }
-        public DeviceInformation DeviceInformation { get; set; }
-        public DeviceInformationUpdate LastDeviceInformationUpdate { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string SerialNumber { get; set; }
+        public DeviceState State { get; set; } = DeviceState.DISCONNECTED;
+        public DeviceInformation Information { get; set; }
+        public DeviceInformationUpdate LastInformationUpdate { get; set; }
+
+        // TODO: These don't work, fix them
+        //public string AndroidVersion
+        //{
+        //    get
+        //    {
+        //        if (State == DeviceState.ANDROID_ADB_ENABLED)
+        //        {
+        //            return ADBProcedures.GetDeviceBuildVersionRelease(SerialNumber).GetAwaiter().GetResult();
+        //        }
+        //        else return null;
+        //    }
+        //}
+
+        //public string AndroidBuildId
+        //{
+        //    get
+        //    {
+        //        if (State != DeviceState.ANDROID_ADB_ENABLED)
+        //        {
+        //            return ADBProcedures.GetDeviceBuildId(SerialNumber).GetAwaiter().GetResult();
+        //        }
+        //        else return null;
+        //    }
+        //}
 
         public string DeviceStateLocalized
         {
             get
             {
-                switch (DeviceState) {
-                    case DeviceStateType.ANDROID:
+                switch (State) {
+                    case DeviceState.ANDROID:
                         return "Android";
-                    case DeviceStateType.ANDROID_ADB_ENABLED:
+                    case DeviceState.ANDROID_ADB_ENABLED:
                         return "Android (ADB Connected)";
-                    case DeviceStateType.WINDOWS:
+                    case DeviceState.WINDOWS:
                         return "Windows";
-                    case DeviceStateType.BOOTLOADER:
+                    case DeviceState.BOOTLOADER:
                         return "Bootloader";
-                    case DeviceStateType.FASTBOOT:
+                    case DeviceState.FASTBOOT:
                         return "Fastboot";
-                    case DeviceStateType.DISCONNECTED:
+                    case DeviceState.DISCONNECTED:
                         return "Disconnected";
                     default:
                         return null;
                 }
+            }
+        }
+
+        public bool IsConnected
+        {
+            get
+            {
+                switch (State)
+                {
+                    case DeviceState.DISCONNECTED:
+                        return false;
+                    default: return true;
+                }
+            }
+        }
+
+        public bool IsDisconnected
+        {
+            get
+            {
+                return !IsConnected;
             }
         }
     }

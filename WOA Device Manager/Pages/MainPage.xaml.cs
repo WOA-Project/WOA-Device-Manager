@@ -14,6 +14,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Pages
@@ -34,7 +35,7 @@ namespace WOADeviceManager.Pages
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
                 this.device = device;
-                DebugInfo.Text = $"{device.DeviceName} Disconnected";
+                DebugInfo.Text = $"{device.Name} Disconnected";
                 Bindings.Update();
             });
         }
@@ -43,9 +44,14 @@ namespace WOADeviceManager.Pages
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
                 this.device = device;
-                DebugInfo.Text = $"{device.DeviceName} Connected";
+                DebugInfo.Text = $"{device.Name} Connected";
                 Bindings.Update();
             });
+        }
+
+        private void RebootToBootloader_Click(object sender, RoutedEventArgs e)
+        {
+            ADBProcedures.RebootToBootloader(device.SerialNumber);
         }
     }
 }

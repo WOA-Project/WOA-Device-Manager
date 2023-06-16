@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using WOADeviceManager.Helpers;
 
 namespace WOADeviceManager.Managers
 {
@@ -52,16 +54,20 @@ namespace WOADeviceManager.Managers
 
         private void Watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            if (args.Id.Equals(device.DeviceId) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
+            if (args.Id.Equals(device.Id) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
             {
-                device.LastDeviceInformationUpdate = args;
-                device.DeviceState = Device.DeviceStateType.ANDROID_ADB_ENABLED;
+                device.LastInformationUpdate = args;
+                device.State = Device.DeviceState.ANDROID_ADB_ENABLED;
+                string pattern = @"#(\d+)#";
+                Match match = Regex.Match(device.Id, pattern);
+                device.SerialNumber = match.Groups[1].Value;
+                device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult();
                 DeviceConnectedEvent?.Invoke(sender, device);
             } 
-            else if (args.Id.Equals(device.DeviceId) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
+            else if (args.Id.Equals(device.Id) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
             {
-                device.LastDeviceInformationUpdate = args;
-                device.DeviceState = Device.DeviceStateType.DISCONNECTED;
+                device.LastInformationUpdate = args;
+                device.State = Device.DeviceState.DISCONNECTED;
                 DeviceDisconnectedEvent?.Invoke(sender, device);
             }
         }
@@ -76,10 +82,8 @@ namespace WOADeviceManager.Managers
             {
                 device = new Device()
                 {
-                    DeviceId = args.Id,
-                    DeviceName = "Surface Duo",
-                    DeviceState = Device.DeviceStateType.ANDROID_ADB_ENABLED,
-                    DeviceInformation = args
+                    Id = args.Id,
+                    Information = args
                 };
                 DeviceFoundEvent?.Invoke(sender, device);
             }

@@ -53,5 +53,20 @@ namespace WOADeviceManager.Pages
         {
             ADBProcedures.RebootToBootloader(device.SerialNumber);
         }
+
+        private void RebootToAndroid_Click(object sender, RoutedEventArgs e)
+        {
+            FastbootProcedures.Reboot(device.SerialNumber);
+        }
+
+        private void FlashUnlock_Click(object sender, RoutedEventArgs e)
+        {
+            FastbootProcedures.FlashUnlock(device.SerialNumber, this);
+        }
+
+        private void FlashLock_Click(object sender, RoutedEventArgs e)
+        {
+            FastbootProcedures.FlashLock(device.SerialNumber);
+        }
     }
 }

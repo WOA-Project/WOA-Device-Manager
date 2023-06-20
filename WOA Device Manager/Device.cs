@@ -17,7 +17,9 @@ namespace WOADeviceManager
 
         public Device() { }
 
-        public string Id { get; set; }
+        public string ID { get; set; }
+        public string ADBID { get; set; }
+        public string FastbootID { get; set; }
         public string Name { get; set; }
         public string SerialNumber { get; set; }
         public DeviceState State { get; set; } = DeviceState.DISCONNECTED;
@@ -90,6 +92,22 @@ namespace WOADeviceManager
             get
             {
                 return !IsConnected;
+            }
+        }
+
+        public bool ADBConnected
+        {
+            get
+            {
+                return State == DeviceState.ANDROID_ADB_ENABLED;
+            }
+        }
+
+        public bool FastbootConnected
+        {
+            get
+            {
+                return State == DeviceState.FASTBOOT;
             }
         }
     }

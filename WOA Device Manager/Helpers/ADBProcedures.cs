@@ -29,9 +29,9 @@ namespace WOADeviceManager.Helpers
             return null;
         }
 
-        public static async void RebootToBootloader(string deviceName)
+        public static void RebootToBootloader(string deviceName)
         {
-            await ADBManager.SendADBCommand("reboot bootloader");
+            ADBManager.SendADBCommand("reboot bootloader", deviceName);
         }
     }
 }

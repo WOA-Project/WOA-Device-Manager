@@ -29,10 +29,10 @@ namespace WOADeviceManager.Managers
             throw new Exception("No valid ADB available");
         }
 
-        public static Process GetADBProcess(string argument = null)
+        public static Process GetADBProcess(string argument = null, string deviceName = null)
         {
             Process process = new Process();
-            string args = $"adb {argument}";
+            string args = $"/C adb {(deviceName != null ? $"-s {deviceName}" : "")} {argument}";
             // TODO: These need to be reimplemented
             //if (!string.IsNullOrEmpty(ApplicationData.Current.LocalSettings.Values["CustomADBPath"] as string))
             //{
@@ -77,22 +77,28 @@ namespace WOADeviceManager.Managers
             return process;
         }
 
-        public static async Task<string> SendADBCommand(string command)
+        public static string SendADBCommand(string command, string deviceName = null, int timeout = 10)
         {
-            Process shell = GetADBProcess(command);
+            Process shell = GetADBProcess(command, deviceName);
 
             StringBuilder sb = new StringBuilder();
 
             Thread.Sleep(250);
 
-            while (shell.StandardOutput.EndOfStream == false || shell.StandardError.EndOfStream == false)
+            Task t = Task.Run(() =>
             {
-                if (shell.StandardOutput.EndOfStream == false) sb.AppendLine(shell.StandardOutput.ReadLine());
-                if (shell.StandardError.EndOfStream == false) sb.AppendLine(shell.StandardError.ReadLine());
-            }
+                try
+                {
+                    while (shell.StandardOutput.EndOfStream == false || shell.StandardError.EndOfStream == false)
+                    {
+                        if (shell.StandardOutput.EndOfStream == false) sb.AppendLine(shell.StandardOutput.ReadLine());
+                        if (shell.StandardError.EndOfStream == false) sb.AppendLine(shell.StandardError.ReadLine());
+                    }
+                } catch { }
+            });
 
+            t.Wait(timeout);
             shell.Close();
-
             return sb.ToString();
         }
 

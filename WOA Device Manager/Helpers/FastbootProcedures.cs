@@ -48,18 +48,6 @@ namespace WOADeviceManager.Helpers
             } 
             else
             {
-                //var messageDialog = new MessageDialog("Flash Unlocking is disabled from Developer Settings in Android.");
-                //messageDialog.Commands.Add(new UICommand(
-                //    "Close",
-                //    new UICommandInvokedHandler((IUICommand command) =>
-                //    {
-
-                //    })));
-
-                //messageDialog.DefaultCommandIndex = 0;
-                //messageDialog.CancelCommandIndex = 0;
-                //await messageDialog.ShowAsync();
-
                 ContentDialog dialog = new ContentDialog();
                 dialog.Title = "Unlocking is disabled";
                 dialog.Content = "Flash Unlocking is disabled from Developer Settings in Android. Please enable it manually from there.";
@@ -76,6 +64,7 @@ namespace WOADeviceManager.Helpers
 
         public static bool FlashLock(string deviceName)
         {
+            //TODO: Check that the device doesn't have Windows installed
             return FastbootManager.SendFastbootCommand("flashing lock") != null; // TODO: error handling here, always returns true rn ofc
         }
     }

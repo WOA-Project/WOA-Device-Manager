@@ -95,7 +95,7 @@ namespace WOADeviceManager.Managers
                 device.SerialNumber = match.Groups[1].Value;
                 if (args.IsEnabled)
                 {
-                    Thread.Sleep(1000); //ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
+                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
                     device.State = Device.DeviceState.ANDROID_ADB_ENABLED;
                     device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult();
                     DeviceConnectedEvent?.Invoke(sender, device);
@@ -110,9 +110,25 @@ namespace WOADeviceManager.Managers
                 device.SerialNumber = match.Groups[1].Value;
                 if (args.IsEnabled)
                 {
-                    Thread.Sleep(1000); //ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
+                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
                     device.State = Device.DeviceState.FASTBOOT;
                     device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
+                    DeviceConnectedEvent?.Invoke(sender, device);
+                }
+            }
+            if (args.Name == "MTP")
+            {
+                device.TWRPID = args.Id;
+                device.Information = args;
+                string pattern = @"#(\d+)#";
+                Match match = Regex.Match(device.TWRPID, pattern);
+                device.SerialNumber = match.Groups[1].Value;
+                if (args.IsEnabled)
+                {
+                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
+                    device.State = Device.DeviceState.TWRP;
+                    // device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult(); // TODO: Find a way to detect what device is connected, if we want to make this work with other models too
+                    device.Name = "Surface Duo";
                     DeviceConnectedEvent?.Invoke(sender, device);
                 }
             }

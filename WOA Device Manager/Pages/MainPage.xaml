@@ -16,14 +16,23 @@
         </StackPanel>
         <Grid Margin="20, 65, 20, 100" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
         <StackPanel Margin="20, 65, 20, 100" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Spacing="4">
-            <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind device.ADBConnected}"> Reboot to bootloader</Button>
+            <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind device.ADBORTWRPConnected}"> Reboot to bootloader</Button>
             <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Reboot to Android</Button>
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <Button Click="FlashUnlock_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Flash Unlock</Button>
                 <Button Click="FlashLock_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Flash Lock</Button>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Click="BootTWRP_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Boot TWRP</Button>
+            </StackPanel>
             <TextBlock x:Name="DebugInfo" TextWrapping="Wrap"></TextBlock>
         </StackPanel>
+        <Grid x:Name="ProgressOverlay" Margin="20, 65, 20, 100" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                <ProgressRing></ProgressRing>
+                <TextBlock>Waiting for device...</TextBlock>
+            </StackPanel>
+        </Grid>
         <StackPanel x:Name="BottomWidgetStack" VerticalAlignment="Bottom" Height="80" Margin="20, 0, 20, 10" Orientation="Horizontal" Spacing="20">
             <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Orientation="Horizontal" Spacing="10">
                 <Grid>

@@ -12,19 +12,21 @@ namespace WOADeviceManager
     {
         public enum DeviceState
         {
-            ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT, DISCONNECTED
+            ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT, TWRP, DISCONNECTED
         }
 
         public Device() { }
 
         public string ID { get; set; }
-        public string ADBID { get; set; }
-        public string FastbootID { get; set; }
         public string Name { get; set; }
         public string SerialNumber { get; set; }
         public DeviceState State { get; set; } = DeviceState.DISCONNECTED;
         public DeviceInformation Information { get; set; }
         public DeviceInformationUpdate LastInformationUpdate { get; set; }
+
+        public string ADBID { get; set; }
+        public string FastbootID { get; set; }
+        public string TWRPID { get; set; }
 
         // TODO: These don't work, fix them
         //public string AndroidVersion
@@ -66,6 +68,8 @@ namespace WOADeviceManager
                         return "Bootloader";
                     case DeviceState.FASTBOOT:
                         return "Fastboot";
+                    case DeviceState.TWRP:
+                        return "TWRP";
                     case DeviceState.DISCONNECTED:
                         return "Disconnected";
                     default:
@@ -100,6 +104,22 @@ namespace WOADeviceManager
             get
             {
                 return State == DeviceState.ANDROID_ADB_ENABLED;
+            }
+        }
+
+        public bool ADBORTWRPConnected
+        {
+            get
+            {
+                return State == DeviceState.ANDROID_ADB_ENABLED || State == DeviceState.TWRP;
+            }
+        }
+
+        public bool TWRPConnected
+        {
+            get
+            {
+                return State == DeviceState.TWRP;
             }
         }
 

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Popups;
 using WOADeviceManager.Managers;
 
@@ -14,7 +15,16 @@ namespace WOADeviceManager.Helpers
     {
         public static string GetProduct(string deviceName)
         {
-            return FastbootManager.SendFastbootCommand("getvar product").Split(Environment.NewLine)[0].Split(": ")[1];
+            string productGetVar = FastbootManager.SendFastbootCommand("getvar product");
+            if (productGetVar.Contains(Environment.NewLine))
+            {
+                string firstLine = productGetVar.Split(Environment.NewLine)[0];
+                if (firstLine.Contains(":"))
+                {
+                    return firstLine.Split(": ")[1];
+                }
+            }
+            return null;
         }
 
         public static void Reboot(string deviceName)
@@ -33,6 +43,8 @@ namespace WOADeviceManager.Helpers
                 dialog.PrimaryButtonClick += (ContentDialog dialog, ContentDialogButtonClickEventArgs args) =>
                 {
                     Debug.WriteLine("hi");
+                    // TODO: Disabled for safety
+                    //return FastbootManager.SendFastbootCommand("flashing unlock") != null; // TODO: error handling here, always returns true rn ofc
                     dialog.Hide();
                 };
                 dialog.CloseButtonText = "Cancel";
@@ -40,10 +52,7 @@ namespace WOADeviceManager.Helpers
                 {
                     dialog.XamlRoot = frameHost.XamlRoot;
                 }
-                dialog.ShowAsync();
-                //TODO: Send 932857957028950 warnings to the user that everything will be formatted
-                //TODO: Disabled for safety
-                //return FastbootManager.SendFastbootCommand("flashing unlock") != null; // TODO: error handling here, always returns true rn ofc
+                _ = dialog.ShowAsync();
                 return true;
             } 
             else
@@ -56,16 +65,41 @@ namespace WOADeviceManager.Helpers
                 {
                     dialog.XamlRoot = frameHost.XamlRoot;
                 }
-                dialog.ShowAsync();
+                _ = dialog.ShowAsync();
                 return false;
             }
             
         }
 
-        public static bool FlashLock(string deviceName)
+        public static bool FlashLock(string deviceName, Control frameHost = null)
         {
-            //TODO: Check that the device doesn't have Windows installed
-            return FastbootManager.SendFastbootCommand("flashing lock") != null; // TODO: error handling here, always returns true rn ofc
+            // TODO: Check that the device doesn't have Windows installed
+            ContentDialog dialog = new ContentDialog();
+            dialog.Title = "⚠️ Your bootloader will be locked";
+            dialog.Content = "This procedure will lock your bootloader. You usually don't want to do this unless you have to sell your device.";
+            dialog.PrimaryButtonText = "⚠️ Proceed";
+            dialog.PrimaryButtonClick += (ContentDialog dialog, ContentDialogButtonClickEventArgs args) =>
+            {
+                Debug.WriteLine("hi");
+                // TODO: Disabled for safety
+                //FastbootManager.SendFastbootCommand("flashing lock") != null; // TODO: error handling here, always returns true rn ofc
+                dialog.Hide();
+            };
+            dialog.CloseButtonText = "Cancel";
+            if (frameHost != null)
+            {
+                dialog.XamlRoot = frameHost.XamlRoot;
+            }
+            _ = dialog.ShowAsync();
+            return true; 
+        }
+
+        public static async Task<bool> BootTWRP(string deviceName)
+        {
+            StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP);
+            if (twrp == null) return false;
+
+            return FastbootManager.SendFastbootCommand($"boot {twrp.Path}") != null;
         }
     }
 }

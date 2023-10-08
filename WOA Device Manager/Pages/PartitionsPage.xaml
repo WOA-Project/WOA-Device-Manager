@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="WOADeviceManager.Pages.PartitionsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:managers="using:WOADeviceManager.Managers"
+    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Grid x:Name="TWRPModeNeededOverlay">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" MaxWidth="300">
+                <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">🔄️</TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" TextAlignment="Center">Reboot to TWRP required</TextBlock>
+                <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">Please reboot to TWRP to use this feature. WOA Device Manager uses GNU parted to manage partitions.</TextBlock>
+                <Button HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Margin="0, 10, 0, 0">Reboot now</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

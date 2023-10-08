@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAPTeam.AndroCtrl.Adb;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,6 +13,34 @@ namespace WOADeviceManager.Managers
 {
     class ADBManager
     {
+        private static AdbServer server;
+        private static AdbClient client;
+        public static AdbClient Client
+        {
+            get
+            {
+                if (client == null) client = new AdbClient();
+                return client;
+            }
+        }
+
+        private static ADBManager _instance;
+        public static ADBManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new ADBManager();
+                return _instance;
+            }
+        }
+
+        private ADBManager()
+        {
+            server = new AdbServer();
+            server.StartServer(@"X:\Tools\ADB\adb.exe", restartServerIfNewer: true);
+        }
+
+        // TODO: To be reimplemented
         public static string GetADBPath()
         {
             if (!string.IsNullOrEmpty(ApplicationData.Current.LocalSettings.Values["CustomADBPath"] as string))
@@ -29,6 +58,7 @@ namespace WOADeviceManager.Managers
             throw new Exception("No valid ADB available");
         }
 
+        [Obsolete]
         public static Process GetADBProcess(string argument = null, string deviceName = null)
         {
             Process process = new Process();
@@ -60,6 +90,7 @@ namespace WOADeviceManager.Managers
             return process;
         }
 
+        [Obsolete]
         public static Process GetADBShell()
         {
             Process process = new Process();
@@ -77,6 +108,7 @@ namespace WOADeviceManager.Managers
             return process;
         }
 
+        [Obsolete]
         public static string SendADBCommand(string command, string deviceName = null, int timeout = 10)
         {
             Process shell = GetADBProcess(command, deviceName);
@@ -102,6 +134,7 @@ namespace WOADeviceManager.Managers
             return sb.ToString();
         }
 
+        [Obsolete]
         public static async Task<string> SendShellCommand(string command, string deviceName = null, bool restart = false, string workingPath = null)
         {
             StorageFile tempFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync($"shellout{command}{DateTime.Now.Ticks}.text", CreationCollisionOption.ReplaceExisting);
@@ -145,7 +178,8 @@ namespace WOADeviceManager.Managers
             return output;
         }
 
-        // These next three methods were stolen somewhere on the web
+        // These next three methods were stolen somewhere on the web, replace them
+        [Obsolete]
         public static async Task<int> StartProcess(string filename, string arguments, string workingDirectory = null, int? timeout = null, TextWriter outputTextWriter = null, TextWriter errorTextWriter = null)
         {
             using (var process = new Process()
@@ -199,6 +233,8 @@ namespace WOADeviceManager.Managers
                 return process.ExitCode;
             }
         }
+
+        [Obsolete]
         public static Task WaitForExitAsync(Process process, CancellationToken cancellationToken = default(CancellationToken))
         {
             process.EnableRaisingEvents = true;
@@ -225,6 +261,8 @@ namespace WOADeviceManager.Managers
 
             return taskCompletionSource.Task;
         }
+
+        [Obsolete]
         public static Task ReadAsync(Action<DataReceivedEventHandler> addHandler, Action<DataReceivedEventHandler> removeHandler, TextWriter textWriter, CancellationToken cancellationToken = default(CancellationToken))
         {
             var taskCompletionSource = new TaskCompletionSource<object>();

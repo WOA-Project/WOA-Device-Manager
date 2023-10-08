@@ -1,0 +1,25 @@
+﻿<Page
+    x:Class="WOADeviceManager.Pages.zDebugPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Padding="16" Spacing="4">
+            <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind device.ADBORTWRPConnected}"> Reboot to bootloader</Button>
+            <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Reboot to Android</Button>
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Click="FlashUnlock_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Flash Unlock</Button>
+                <Button Click="FlashLock_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Flash Lock</Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Click="BootTWRP_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Boot TWRP</Button>
+                <Button Click="PushParted_Click" IsEnabled="{x:Bind device.TWRPConnected}"> Push parted</Button>
+            </StackPanel>
+            <TextBlock x:Name="DebugInfo" TextWrapping="Wrap"></TextBlock>
+        </StackPanel>
+    </Grid>
+</Page>

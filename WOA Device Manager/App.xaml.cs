@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using SAPTeam.AndroCtrl.Adb;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,11 +25,15 @@ namespace WOADeviceManager
 {
     public partial class App : Application
     {
-        public DeviceManager DeviceManager;
+        private DeviceManager DeviceManager;
+        private ADBManager ADBManager;
 
         public App()
         {
             InitializeComponent();
+
+            ADBManager = ADBManager.Instance;
+            DeviceManager = DeviceManager.Instance;
         }
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -43,8 +48,6 @@ namespace WOADeviceManager
             MainWindowAW = AppWindow.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(m_window_hwnd));
 
             mainWindow.Activate();
-
-            DeviceManager = new DeviceManager();
         }
 
         public static Window mainWindow;

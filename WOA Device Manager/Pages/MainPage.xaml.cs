@@ -1,91 +1,85 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Pages
 {
     public sealed partial class MainPage : Page
     {
-        Device device = null;
+        private Device device = null;
+        private static MainPage _mainPage;
 
         public MainPage()
         {
             InitializeComponent();
 
-            // TODO: Initial enabling/disabling of UI based on device availability
+            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
+            DeviceManager.ManuallyCheckForADBDevices();
 
-            DeviceManager.Instance.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
-            DeviceManager.Instance.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
+            _mainPage = this;
         }
 
-        private void Instance_DeviceDisconnectedEvent(DeviceWatcher sender, Device device)
+        private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
                 this.device = device;
-                DebugInfo.Text = $"{device.Name} Disconnected";
+                //DebugInfo.Text = $"{device.Name} disconnected.";
                 Bindings.Update();
             });
         }
 
-        private void DeviceManager_DeviceConnectedEvent(DeviceWatcher sender, Device device)
+        private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
                 this.device = device;
-                DebugInfo.Text = $"{device.Name} Connected";
+                //DebugInfo.Text = $"{device.Name} connected in {device.DeviceStateLocalized}.";
                 Bindings.Update();
             });
         }
 
-        private void RebootToBootloader_Click(object sender, RoutedEventArgs e)
+        private void MainNavigationSelectionChanged(object sender, NavigationViewSelectionChangedEventArgs e)
         {
-            ToggleLoadingScreen(true);
-            ADBProcedures.RebootToBootloader(device.SerialNumber);
-            ToggleLoadingScreen(false);
+            WelcomeView.Visibility = Visibility.Collapsed;
+            if (e.SelectedItem != null)
+            {
+                var selectedItem = (e.SelectedItem as NavigationViewItem);
+                switch (selectedItem.Tag)
+                {
+                    case "status":
+                        break;
+                    case "managewindows":
+                        break;
+                    case "partitions":
+                        MainNavigationFrame.Navigate(typeof(PartitionsPage));
+                        break;
+                    case "debug":
+                        MainNavigationFrame.Navigate(typeof(zDebugPage));
+                        break;
+                }
+            }
         }
 
-        private void RebootToAndroid_Click(object sender, RoutedEventArgs e)
+        private string BatteryLevelFormatted
         {
-            ToggleLoadingScreen(true);
-            FastbootProcedures.Reboot(device.SerialNumber);
-            ToggleLoadingScreen(false);
+            get
+            {
+                if (device != null && device.BatteryLevel != null)
+                {
+                    return $"Battery level: {device.BatteryLevel}%";
+                }
+                else
+                {
+                    return "Battery level: Unknown";
+                }
+            }
         }
 
-        private void FlashUnlock_Click(object sender, RoutedEventArgs e)
+        public static void ToggleLoadingScreen(bool show)
         {
-            _ = FastbootProcedures.FlashUnlock(device.SerialNumber, this);
-        }
-
-        private void FlashLock_Click(object sender, RoutedEventArgs e)
-        {
-            FastbootProcedures.FlashLock(device.SerialNumber, this);
-        }
-
-        private async void BootTWRP_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleLoadingScreen(true);
-            await FastbootProcedures.BootTWRP(device.SerialNumber);
-            ToggleLoadingScreen(false);
-        }
-
-        private void ToggleLoadingScreen(bool show)
-        {
-            if (show) ProgressOverlay.Visibility = Visibility.Visible;
+            if (show) _mainPage.ProgressOverlay.Visibility = Visibility.Visible;
             DoubleAnimation fadeAnimation = new DoubleAnimation
             {
                 From = show ? 0 : 1,
@@ -97,11 +91,11 @@ namespace WOADeviceManager.Pages
             {
                 fadeAnimation.Completed += (s, e) =>
                 {
-                    ProgressOverlay.Visibility = Visibility.Collapsed;
+                    _mainPage.ProgressOverlay.Visibility = Visibility.Collapsed;
                 };
             }
 
-            Storyboard.SetTarget(fadeAnimation, ProgressOverlay);
+            Storyboard.SetTarget(fadeAnimation, _mainPage.ProgressOverlay);
             Storyboard.SetTargetProperty(fadeAnimation, "Opacity");
             Storyboard storyboard = new Storyboard();
             storyboard.Children.Add(fadeAnimation);

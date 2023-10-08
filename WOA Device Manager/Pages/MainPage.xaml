@@ -2,53 +2,59 @@
     x:Class="WOADeviceManager.Pages.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:WOADeviceManager.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
     <Grid>
-        <StackPanel x:Name="TitleBar" Orientation="Horizontal" Height="44" VerticalAlignment="Top" Spacing="16" Margin="6, 10, 0, 0">
+        <NavigationView Background="Transparent" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneToggleButtonVisible="False" IsTitleBarAutoPaddingEnabled="False" SelectionChanged="MainNavigationSelectionChanged">
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItemSeparator></NavigationViewItemSeparator>
+                <NavigationViewItem Content="Advanced" Height="30" IsEnabled="False"></NavigationViewItem>
+                <NavigationViewItem Icon="Manage" Content="Partitions" Tag="partitions"></NavigationViewItem>
+                <NavigationViewItem Icon="Setting" Content="zDebug" Margin="0, 0, 0, 20" Tag="debug"></NavigationViewItem>
+                <NavigationViewItem IsHitTestVisible="False">
+                    <StackPanel x:Name="BottomWidgetStack" VerticalAlignment="Bottom" Height="80" Margin="-5, 0, 0, 5" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="20">
+                        <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Orientation="Horizontal" Spacing="10">
+                            <Grid>
+                                <Grid Background="{StaticResource AccentFillColorDefaultBrush}" Margin="4, 6, 4, 6"></Grid>
+                                <Image Source="/Assets/Devices/SurfaceDuo.png"></Image>
+                            </Grid>
+                            <StackPanel>
+                                <TextBlock Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}"></TextBlock>
+                                <TextBlock Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8"></TextBlock>
+                                <TextBlock x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}"></TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="CellPhone" Content="Device status" Margin="0, 60, 0, 0" Tag="status"></NavigationViewItem>
+                <NavigationViewItem Icon="Repair" Content="Manage Windows" Tag="managewindows"></NavigationViewItem>
+            </NavigationView.MenuItems>
+            <Grid>
+                <Grid Margin="0, 40, 20, 20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
+                <Grid x:Name="WelcomeView">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                        <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>
+                        <TextBlock HorizontalAlignment="Center">Welcome to WOA Device Manager</TextBlock>
+                    </StackPanel>
+                </Grid>
+                <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0, 40, 20, 20" CornerRadius="4"></Frame>
+                <Grid x:Name="ProgressOverlay" Margin="0, 40, 20, 20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                        <ProgressRing></ProgressRing>
+                        <TextBlock>Waiting for device...</TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </NavigationView>
+        <StackPanel x:Name="TitleBar" Orientation="Horizontal" Height="44" VerticalAlignment="Top" Spacing="16" Margin="-5, 10, 0, 0">
             <Grid Width="30" Height="30" Margin="20, 2, 0, 0" VerticalAlignment="Center" CornerRadius="6" Opacity="0.75">
                 <Image x:Name="AppIcon" Width="30" Height="30" Source="/Assets/AppIcon.png" VerticalAlignment="Center"/>
             </Grid>
             <TextBlock x:Name="AppTitle" VerticalAlignment="Center" FontSize="18">WOA Device Manager</TextBlock>
-        </StackPanel>
-        <Grid Margin="20, 65, 20, 100" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
-        <StackPanel Margin="20, 65, 20, 100" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Spacing="4">
-            <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind device.ADBORTWRPConnected}"> Reboot to bootloader</Button>
-            <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Reboot to Android</Button>
-            <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Click="FlashUnlock_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Flash Unlock</Button>
-                <Button Click="FlashLock_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Flash Lock</Button>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Click="BootTWRP_Click" IsEnabled="{x:Bind device.FastbootConnected}"> Boot TWRP</Button>
-            </StackPanel>
-            <TextBlock x:Name="DebugInfo" TextWrapping="Wrap"></TextBlock>
-        </StackPanel>
-        <Grid x:Name="ProgressOverlay" Margin="20, 65, 20, 100" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
-                <ProgressRing></ProgressRing>
-                <TextBlock>Waiting for device...</TextBlock>
-            </StackPanel>
-        </Grid>
-        <StackPanel x:Name="BottomWidgetStack" VerticalAlignment="Bottom" Height="80" Margin="20, 0, 20, 10" Orientation="Horizontal" Spacing="20">
-            <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Orientation="Horizontal" Spacing="10">
-                <Grid>
-                    <Grid Background="SandyBrown" Margin="4, 6, 4, 6"></Grid>
-                    <Image Source="/Assets/Devices/SurfaceDuo.png"></Image>
-                </Grid>
-                <StackPanel>
-                    <TextBlock Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}"></TextBlock>
-                    <TextBlock Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8"></TextBlock>
-                    <!--<TextBlock Opacity="0.8">
-                        <Run Text="{x:Bind device.AndroidVersion}"></Run>
-                        <Run> - </Run>
-                        <Run Text="{x:Bind device.AndroidBuildId}"></Run>
-                    </TextBlock>-->
-                </StackPanel>
-            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

@@ -1,37 +1,100 @@
-﻿using System;
+﻿using SAPTeam.AndroCtrl.Adb;
+using SAPTeam.AndroCtrl.Adb.DeviceCommands;
+using SAPTeam.AndroCtrl.Adb.Receivers;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage;
 using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Helpers
 {
     public class ADBProcedures
     {
-        public static async Task<string> GetDeviceProductModel(string deviceName)
+        public static string GetDeviceProductModel()
         {
-            return (await ADBManager.SendShellCommand("getprop ro.product.model", deviceName)).Split(Environment.NewLine)[0];
+            var receiver = new ConsoleOutputReceiver();
+            try
+            {
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.model", DeviceManager.Device.Data, receiver);
+            }
+            catch (Exception) { }
+            return receiver.ToString().Trim();
         }
 
-        public static async Task<string> GetDeviceBuildVersionRelease(string deviceName)
+        public static string GetDeviceBuildVersionRelease()
         {
-            return "Android " + (await ADBManager.SendShellCommand("getprop ro.build.version.release", deviceName)).Split(Environment.NewLine)[0];
-        }
-
-        public static async Task<string> GetDeviceBuildId(string deviceName)
-        {
-            return (await ADBManager.SendShellCommand("getprop ro.build.id", deviceName)).Split(Environment.NewLine)[0];
-        }
-
-        public static async Task<string> GetDeviceWallpaper(string deviceName)
-        {
+            var receiver = new ConsoleOutputReceiver();
+            try
+            {
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.version.release", DeviceManager.Device.Data, receiver);
+                return "Android " + receiver.ToString().Trim();
+            }
+            catch (Exception) { }
             return null;
         }
 
-        public static void RebootToBootloader(string deviceName)
+        public static string GetDeviceBuildId()
         {
-            ADBManager.SendADBCommand("reboot bootloader", deviceName);
+            var receiver = new ConsoleOutputReceiver();
+            try
+            {
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.id", DeviceManager.Device.Data, receiver);
+                return receiver.ToString().Trim();
+            }
+            catch (Exception) { }
+            return null;
+        }
+
+        public static string GetDeviceWallpaperPath()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void RebootToBootloader()
+        {
+            ADBManager.Client.Reboot("bootloader", DeviceManager.Device.Data);
+        }
+
+        public static async Task<bool> PushParted()
+        {
+            var receiver = new ConsoleOutputReceiver();
+            StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);
+            string command = $"push \"{@parted.Path}\" /sdcard/";
+            Progress<int> progress = new Progress<int>();
+            try
+            {
+                using (SyncService service = new SyncService(ADBManager.Client, DeviceManager.Device.Data))
+                using (Stream stream = File.OpenRead(@parted.Path))
+                {
+                    service.Push(stream, "/sdcard/parted", 755, DateTime.Now, progress, CancellationToken.None);
+                }
+                string result = receiver.ToString().Trim();
+                Debug.WriteLine(result);
+                return !result.Contains("error");
+            }
+            catch { }
+            return false;
+        }
+
+        internal static string GetDeviceBatteryLevel()
+        {
+            var receiver = new ConsoleOutputReceiver();
+            try
+            {
+                ADBManager.Client.ExecuteRemoteCommand("dumpsys battery", DeviceManager.Device.Data, receiver);
+                string result = receiver.ToString().Trim();
+                result = result.Split("level: ")[1].Split("\n")[0].Trim();
+                return result;
+            }
+            catch (Exception) { }
+            return null;
         }
     }
 }

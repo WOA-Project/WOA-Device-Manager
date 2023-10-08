@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SAPTeam.AndroCtrl.Adb;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using WOADeviceManager.Helpers;
 
@@ -15,6 +12,7 @@ namespace WOADeviceManager.Managers
     public class DeviceManager
     {
         private DeviceWatcher watcher;
+        private static DeviceMonitor adbMonitor;
 
         private static DeviceManager _instance;
         public static DeviceManager Instance
@@ -26,27 +24,32 @@ namespace WOADeviceManager.Managers
             }
         }
 
-        public static Device device;
+        private static Device device;
         public static Device Device
         {
             get
             {
+                if (device == null) device = new Device();
                 return device;
             }
             private set { device = value; }
         }
 
-        public delegate void DeviceFoundEventHandler(DeviceWatcher sender, Device device);
-        public event DeviceFoundEventHandler DeviceFoundEvent;
+        public delegate void DeviceFoundEventHandler(object sender, Device device);
+        public delegate void DeviceConnectedEventHandler(object sender, Device device);
+        public delegate void DeviceDisconnectedEventHandler(object sender, Device device);
+        public static event DeviceFoundEventHandler DeviceFoundEvent;
+        public static event DeviceConnectedEventHandler DeviceConnectedEvent;
+        public static event DeviceDisconnectedEventHandler DeviceDisconnectedEvent;
 
-        public delegate void DeviceConnectedEventHandler(DeviceWatcher sender, Device device);
-        public delegate void DeviceDisconnectedEventHandler(DeviceWatcher sender, Device device);
-        public event DeviceConnectedEventHandler DeviceConnectedEvent;
-        public event DeviceDisconnectedEventHandler DeviceDisconnectedEvent;
-
-        public DeviceManager()
+        private DeviceManager()
         {
-            device = new Device();
+            if (device == null) device = new Device();
+
+            adbMonitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
+            adbMonitor.DeviceConnected += OnADBDeviceConnected;
+            adbMonitor.DeviceDisconnected += OnADBDeviceDisconnected;
+            adbMonitor.Start();
 
             watcher = DeviceInformation.CreateWatcher();
             watcher.Added += DeviceAdded;
@@ -55,29 +58,71 @@ namespace WOADeviceManager.Managers
             watcher.Start();
         }
 
+        void OnADBDeviceConnected(object sender, DeviceDataEventArgs e)
+        {
+            Debug.WriteLine($"The device {e.Device.Serial} has connected to this PC");
+            var connectedDevices = ADBManager.Client.GetDevices();
+
+            foreach (var connectedDevice in connectedDevices)
+            {
+                if (e.Device.Serial.Equals(connectedDevice.Serial))
+                {
+                    device.SerialNumber = connectedDevice.Serial;
+                    device.Data = connectedDevice;
+                }
+            }
+        }
+
+        void OnADBDeviceDisconnected(object sender, DeviceDataEventArgs e)
+        {
+            Debug.WriteLine($"The device {e.Device.Serial} has disconnected from this PC");
+        }
+
+        public static void ManuallyCheckForADBDevices()
+        {
+            try
+            {
+                var connectedDevices = ADBManager.Client.GetDevices();
+                var firstDevice = connectedDevices.FirstOrDefault();
+                if (firstDevice != null)
+                {
+                    Device.SerialNumber = firstDevice.Serial;
+                    Device.Data = firstDevice;
+                }
+            } catch { }
+        }
+
         private void Watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             if (args.Id.Equals(device.ADBID) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
             {
                 Thread.Sleep(1000); //ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
-                device.State = Device.DeviceState.ANDROID_ADB_ENABLED;
-                device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult();
+                device.Name = ADBProcedures.GetDeviceProductModel();
+                device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
             else if (args.Id.Equals(device.FastbootID) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
             {
-                Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "fastbot devices" each 0.5s until the device is detected
+                Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "fastboot devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
-                device.State = Device.DeviceState.FASTBOOT;
+                device.State = Device.DeviceStateEnum.FASTBOOT;
                 device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
-            else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceState.ANDROID_ADB_ENABLED && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false) 
-                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceState.FASTBOOT && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false))
+            else if (args.Id.Equals(device.TWRPID) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
+            {
+                Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
+                device.LastInformationUpdate = args;
+                device.State = Device.DeviceStateEnum.TWRP;
+                device.Name = ADBProcedures.GetDeviceProductModel();
+                DeviceConnectedEvent?.Invoke(sender, device);
+            }   
+            else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
+                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceStateEnum.FASTBOOT && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false))
             {
                 device.LastInformationUpdate = args;
-                device.State = Device.DeviceState.DISCONNECTED;
+                device.State = Device.DeviceStateEnum.DISCONNECTED;
                 DeviceDisconnectedEvent?.Invoke(sender, device);
             }
         }
@@ -96,9 +141,9 @@ namespace WOADeviceManager.Managers
                 if (args.IsEnabled)
                 {
                     Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceState.ANDROID_ADB_ENABLED;
-                    device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult();
-                    DeviceConnectedEvent?.Invoke(sender, device);
+                    device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                    device.Name = ADBProcedures.GetDeviceProductModel();
+                    DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
             if (args.Name == "Surface Duo Fastboot")
@@ -111,9 +156,9 @@ namespace WOADeviceManager.Managers
                 if (args.IsEnabled)
                 {
                     Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceState.FASTBOOT;
+                    device.State = Device.DeviceStateEnum.FASTBOOT;
                     device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
-                    DeviceConnectedEvent?.Invoke(sender, device);
+                    DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
             if (args.Name == "MTP")
@@ -126,10 +171,10 @@ namespace WOADeviceManager.Managers
                 if (args.IsEnabled)
                 {
                     Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceState.TWRP;
+                    device.State = Device.DeviceStateEnum.TWRP;
                     // device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult(); // TODO: Find a way to detect what device is connected, if we want to make this work with other models too
                     device.Name = "Surface Duo";
-                    DeviceConnectedEvent?.Invoke(sender, device);
+                    DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace WOADeviceManager.Managers
     {
         public enum DownloadableComponent
         {
-            TWRP
+            TWRP, PARTED
         }
 
         public static Task<StorageFile> RetrieveFile(DownloadableComponent component)
@@ -22,6 +22,10 @@ namespace WOADeviceManager.Managers
                 case DownloadableComponent.TWRP:
                     downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/surfaceduo1-twrp.img";
                     fileName = "TWRP.img";
+                    break;
+                case DownloadableComponent.PARTED:
+                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/parted";
+                    fileName = "parted";
                     break;
             }
             return RetrieveFile(downloadPath, fileName);

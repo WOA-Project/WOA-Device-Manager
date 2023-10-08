@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAPTeam.AndroCtrl.Adb;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,14 @@ namespace WOADeviceManager
 {
     public class Device
     {
-        public enum DeviceState
+        public enum DeviceStateEnum
         {
             ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT, TWRP, DISCONNECTED
+        }
+
+        public enum OEMUnlockStateEnum
+        {
+            UNLOCKED, LOCKED, UNKNOWN
         }
 
         public Device() { }
@@ -20,9 +26,11 @@ namespace WOADeviceManager
         public string ID { get; set; }
         public string Name { get; set; }
         public string SerialNumber { get; set; }
-        public DeviceState State { get; set; } = DeviceState.DISCONNECTED;
+        public DeviceStateEnum State { get; set; } = DeviceStateEnum.DISCONNECTED;
+        public OEMUnlockStateEnum OEMUnlockState { get; set; }
         public DeviceInformation Information { get; set; }
         public DeviceInformationUpdate LastInformationUpdate { get; set; }
+        public DeviceData Data { get; set; }
 
         public string ADBID { get; set; }
         public string FastbootID { get; set; }
@@ -53,24 +61,33 @@ namespace WOADeviceManager
         //    }
         //}
 
+        public string BatteryLevel
+        {
+            get
+            {
+                if (State == DeviceStateEnum.ANDROID_ADB_ENABLED) return ADBProcedures.GetDeviceBatteryLevel();
+                else return null;
+            }
+        }
+
         public string DeviceStateLocalized
         {
             get
             {
                 switch (State) {
-                    case DeviceState.ANDROID:
+                    case DeviceStateEnum.ANDROID:
                         return "Android";
-                    case DeviceState.ANDROID_ADB_ENABLED:
+                    case DeviceStateEnum.ANDROID_ADB_ENABLED:
                         return "Android (ADB Connected)";
-                    case DeviceState.WINDOWS:
+                    case DeviceStateEnum.WINDOWS:
                         return "Windows";
-                    case DeviceState.BOOTLOADER:
+                    case DeviceStateEnum.BOOTLOADER:
                         return "Bootloader";
-                    case DeviceState.FASTBOOT:
+                    case DeviceStateEnum.FASTBOOT:
                         return "Fastboot";
-                    case DeviceState.TWRP:
+                    case DeviceStateEnum.TWRP:
                         return "TWRP";
-                    case DeviceState.DISCONNECTED:
+                    case DeviceStateEnum.DISCONNECTED:
                         return "Disconnected";
                     default:
                         return null;
@@ -84,7 +101,7 @@ namespace WOADeviceManager
             {
                 switch (State)
                 {
-                    case DeviceState.DISCONNECTED:
+                    case DeviceStateEnum.DISCONNECTED:
                         return false;
                     default: return true;
                 }
@@ -103,7 +120,7 @@ namespace WOADeviceManager
         {
             get
             {
-                return State == DeviceState.ANDROID_ADB_ENABLED;
+                return State == DeviceStateEnum.ANDROID_ADB_ENABLED;
             }
         }
 
@@ -111,7 +128,7 @@ namespace WOADeviceManager
         {
             get
             {
-                return State == DeviceState.ANDROID_ADB_ENABLED || State == DeviceState.TWRP;
+                return State == DeviceStateEnum.ANDROID_ADB_ENABLED || State == DeviceStateEnum.TWRP;
             }
         }
 
@@ -119,7 +136,7 @@ namespace WOADeviceManager
         {
             get
             {
-                return State == DeviceState.TWRP;
+                return State == DeviceStateEnum.TWRP;
             }
         }
 
@@ -127,7 +144,7 @@ namespace WOADeviceManager
         {
             get
             {
-                return State == DeviceState.FASTBOOT;
+                return State == DeviceStateEnum.FASTBOOT;
             }
         }
     }

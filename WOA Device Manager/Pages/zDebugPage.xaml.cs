@@ -52,5 +52,12 @@ namespace WOADeviceManager.Pages
             await ADBProcedures.PushParted();
             MainPage.ToggleLoadingScreen(false);
         }
+
+        private async void MassStorageMode_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.ToggleLoadingScreen(true);
+            await ADBProcedures.EnableMassStorageMode();
+            MainPage.ToggleLoadingScreen(false);
+        }
     }
 }

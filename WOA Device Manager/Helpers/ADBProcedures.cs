@@ -65,7 +65,6 @@ namespace WOADeviceManager.Helpers
         public static async Task<bool> PushParted()
         {
             StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);
-            string command = $"push \"{@parted.Path}\" /sdcard/";
             Progress<int> progress = new Progress<int>();
             bool completed = false;
             progress.ProgressChanged += (object sender, int e) =>
@@ -87,7 +86,40 @@ namespace WOADeviceManager.Helpers
             return false;
         }
 
-        internal static string GetDeviceBatteryLevel()
+        public static async Task<bool> PushMSCScript()
+        {
+            StorageFile msc = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.MASS_STORAGE_SCRIPT);
+            Progress<int> progress = new Progress<int>();
+            bool completed = false;
+            progress.ProgressChanged += (object sender, int e) =>
+            {
+                completed = e == 100;
+            };
+            try
+            {
+                using (SyncService service = new SyncService(ADBManager.Client, DeviceManager.Device.Data))
+                using (Stream stream = File.OpenRead(@msc.Path))
+                {
+                    service.Push(stream, "/sdcard/msc.tar", 755, DateTime.Now, progress, CancellationToken.None);
+                }
+                while (!completed) await Task.Delay(500);
+                var receiver = new ConsoleOutputReceiver();
+                try
+                {
+                    ADBManager.Client.ExecuteRemoteCommand("tar -xf /sdcard/msc.tar -C /sdcard --no-same-owner", DeviceManager.Device.Data, receiver);
+                }
+                catch (Exception) 
+                {
+                    return false;
+                }
+                return true;
+            }
+            // TODO: Handle exception (file transfer failed)
+            catch { }
+            return false;
+        }
+
+        public static string GetDeviceBatteryLevel()
         {
             var receiver = new ConsoleOutputReceiver();
             try
@@ -99,6 +131,19 @@ namespace WOADeviceManager.Helpers
             }
             catch (Exception) { }
             return null;
+        }
+
+        public static async Task EnableMassStorageMode()
+        {
+            await PushMSCScript();
+            var receiver = new ConsoleOutputReceiver();
+            try
+            {
+                ADBManager.Client.ExecuteRemoteCommand("sh /sdcard/msc.sh", DeviceManager.Device.Data, receiver);
+                await Task.Delay(3000);
+            }
+            catch (Exception) { }
+            return;
         }
     }
 }

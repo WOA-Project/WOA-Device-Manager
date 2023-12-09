@@ -64,10 +64,14 @@ namespace WOADeviceManager.Helpers
 
         public static async Task<bool> PushParted()
         {
-            var receiver = new ConsoleOutputReceiver();
             StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);
             string command = $"push \"{@parted.Path}\" /sdcard/";
             Progress<int> progress = new Progress<int>();
+            bool completed = false;
+            progress.ProgressChanged += (object sender, int e) =>
+            {
+                completed = e == 100;
+            };
             try
             {
                 using (SyncService service = new SyncService(ADBManager.Client, DeviceManager.Device.Data))
@@ -75,10 +79,10 @@ namespace WOADeviceManager.Helpers
                 {
                     service.Push(stream, "/sdcard/parted", 755, DateTime.Now, progress, CancellationToken.None);
                 }
-                string result = receiver.ToString().Trim();
-                Debug.WriteLine(result);
-                return !result.Contains("error");
+                while (!completed) await Task.Delay(500);
+                return true;
             }
+            // TODO: Handle exception (file transfer failed)
             catch { }
             return false;
         }

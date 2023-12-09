@@ -106,7 +106,7 @@ namespace WOADeviceManager.Managers
             {
                 Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "fastboot devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
-                device.State = Device.DeviceStateEnum.FASTBOOT;
+                device.State = Device.DeviceStateEnum.BOOTLOADER;
                 device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
@@ -119,7 +119,8 @@ namespace WOADeviceManager.Managers
                 DeviceConnectedEvent?.Invoke(sender, device);
             }   
             else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
-                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceStateEnum.FASTBOOT && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false))
+                || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
+                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceStateEnum.BOOTLOADER && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false))
             {
                 device.LastInformationUpdate = args;
                 device.State = Device.DeviceStateEnum.DISCONNECTED;
@@ -156,7 +157,7 @@ namespace WOADeviceManager.Managers
                 if (args.IsEnabled)
                 {
                     Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceStateEnum.FASTBOOT;
+                    device.State = Device.DeviceStateEnum.BOOTLOADER;
                     device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
                     DeviceConnectedEvent?.Invoke(null, device);
                 }

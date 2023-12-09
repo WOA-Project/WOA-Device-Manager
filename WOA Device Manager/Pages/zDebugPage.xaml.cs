@@ -10,42 +10,39 @@ namespace WOADeviceManager.Pages
 {
     public sealed partial class zDebugPage : Page
     {
-        Device device = null;
-        DeviceData devicedata = null;
-
         public zDebugPage()
         {
             InitializeComponent();
         }
 
-        private void RebootToBootloader_Click(object sender, RoutedEventArgs e)
+        private async void RebootToBootloader_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            ADBProcedures.RebootToBootloader();
+            await DeviceRebootHelper.RebootToBootloaderAndWait();
             MainPage.ToggleLoadingScreen(false);
         }
 
         private void RebootToAndroid_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            FastbootProcedures.Reboot(device.SerialNumber);
+            FastbootProcedures.Reboot(DeviceManager.Device.SerialNumber);
             MainPage.ToggleLoadingScreen(false);
         }
 
         private void FlashUnlock_Click(object sender, RoutedEventArgs e)
         {
-            _ = FastbootProcedures.FlashUnlock(device.SerialNumber, this);
+            _ = FastbootProcedures.FlashUnlock(DeviceManager.Device.SerialNumber, this);
         }
 
         private void FlashLock_Click(object sender, RoutedEventArgs e)
         {
-            FastbootProcedures.FlashLock(device.SerialNumber, this);
+            FastbootProcedures.FlashLock(DeviceManager.Device.SerialNumber, this);
         }
 
         private async void BootTWRP_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await FastbootProcedures.BootTWRP(device.SerialNumber);
+            await FastbootProcedures.BootTWRP(DeviceManager.Device.SerialNumber);
             MainPage.ToggleLoadingScreen(false);
         }
 

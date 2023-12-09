@@ -36,31 +36,6 @@ namespace WOADeviceManager
         public string FastbootID { get; set; }
         public string TWRPID { get; set; }
 
-        // TODO: These don't work, fix them
-        //public string AndroidVersion
-        //{
-        //    get
-        //    {
-        //        if (State == DeviceState.ANDROID_ADB_ENABLED)
-        //        {
-        //            return ADBProcedures.GetDeviceBuildVersionRelease(SerialNumber).GetAwaiter().GetResult();
-        //        }
-        //        else return null;
-        //    }
-        //}
-
-        //public string AndroidBuildId
-        //{
-        //    get
-        //    {
-        //        if (State != DeviceState.ANDROID_ADB_ENABLED)
-        //        {
-        //            return ADBProcedures.GetDeviceBuildId(SerialNumber).GetAwaiter().GetResult();
-        //        }
-        //        else return null;
-        //    }
-        //}
-
         public string BatteryLevel
         {
             get
@@ -145,6 +120,14 @@ namespace WOADeviceManager
             get
             {
                 return State == DeviceStateEnum.FASTBOOT;
+            }
+        }
+
+        public bool BootloaderConnected
+        {
+            get
+            {
+                return State == DeviceStateEnum.BOOTLOADER;
             }
         }
     }

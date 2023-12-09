@@ -42,6 +42,7 @@
                     </StackPanel>
                 </Grid>
                 <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0, 40, 20, 20" CornerRadius="4"></Frame>
+                <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
                 <Grid x:Name="ProgressOverlay" Margin="0, 40, 20, 20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
                         <ProgressRing></ProgressRing>

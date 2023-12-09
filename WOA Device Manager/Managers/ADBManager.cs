@@ -24,6 +24,16 @@ namespace WOADeviceManager.Managers
             }
         }
 
+        private static ShellSocket shell;
+        public static ShellSocket Shell
+        {
+            get
+            {
+                if (shell == null) shell = client.StartShell(DeviceManager.Device.Data);
+                return shell;
+            }
+        }
+
         private static ADBManager _instance;
         public static ADBManager Instance
         {

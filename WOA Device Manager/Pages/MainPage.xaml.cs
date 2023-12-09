@@ -79,27 +79,30 @@ namespace WOADeviceManager.Pages
 
         public static void ToggleLoadingScreen(bool show)
         {
-            if (show) _mainPage.ProgressOverlay.Visibility = Visibility.Visible;
-            DoubleAnimation fadeAnimation = new DoubleAnimation
+            _mainPage.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
             {
-                From = show ? 0 : 1,
-                To = show ? 1 : 0,
-                Duration = new Duration(TimeSpan.FromMilliseconds(300)),
-            };
-
-            if (!show)
-            {
-                fadeAnimation.Completed += (s, e) =>
+                if (show) _mainPage.ProgressOverlay.Visibility = Visibility.Visible;
+                DoubleAnimation fadeAnimation = new DoubleAnimation
                 {
-                    _mainPage.ProgressOverlay.Visibility = Visibility.Collapsed;
+                    From = show ? 0 : 1,
+                    To = show ? 1 : 0,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(300)),
                 };
-            }
 
-            Storyboard.SetTarget(fadeAnimation, _mainPage.ProgressOverlay);
-            Storyboard.SetTargetProperty(fadeAnimation, "Opacity");
-            Storyboard storyboard = new Storyboard();
-            storyboard.Children.Add(fadeAnimation);
-            storyboard.Begin();
+                if (!show)
+                {
+                    fadeAnimation.Completed += (s, e) =>
+                    {
+                        _mainPage.ProgressOverlay.Visibility = Visibility.Collapsed;
+                    };
+                }
+
+                Storyboard.SetTarget(fadeAnimation, _mainPage.ProgressOverlay);
+                Storyboard.SetTargetProperty(fadeAnimation, "Opacity");
+                Storyboard storyboard = new Storyboard();
+                storyboard.Children.Add(fadeAnimation);
+                storyboard.Begin();
+            });
         }
     }
 }

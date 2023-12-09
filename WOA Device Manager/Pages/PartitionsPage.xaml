@@ -9,12 +9,27 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Grid x:Name="TWRPModeNeededOverlay">
+        <Grid>
+            <ListView x:Name="PartitionsListView" ItemsSource="{x:Bind partitions}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock>
+                            <Run Text="{Binding Name}"/>
+                            <Run Text=" - "/>
+                            <Run Text="{Binding Size}"/>
+                            <Run Text=" - "/>
+                            <Run Text="{Binding FileSystem}"/>
+                        </TextBlock>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        <Grid x:Name="TWRPModeNeededOverlay" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" MaxWidth="300">
                 <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">🔄️</TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" TextAlignment="Center">Reboot to TWRP required</TextBlock>
                 <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">Please reboot to TWRP to use this feature. WOA Device Manager uses GNU parted to manage partitions.</TextBlock>
-                <Button HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Margin="0, 10, 0, 0">Reboot now</Button>
+                <Button x:Name="RebootToTWRPButton" HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Margin="0, 10, 0, 0" Click="RebootToTWRPButton_Click">Reboot now</Button>
             </StackPanel>
         </Grid>
     </Grid>

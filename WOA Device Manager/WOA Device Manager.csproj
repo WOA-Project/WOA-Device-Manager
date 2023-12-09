@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\AppIcon.png" />
+    <None Remove="Pages\DevicePage.xaml" />
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\PartitionsPage.xaml" />
   </ItemGroup>
@@ -54,6 +55,10 @@
   <ItemGroup>
     <Page Update="Pages\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\DevicePage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\PartitionsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

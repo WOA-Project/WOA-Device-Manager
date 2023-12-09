@@ -8,7 +8,7 @@ namespace WOADeviceManager.Pages
 {
     public sealed partial class MainPage : Page
     {
-        private Device device = null;
+        private Device device = DeviceManager.Device;
         private static MainPage _mainPage;
 
         public MainPage()
@@ -26,7 +26,6 @@ namespace WOADeviceManager.Pages
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
                 this.device = device;
-                //DebugInfo.Text = $"{device.Name} disconnected.";
                 Bindings.Update();
             });
         }
@@ -35,7 +34,6 @@ namespace WOADeviceManager.Pages
         {
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
                 this.device = device;
-                //DebugInfo.Text = $"{device.Name} connected in {device.DeviceStateLocalized}.";
                 Bindings.Update();
             });
         }
@@ -49,6 +47,7 @@ namespace WOADeviceManager.Pages
                 switch (selectedItem.Tag)
                 {
                     case "status":
+                        MainNavigationFrame.Navigate(typeof(DevicePage));
                         break;
                     case "managewindows":
                         break;
@@ -58,21 +57,6 @@ namespace WOADeviceManager.Pages
                     case "debug":
                         MainNavigationFrame.Navigate(typeof(zDebugPage));
                         break;
-                }
-            }
-        }
-
-        private string BatteryLevelFormatted
-        {
-            get
-            {
-                if (device != null && device.BatteryLevel != null)
-                {
-                    return $"Battery level: {device.BatteryLevel}%";
-                }
-                else
-                {
-                    return "Battery level: Unknown";
                 }
             }
         }
@@ -103,6 +87,37 @@ namespace WOADeviceManager.Pages
                 storyboard.Children.Add(fadeAnimation);
                 storyboard.Begin();
             });
+        }
+
+        private string BatteryLevelFormatted
+        {
+            get
+            {
+                if (device != null && device.BatteryLevel != null)
+                {
+                    return $"Battery level: {device.BatteryLevel}%";
+                }
+                else
+                {
+                    return "Battery level: Unknown";
+                }
+            }
+        }
+
+        private bool IsDeviceConnected
+        {
+            get
+            {
+                return device != null && device.IsConnected;
+            }
+        }
+
+        private bool IsDeviceDisconnected
+        {
+            get
+            {
+                return !IsDeviceConnected;
+            }
         }
     }
 }

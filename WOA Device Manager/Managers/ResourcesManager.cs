@@ -10,7 +10,7 @@ namespace WOADeviceManager.Managers
     {
         public enum DownloadableComponent
         {
-            TWRP, PARTED
+            TWRP, PARTED, MASS_STORAGE_SCRIPT
         }
 
         public static Task<StorageFile> RetrieveFile(DownloadableComponent component)
@@ -26,6 +26,10 @@ namespace WOADeviceManager.Managers
                 case DownloadableComponent.PARTED:
                     downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/parted";
                     fileName = "parted";
+                    break;
+                case DownloadableComponent.MASS_STORAGE_SCRIPT:
+                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/msc.tar";
+                    fileName = "msc.tar";
                     break;
             }
             return RetrieveFile(downloadPath, fileName);
@@ -55,7 +59,7 @@ namespace WOADeviceManager.Managers
 
         public static bool IsFileAlreadyDownloaded(string fileName)
         {
-            if (File.Exists(fileName)) 
+            if (File.Exists(ApplicationData.Current.LocalFolder.Path + "\\" + fileName)) 
             { 
                 return true;
             }

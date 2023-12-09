@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="WOADeviceManager.Pages.DevicePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:managers="using:WOADeviceManager.Managers"
+    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Height="80" Orientation="Horizontal" Spacing="10">
+            <Grid>
+                <Grid Background="{StaticResource AccentFillColorDefaultBrush}" Margin="4, 6, 4, 6"></Grid>
+                <Image Source="/Assets/Devices/SurfaceDuo.png"></Image>
+            </Grid>
+            <StackPanel>
+                <TextBlock Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}"></TextBlock>
+                <TextBlock Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8"></TextBlock>
+                <TextBlock x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}"></TextBlock>
+            </StackPanel>
+        </StackPanel>
+        <Grid x:Name="DeviceNeededOverlay" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Visibility="{x:Bind IsDeviceDisconnected}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" MaxWidth="300">
+                <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" TextAlignment="Center">Connect a compatible device</TextBlock>
+                <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.75">WOA Device Manager helps you install, update and manage Windows on your Android device. Please connect a compatible device.</TextBlock>
+                <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.75">Currently only the Surface Duo 1 is supported.</TextBlock>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20" Orientation="Horizontal" Margin="0, 20, 0, 0">
+                    <ProgressRing></ProgressRing>
+                    <TextBlock VerticalAlignment="Center">Checking for new connected devices...</TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

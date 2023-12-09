@@ -14,8 +14,8 @@
                 <NavigationViewItem Icon="Manage" Content="Partitions" Tag="partitions"></NavigationViewItem>
                 <NavigationViewItem Icon="Setting" Content="zDebug" Margin="0, 0, 0, 20" Tag="debug"></NavigationViewItem>
                 <NavigationViewItem IsHitTestVisible="False">
-                    <StackPanel x:Name="BottomWidgetStack" VerticalAlignment="Bottom" Height="80" Margin="-5, 0, 0, 5" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="20">
-                        <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Orientation="Horizontal" Spacing="10">
+                    <StackPanel x:Name="BottomWidgetStack" VerticalAlignment="Bottom" Margin="-5, 0, 0, 5" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
+                        <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Height="80" Orientation="Horizontal" Spacing="10" Visibility="{x:Bind IsDeviceConnected}">
                             <Grid>
                                 <Grid Background="{StaticResource AccentFillColorDefaultBrush}" Margin="4, 6, 4, 6"></Grid>
                                 <Image Source="/Assets/Devices/SurfaceDuo.png"></Image>
@@ -25,6 +25,9 @@
                                 <TextBlock Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8"></TextBlock>
                                 <TextBlock x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}"></TextBlock>
                             </StackPanel>
+                        </StackPanel>
+                        <StackPanel x:Name="NoDevicesConnectedWidget" Spacing="10" Height="30" Visibility="{x:Bind IsDeviceDisconnected}">
+                            <TextBlock Opacity="0.6">No device connected</TextBlock>
                         </StackPanel>
                     </StackPanel>
                 </NavigationViewItem>

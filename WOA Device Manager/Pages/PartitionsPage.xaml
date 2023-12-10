@@ -10,16 +10,21 @@
 
     <Grid>
         <Grid>
-            <ListView x:Name="PartitionsListView" ItemsSource="{x:Bind partitions}">
+            <StackPanel x:Name="ListHeader" Orientation="Horizontal">
+                <TextBlock Width="200" Margin="20, 15">Name</TextBlock>
+                <AppBarSeparator/>
+                <TextBlock Width="100" Margin="20, 15">Size</TextBlock>
+                <AppBarSeparator/>
+                <TextBlock Width="100" Margin="20, 15">File System</TextBlock>
+            </StackPanel>
+            <ListView x:Name="PartitionsListView" ItemsSource="{x:Bind partitions}" Margin="5, 50, 5, 0">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock>
-                            <Run Text="{Binding Name}"/>
-                            <Run Text=" - "/>
-                            <Run Text="{Binding Size}"/>
-                            <Run Text=" - "/>
-                            <Run Text="{Binding FileSystem}"/>
-                        </TextBlock>
+                        <StackPanel x:Name="ListHeader" Orientation="Horizontal">
+                            <TextBlock Width="244" Margin="0, 15" Text="{Binding Name}"></TextBlock>
+                            <TextBlock Width="125" Margin="0, 15" Text="{Binding Size}"></TextBlock>
+                            <TextBlock Width="100" Margin="20, 15" Text="{Binding FileSystem}"></TextBlock>
+                        </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

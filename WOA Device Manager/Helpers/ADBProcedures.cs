@@ -62,6 +62,16 @@ namespace WOADeviceManager.Helpers
             ADBManager.Client.Reboot("bootloader", DeviceManager.Device.Data);
         }
 
+        public static void RebootToAndroid()
+        {
+            ADBManager.Client.Reboot(null, DeviceManager.Device.Data);
+        }
+
+        public static void RebootToFastboot()
+        {
+            ADBManager.Client.Reboot("fastboot", DeviceManager.Device.Data);
+        }
+
         public static async Task<bool> PushParted()
         {
             StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);
@@ -125,8 +135,8 @@ namespace WOADeviceManager.Helpers
             try
             {
                 ADBManager.Client.ExecuteRemoteCommand("dumpsys battery", DeviceManager.Device.Data, receiver);
-                string result = receiver.ToString().Trim();
-                result = result.Split("level: ")[1].Split("\n")[0].Trim();
+                string result = receiver.ToString()?.Trim();
+                result = result?.Split("level: ")?[1]?.Split("\n")?[0]?.Trim();
                 return result;
             }
             catch (Exception) { }
@@ -136,13 +146,8 @@ namespace WOADeviceManager.Helpers
         public static async Task EnableMassStorageMode()
         {
             await PushMSCScript();
-            var receiver = new ConsoleOutputReceiver();
-            try
-            {
-                ADBManager.Client.ExecuteRemoteCommand("sh /sdcard/msc.sh", DeviceManager.Device.Data, receiver);
-                await Task.Delay(3000);
-            }
-            catch (Exception) { }
+            Debug.WriteLine(ADBManager.Shell.Interact("sh /sdcard/msc.sh"));
+            await Task.Delay(200);
             return;
         }
     }

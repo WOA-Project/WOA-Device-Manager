@@ -94,7 +94,10 @@ namespace WOADeviceManager.Managers
 
         private void Watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            if (args.Id.Equals(device.ADBID) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
+            args.Properties.TryGetValue("System.Devices.InterfaceEnabled", out object? IsInterfaceEnabledObjectValue);
+            bool IsInterfaceEnabled = (bool?)IsInterfaceEnabledObjectValue ?? false;
+
+            if (args.Id.Equals(device.ADBID) && IsInterfaceEnabled == true)
             {
                 Thread.Sleep(1000); //ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
@@ -102,7 +105,7 @@ namespace WOADeviceManager.Managers
                 device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
-            else if (args.Id.Equals(device.FastbootID) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
+            else if (args.Id.Equals(device.FastbootID) && IsInterfaceEnabled == true)
             {
                 Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "fastboot devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
@@ -110,7 +113,7 @@ namespace WOADeviceManager.Managers
                 device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
-            else if (args.Id.Equals(device.TWRPID) && (bool)args.Properties["System.Devices.InterfaceEnabled"] == true)
+            else if (args.Id.Equals(device.TWRPID) && IsInterfaceEnabled == true)
             {
                 Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
@@ -118,9 +121,9 @@ namespace WOADeviceManager.Managers
                 device.Name = ADBProcedures.GetDeviceProductModel();
                 DeviceConnectedEvent?.Invoke(sender, device);
             }   
-            else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
-                || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false)
-                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceStateEnum.BOOTLOADER && (bool)args.Properties["System.Devices.InterfaceEnabled"] == false))
+            else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED && IsInterfaceEnabled == false)
+                || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP && IsInterfaceEnabled == false)
+                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceStateEnum.BOOTLOADER && IsInterfaceEnabled == false))
             {
                 device.LastInformationUpdate = args;
                 device.State = Device.DeviceStateEnum.DISCONNECTED;

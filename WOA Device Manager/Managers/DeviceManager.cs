@@ -110,7 +110,7 @@ namespace WOADeviceManager.Managers
                 Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "fastboot devices" each 0.5s until the device is detected
                 device.LastInformationUpdate = args;
                 device.State = Device.DeviceStateEnum.BOOTLOADER;
-                device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
+                device.Name = FastbootProcedures.GetProduct(device);
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
             else if (args.Id.Equals(device.TWRPID) && IsInterfaceEnabled == true)
@@ -186,7 +186,7 @@ namespace WOADeviceManager.Managers
                 {
                     Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
                     device.State = Device.DeviceStateEnum.BOOTLOADER;
-                    device.Name = FastbootProcedures.GetProduct(device.SerialNumber);
+                    device.Name = FastbootProcedures.GetProduct(device);
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }

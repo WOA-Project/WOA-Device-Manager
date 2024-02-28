@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using FastBoot;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,9 +14,15 @@ namespace WOADeviceManager.Helpers
 {
     internal class FastbootProcedures
     {
-        public static string GetProduct(string deviceName)
+        public static string GetProduct(Device device)
         {
-            string productGetVar = FastbootManager.SendFastbootCommand("getvar product");
+            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            bool result = fastBootTransport.GetVariable("product", out string productGetVar);
+            if (result)
+            {
+                return null;
+            }
+
             if (productGetVar.Contains(Environment.NewLine))
             {
                 string firstLine = productGetVar.Split(Environment.NewLine)[0];
@@ -27,14 +34,22 @@ namespace WOADeviceManager.Helpers
             return null;
         }
 
-        public static void Reboot(string deviceName)
+        public static void Reboot(Device device)
         {
-            FastbootManager.SendFastbootCommand("reboot");
+            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            fastBootTransport.Reboot();
         }
 
-        public static async Task<bool> FlashUnlock(string deviceName, Control frameHost = null)
+        public static async Task<bool> FlashUnlock(Device device, Control frameHost = null)
         {
-            if (FastbootManager.SendFastbootCommand("flashing get_unlock_ability").Contains("get_unlock_ability: 1"))
+            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            bool result = fastBootTransport.FlashingGetUnlockAbility(out bool canUnlock);
+            if (result)
+            {
+                return false;
+            }
+
+            if (canUnlock)
             {
                 ContentDialog dialog = new ContentDialog();
                 dialog.Title = "⚠️ EVERYTHING WILL BE FORMATTED";
@@ -44,7 +59,7 @@ namespace WOADeviceManager.Helpers
                 {
                     Debug.WriteLine("hi");
                     // TODO: Disabled for safety
-                    //return FastbootManager.SendFastbootCommand("flashing unlock") != null; // TODO: error handling here, always returns true rn ofc
+                    //return fastBootTransport.FlashingUnlock(); // TODO: error handling here, always returns true rn ofc
                     dialog.Hide();
                 };
                 dialog.CloseButtonText = "Cancel";
@@ -71,8 +86,10 @@ namespace WOADeviceManager.Helpers
             
         }
 
-        public static bool FlashLock(string deviceName, Control frameHost = null)
+        public static bool FlashLock(Device device, Control frameHost = null)
         {
+            using FastBootTransport fastBootTransport = new(device.FastbootID);
+
             // TODO: Check that the device doesn't have Windows installed
             ContentDialog dialog = new ContentDialog();
             dialog.Title = "⚠️ Your bootloader will be locked";
@@ -82,7 +99,7 @@ namespace WOADeviceManager.Helpers
             {
                 Debug.WriteLine("hi");
                 // TODO: Disabled for safety
-                //FastbootManager.SendFastbootCommand("flashing lock") != null; // TODO: error handling here, always returns true rn ofc
+                //return fastBootTransport.FlashingLock(); // TODO: error handling here, always returns true rn ofc
                 dialog.Hide();
             };
             dialog.CloseButtonText = "Cancel";
@@ -94,12 +111,14 @@ namespace WOADeviceManager.Helpers
             return true; 
         }
 
-        public static async Task<bool> BootTWRP(string deviceName)
+        public static async Task<bool> BootTWRP(Device device)
         {
+            using FastBootTransport fastBootTransport = new(device.FastbootID);
+
             StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP);
             if (twrp == null) return false;
 
-            return FastbootManager.SendFastbootCommand($"boot {twrp.Path}") != null;
+            return fastBootTransport.BootImageIntoRam(twrp.Path);
         }
     }
 }

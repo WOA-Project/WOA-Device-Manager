@@ -30,7 +30,7 @@ namespace WOADeviceManager.Helpers
         {
             if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER || DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOT)
             {
-                FastbootProcedures.Reboot(DeviceManager.Device.SerialNumber);
+                FastbootProcedures.Reboot(DeviceManager.Device);
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.WINDOWS)
             {
@@ -51,7 +51,7 @@ namespace WOADeviceManager.Helpers
             }
             if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER || DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOT)
             {
-                await FastbootProcedures.BootTWRP(DeviceManager.Device.SerialNumber);
+                await FastbootProcedures.BootTWRP(DeviceManager.Device);
             }
             while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP) await Task.Delay(1000);
         }

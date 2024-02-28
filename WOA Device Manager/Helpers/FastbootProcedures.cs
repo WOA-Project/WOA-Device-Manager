@@ -14,24 +14,31 @@ namespace WOADeviceManager.Helpers
 {
     internal class FastbootProcedures
     {
+        private static string CleanupProductString(string product)
+        {
+            if (product == "surfaceduo")
+            {
+                return "Surface Duo";
+            }
+
+            if (product == "surfaceduo2")
+            {
+                return "Surface Duo 2";
+            }
+
+            return product;
+        }
+
         public static string GetProduct(Device device)
         {
             using FastBootTransport fastBootTransport = new(device.FastbootID);
             bool result = fastBootTransport.GetVariable("product", out string productGetVar);
-            if (result)
+            if (!result)
             {
                 return null;
             }
 
-            if (productGetVar.Contains(Environment.NewLine))
-            {
-                string firstLine = productGetVar.Split(Environment.NewLine)[0];
-                if (firstLine.Contains(":"))
-                {
-                    return firstLine.Split(": ")[1];
-                }
-            }
-            return null;
+            return CleanupProductString(productGetVar);
         }
 
         public static void Reboot(Device device)

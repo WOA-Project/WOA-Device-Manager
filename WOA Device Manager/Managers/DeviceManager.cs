@@ -190,7 +190,7 @@ namespace WOADeviceManager.Managers
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
-            if (args.Name == "MTP")
+            else if (args.Name == "MTP" && args.Id.StartsWith(@"\\?\USB#VID_05C6&PID_9039&MI_00"))
             {
                 device.TWRPID = args.Id;
                 device.Information = args;
@@ -203,6 +203,22 @@ namespace WOADeviceManager.Managers
                     device.State = Device.DeviceStateEnum.TWRP;
                     // device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult(); // TODO: Find a way to detect what device is connected, if we want to make this work with other models too
                     device.Name = "Surface Duo";
+                    DeviceConnectedEvent?.Invoke(null, device);
+                }
+            }
+            else if (args.Name == "ASUS_I006D" && args.Id.StartsWith(@"\\?\USB#VID_18D1&PID_D001"))
+            {
+                device.TWRPID = args.Id;
+                device.Information = args;
+                string pattern = @"#(\d+)#";
+                Match match = Regex.Match(device.TWRPID, pattern);
+                device.SerialNumber = match.Groups[1].Value;
+                if (args.IsEnabled)
+                {
+                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
+                    device.State = Device.DeviceStateEnum.TWRP;
+                    // device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult(); // TODO: Find a way to detect what device is connected, if we want to make this work with other models too
+                    device.Name = "Surface Duo 2";
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }

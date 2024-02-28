@@ -135,7 +135,32 @@ namespace WOADeviceManager.Managers
         {
             // TODO: Replace with ID or whatever needed to make it unique
             // TODO: If we're going to support multiple devices, needs a list of compatible names
-            if (args.Name == "Surface Duo ADB")
+
+            // Adb Enabled Android example:
+            //
+            // Args.ID: \\?\USB#VID_045E&PID_0C26#0F0012E214600A#{dee824ef-729b-4a0e-9c14-b7117d33a817}
+            //
+            // SurfaceDuoUsb.inf list:
+            //
+            // %Fastboot%              = Fastboot_Install, USB\VID_045E&PID_0C2F
+            // %Adb%                   = Adb_Install, USB\VID_045E&PID_0C26
+            // %AdbSideload%           = AdbSideload_Install, USB\VID_045E&PID_0C30
+            // %AdbComposite%          = AdbComposite_Install, USB\VID_045E&PID_0C26&MI_01
+            // %AdbCompositeTether%    = AdbCompositeTether_Install, USB\VID_045E&PID_0C28&MI_02
+            // %AdbCompositeFT%        = AdbCompositeFT_Install, USB\VID_045E&PID_0C2A&MI_01
+            // %AdbCompositePTP%       = AdbCompositePTP_Install, USB\VID_045E&PID_0C2C&MI_01
+            // %AdbCompositeMIDI%      = AdbCompositeMIDI_Install, USB\VID_045E&PID_0C2E&MI_02
+            //
+            // Fastboot           = "Surface Duo Fastboot"
+            // Adb                = "Surface Duo ADB"
+            // AdbSideload        = "Surface Duo ADB Sideload"
+            // AdbComposite       = "Surface Duo Composite ADB"
+            // AdbCompositeTether = "Surface Duo Composite ADB Tether"
+            // AdbCompositeFT     = "Surface Duo Composite ADB File Transfer"
+            // AdbCompositePTP    = "Surface Duo Composite ADB PTP"
+            // AdbCompositeMIDI   = "Surface Duo Composite ADB MIDI"
+
+            if (args.Name == "Surface Duo ADB" && args.Id.StartsWith(@"\\?\USB#VID_045E&PID_0C26"))
             {
                 device.ADBID = args.Id;
                 device.Information = args;
@@ -150,7 +175,7 @@ namespace WOADeviceManager.Managers
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
-            if (args.Name == "Surface Duo Fastboot")
+            else if (args.Name == "Surface Duo Fastboot" && args.Id.StartsWith(@"\\?\USB#VID_045E&PID_0C2F"))
             {
                 device.FastbootID = args.Id;
                 device.Information = args;

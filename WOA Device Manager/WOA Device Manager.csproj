@@ -52,6 +52,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AndroidDebugBridge\AndroidDebugBridge.csproj" />
     <ProjectReference Include="..\FastBoot\FastBoot.csproj" />
   </ItemGroup>
   <ItemGroup>

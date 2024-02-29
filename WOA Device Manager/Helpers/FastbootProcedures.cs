@@ -29,9 +29,9 @@ namespace WOADeviceManager.Helpers
             return product;
         }
 
-        public static string GetProduct(Device device)
+        public static string GetProduct()
         {
-            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
             bool result = fastBootTransport.GetVariable("product", out string productGetVar);
             if (!result)
             {
@@ -41,15 +41,33 @@ namespace WOADeviceManager.Helpers
             return CleanupProductString(productGetVar);
         }
 
-        public static void Reboot(Device device)
+        public static void Reboot()
         {
-            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
             fastBootTransport.Reboot();
         }
 
-        public static async Task<bool> FlashUnlock(Device device, Control frameHost = null)
+        public static void RebootBootloader()
         {
-            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
+            fastBootTransport.RebootBootloader();
+        }
+
+        public static void RebootRecovery()
+        {
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
+            fastBootTransport.RebootRecovery();
+        }
+
+        public static void RebootFastbootD()
+        {
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
+            fastBootTransport.RebootFastBootD();
+        }
+
+        public static async Task<bool> FlashUnlock(Control frameHost = null)
+        {
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
             bool result = fastBootTransport.FlashingGetUnlockAbility(out bool canUnlock);
             if (result)
             {
@@ -93,9 +111,9 @@ namespace WOADeviceManager.Helpers
             
         }
 
-        public static bool FlashLock(Device device, Control frameHost = null)
+        public static bool FlashLock(Control frameHost = null)
         {
-            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
 
             // TODO: Check that the device doesn't have Windows installed
             ContentDialog dialog = new ContentDialog();
@@ -118,14 +136,26 @@ namespace WOADeviceManager.Helpers
             return true; 
         }
 
-        public static async Task<bool> BootTWRP(Device device)
+        public static async Task<bool> BootTWRP()
         {
-            using FastBootTransport fastBootTransport = new(device.FastbootID);
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
 
             StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP);
             if (twrp == null) return false;
 
             return fastBootTransport.BootImageIntoRam(twrp.Path);
+        }
+
+        public static string GetDeviceBatteryLevel()
+        {
+            using FastBootTransport fastBootTransport = new(DeviceManager.Device.FastbootID);
+            bool result = fastBootTransport.GetVariable("battery-level", out string batteryLevel);
+            if (result)
+            {
+                return batteryLevel;
+            }
+
+            return null;
         }
     }
 }

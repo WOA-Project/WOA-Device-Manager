@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WOADeviceManager.Managers;
 
@@ -14,6 +11,10 @@ namespace WOADeviceManager.Helpers
             if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED || DeviceManager.Device.State == Device.DeviceStateEnum.TWRP)
             {
                 ADBProcedures.RebootToBootloader();
+            }
+            else if (DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOT)
+            {
+                FastbootProcedures.RebootBootloader();
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID)
             {
@@ -30,30 +31,49 @@ namespace WOADeviceManager.Helpers
         {
             if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER || DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOT)
             {
-                FastbootProcedures.Reboot(DeviceManager.Device);
+                FastbootProcedures.Reboot();
+            }
+            else if (DeviceManager.Device.State == Device.DeviceStateEnum.TWRP)
+            {
+                ADBProcedures.RebootToAndroid();
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.WINDOWS)
             {
                 throw new Exception("Rebooting from Windows to Android is still unsupported.");
             }
-            while (DeviceManager.Device.State != Device.DeviceStateEnum.ANDROID_ADB_ENABLED) await Task.Delay(1000);
+            while (DeviceManager.Device.State != Device.DeviceStateEnum.ANDROID_ADB_ENABLED && DeviceManager.Device.State != Device.DeviceStateEnum.ANDROID) await Task.Delay(1000);
         }
 
         public static async Task RebootToTWRPAndWait()
         {
-            if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED)
+            await RebootToBootloaderAndWait();
+
+            if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER || DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOT)
             {
-                await RebootToBootloaderAndWait();
+                await FastbootProcedures.BootTWRP();
+            }
+            while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP) await Task.Delay(1000);
+        }
+
+        public static async Task RebootToFastbootDAndWait()
+        {
+            if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED || DeviceManager.Device.State == Device.DeviceStateEnum.TWRP)
+            {
+                ADBProcedures.RebootToFastboot();
+            }
+            else if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+            {
+                FastbootProcedures.RebootFastbootD();
+            }
+            else if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID)
+            {
+                throw new Exception("Unauthorized ADB devices can't be rebooted to fastbootd.");
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.WINDOWS)
             {
-                throw new Exception("Rebooting from Windows to TWRP is still unsupported.");
+                throw new Exception("Rebooting from Windows to the fastbootd is still unsupported.");
             }
-            if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER || DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOT)
-            {
-                await FastbootProcedures.BootTWRP(DeviceManager.Device);
-            }
-            while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP) await Task.Delay(1000);
+            while (DeviceManager.Device.State != Device.DeviceStateEnum.FASTBOOT) await Task.Delay(1000);
         }
     }
 }

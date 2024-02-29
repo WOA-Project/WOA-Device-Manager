@@ -49,7 +49,17 @@ namespace WOADeviceManager.Pages
                     case "status":
                         MainNavigationFrame.Navigate(typeof(DevicePage));
                         break;
-                    case "managewindows":
+                    case "manualmode":
+                        MainNavigationFrame.Navigate(typeof(SwitchModePage));
+                        break;
+                    case "unlockbootloader":
+                    case "restorebootloader":
+                    case "enabledualboot":
+                    case "disabledualboot":
+                    case "backupwindows":
+                    case "flashwindows":
+                    case "updatewindows":
+                    case "downloadwindows":
                         break;
                     case "partitions":
                         MainNavigationFrame.Navigate(typeof(PartitionsPage));

@@ -40,8 +40,12 @@ namespace WOADeviceManager
         {
             get
             {
-                if (State == DeviceStateEnum.ANDROID_ADB_ENABLED) return ADBProcedures.GetDeviceBatteryLevel();
-                else return null;
+                if (State == DeviceStateEnum.ANDROID_ADB_ENABLED)
+                    return ADBProcedures.GetDeviceBatteryLevel();
+                else if (State == DeviceStateEnum.FASTBOOT || State == DeviceStateEnum.BOOTLOADER)
+                    return FastbootProcedures.GetDeviceBatteryLevel();
+                else
+                    return null;
             }
         }
 

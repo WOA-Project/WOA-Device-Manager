@@ -23,6 +23,7 @@
     <None Remove="Pages\DevicePage.xaml" />
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\PartitionsPage.xaml" />
+    <None Remove="Pages\SwitchModePage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,6 +68,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\PartitionsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Pages\SwitchModePage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

@@ -25,24 +25,24 @@ namespace WOADeviceManager.Pages
         private void RebootToAndroid_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            FastbootProcedures.Reboot(DeviceManager.Device);
+            FastbootProcedures.Reboot();
             MainPage.ToggleLoadingScreen(false);
         }
 
         private void FlashUnlock_Click(object sender, RoutedEventArgs e)
         {
-            _ = FastbootProcedures.FlashUnlock(DeviceManager.Device, this);
+            _ = FastbootProcedures.FlashUnlock(this);
         }
 
         private void FlashLock_Click(object sender, RoutedEventArgs e)
         {
-            FastbootProcedures.FlashLock(DeviceManager.Device, this);
+            FastbootProcedures.FlashLock(this);
         }
 
         private async void BootTWRP_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await FastbootProcedures.BootTWRP(DeviceManager.Device);
+            await FastbootProcedures.BootTWRP();
             MainPage.ToggleLoadingScreen(false);
         }
 

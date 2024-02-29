@@ -33,8 +33,18 @@
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="CellPhone" Content="Device status" Margin="0, 60, 0, 0" Tag="status"></NavigationViewItem>
-                <NavigationViewItem Icon="Repair" Content="Manage Windows" Tag="managewindows"></NavigationViewItem>
+                <NavigationViewItem Icon="CellPhone" Content="Info" Margin="0, 60, 0, 0" Tag="status"></NavigationViewItem>
+                <NavigationViewItem Icon="Refresh" Content="Manual mode" Tag="manualmode"></NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Icon="Document" Content="Unlock bootloader" Tag="unlockbootloader"></NavigationViewItem>
+                <NavigationViewItem Icon="ProtectedDocument" Content="Restore bootloader" Tag="restorebootloader"></NavigationViewItem>
+                <NavigationViewItem Icon="Document" Content="Enable dual boot" Tag="enabledualboot"></NavigationViewItem>
+                <NavigationViewItem Icon="ProtectedDocument" Content="Disable dual boot" Tag="disabledualboot"></NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Icon="Save" Content="Backup" Tag="backupwindows"></NavigationViewItem>
+                <NavigationViewItem Icon="Repair" Content="Flash" Tag="flashwindows"></NavigationViewItem>
+                <NavigationViewItem Icon="PostUpdate" Content="Update" Tag="updatewindows"></NavigationViewItem>
+                <NavigationViewItem Icon="Download" Content="Download" Tag="downloadwindows"></NavigationViewItem>
             </NavigationView.MenuItems>
             <Grid>
                 <Grid Margin="0, 40, 20, 20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
@@ -47,9 +57,9 @@
                 <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0, 40, 20, 20" CornerRadius="4"></Frame>
                 <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
                 <Grid x:Name="ProgressOverlay" Margin="0, 40, 20, 20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
                         <ProgressRing></ProgressRing>
-                        <TextBlock>Waiting for device...</TextBlock>
+                        <TextBlock FontSize="36" FontWeight="SemiBold">Waiting for device...</TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>

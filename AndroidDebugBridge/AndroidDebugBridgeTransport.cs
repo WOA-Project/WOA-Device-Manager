@@ -89,9 +89,9 @@ namespace AndroidDebugBridge
                 throw new Exception("Message has not sent a message of type CNXN during handshake.");
             }
 
-            if (DeviceConnectPacket.FirstArgument != 0x01000000)
+            if (DeviceConnectPacket.FirstArgument != 0x01000001)
             {
-                throw new Exception("Message has not sent a message of type CNXN version 0x01000000 during handshake.");
+                throw new Exception("Message has not sent a message of type CNXN version 0x01000001 during handshake.");
             }
 
             Console.WriteLine(Encoding.ASCII.GetString(DeviceConnectPacket.Payload!));

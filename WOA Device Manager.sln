@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WOA Device Manager", "WOA D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastBoot", "Fastboot\FastBoot.csproj", "{A800D1FF-C61B-4D3F-87D2-59C4CA0321F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidDebugBridge", "AndroidDebugBridge\AndroidDebugBridge.csproj", "{C80B9C16-2960-4061-908F-C0B6C205AD5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AndroidDebugBridge", "AndroidDebugBridge\AndroidDebugBridge.csproj", "{C80B9C16-2960-4061-908F-C0B6C205AD5E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "Playground\Playground.csproj", "{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,22 @@ Global
 		{C80B9C16-2960-4061-908F-C0B6C205AD5E}.Release|x64.Build.0 = Release|Any CPU
 		{C80B9C16-2960-4061-908F-C0B6C205AD5E}.Release|x86.ActiveCfg = Release|Any CPU
 		{C80B9C16-2960-4061-908F-C0B6C205AD5E}.Release|x86.Build.0 = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|ARM64.Build.0 = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|x64.Build.0 = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{26C65B28-88F8-4F90-A1E2-A898C9B2FA7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

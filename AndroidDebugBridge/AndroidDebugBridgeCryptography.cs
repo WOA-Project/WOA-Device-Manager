@@ -41,9 +41,10 @@ namespace AndroidDebugBridge
 
         private static BigInteger ModInverse(BigInteger value, BigInteger modulo)
         {
-            if (1 != EGCD(value, modulo, out BigInteger x, out _))
+            BigInteger egcd = EGCD(value, modulo, out BigInteger x, out _);
+            if (1 != egcd)
             {
-                throw new ArgumentException("Invalid modulo", nameof(modulo));
+                //throw new ArgumentException("Invalid modulo", nameof(modulo));
             }
 
             if (x < 0)
@@ -118,7 +119,7 @@ namespace AndroidDebugBridge
 
             const int keyLengthInDWORDs = 64; // 2048 bits / 256 bytes / 64 DWORDs
 
-            int e = BitConverter.ToInt32(exponent);
+            int e = (int)new BigInteger(exponent);
 
             BigInteger r32 = new BigInteger(1) << 32;
 
@@ -128,7 +129,7 @@ namespace AndroidDebugBridge
 
             BigInteger remainder = BigInteger.Remainder(n, r32);
             BigInteger tn0inv = ModInverse(remainder, r32);
-            uint n0inv = (uint)BigInteger.Negate(tn0inv);
+            uint n0inv = (uint)(BigInteger.Negate(tn0inv) & uint.MaxValue);
 
             uint[] nTable = new uint[keyLengthInDWORDs];
             uint[] rrTable = new uint[keyLengthInDWORDs];
@@ -139,7 +140,7 @@ namespace AndroidDebugBridge
                 rrTable[i] = (uint)remainder;
 
                 n = BigInteger.DivRem(n, r32, out remainder);
-                nTable[i] = (uint)remainder;
+                nTable[i] = (uint)(remainder & uint.MaxValue);
             }
 
             return (n0inv, nTable, rrTable, e);

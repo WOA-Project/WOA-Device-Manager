@@ -65,12 +65,9 @@ namespace AndroidDebugBridge
             uint CommandPayloadCrc = binaryReader.ReadUInt32();
 
             uint magic = binaryReader.ReadUInt32();
-            if ((CommandIdentifier ^ 0xFFFFFFFF) != magic)
-            {
-                throw new InvalidDataException("Invalid Command Packet magic!");
-            }
-
-            return (CommandIdentifier, FirstArgument, SecondArgument, CommandPayloadLength, CommandPayloadCrc);
+            return (CommandIdentifier ^ 0xFFFFFFFF) != magic
+                ? throw new InvalidDataException("Invalid Command Packet magic!")
+                : (CommandIdentifier, FirstArgument, SecondArgument, CommandPayloadLength, CommandPayloadCrc);
         }
 
         internal static (AndroidDebugBridgeCommands CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) ParseCommandPacket(byte[] packet)

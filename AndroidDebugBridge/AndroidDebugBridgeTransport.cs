@@ -8,10 +8,10 @@ namespace AndroidDebugBridge
     public class AndroidDebugBridgeTransport : IDisposable
     {
         private bool Disposed = false;
-        private readonly USBDevice USBDevice = null;
-        private USBPipe InputPipe = null;
-        private USBPipe OutputPipe = null;
-        RSACryptoServiceProvider RSACryptoServiceProvider = new(2048);
+        private readonly USBDevice? USBDevice = null;
+        private readonly USBPipe? InputPipe = null;
+        private readonly USBPipe? OutputPipe = null;
+        private readonly RSACryptoServiceProvider RSACryptoServiceProvider = new(2048);
 
         public AndroidDebugBridgeTransport(string DevicePath)
         {
@@ -44,11 +44,67 @@ namespace AndroidDebugBridge
 
             StringBuilder keyString = new(720);
 
-            keyString.Append(Convert.ToBase64String(ConvertedKey));
-            keyString.Append(" unknown@unknown");
-            keyString.Append('\0');
+            _ = keyString.Append(Convert.ToBase64String(ConvertedKey));
+            _ = keyString.Append(" unknown@unknown");
+            _ = keyString.Append('\0');
 
             return Encoding.UTF8.GetBytes(keyString.ToString());
+        }
+
+        private uint localId = 0;
+
+        public void Reboot()
+        {
+            uint rebootLocalId = ++localId;
+
+            AndroidDebugBridgeMessage RebootMessage = AndroidDebugBridgeMessage.GetOpenMessage(rebootLocalId, "reboot:");
+
+            RebootMessage.SendMessage(OutputPipe);
+
+            AndroidDebugBridgeMessage OkayResponse = AndroidDebugBridgeMessage.ReadIncomingMessage(InputPipe);
+
+            if (OkayResponse.CommandIdentifier != AndroidDebugBridgeCommands.OKAY)
+            {
+                throw new Exception("Message has not sent a message of type OKAY during reboot open.");
+            }
+
+            AndroidDebugBridgeMessage WriteResponse = AndroidDebugBridgeMessage.ReadIncomingMessage(InputPipe);
+
+            if (WriteResponse.CommandIdentifier != AndroidDebugBridgeCommands.OKAY)
+            {
+                throw new Exception("Message has not sent a second message of type OKAY during reboot open.");
+            }
+        }
+
+        public void Shell()
+        {
+            uint shellLocalId = ++localId;
+
+            AndroidDebugBridgeMessage ShellMessage = AndroidDebugBridgeMessage.GetOpenMessage(shellLocalId, "shell:");
+
+            ShellMessage.SendMessage(OutputPipe);
+
+            AndroidDebugBridgeMessage OkayResponse = AndroidDebugBridgeMessage.ReadIncomingMessage(InputPipe);
+
+            if (OkayResponse.CommandIdentifier != AndroidDebugBridgeCommands.OKAY)
+            {
+                throw new Exception("Message has not sent a message of type OKAY during shell open.");
+            }
+
+            AndroidDebugBridgeMessage WriteResponse = AndroidDebugBridgeMessage.ReadIncomingMessage(InputPipe);
+
+            if (WriteResponse.CommandIdentifier != AndroidDebugBridgeCommands.WRTE)
+            {
+                throw new Exception("Message has not sent a second message of type WRITE during shell open.");
+            }
+
+            uint remoteId = WriteResponse.FirstArgument;
+
+            Console.WriteLine(Encoding.UTF8.GetString(WriteResponse.Payload!));
+
+            AndroidDebugBridgeMessage OkayMessage = AndroidDebugBridgeMessage.GetReadyMessage(shellLocalId, remoteId);
+
+            OkayMessage.SendMessage(OutputPipe);
         }
 
         public void Connect()

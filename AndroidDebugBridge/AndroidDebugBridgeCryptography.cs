@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 using System.Security.Cryptography;
 
@@ -23,8 +22,8 @@ namespace AndroidDebugBridge
                 BigInteger q = right / left;
                 BigInteger r = right % left;
 
-                BigInteger m = leftFactor - u * q;
-                BigInteger n = rightFactor - v * q;
+                BigInteger m = leftFactor - (u * q);
+                BigInteger n = rightFactor - (v * q);
 
                 right = left;
                 left = r;
@@ -59,7 +58,7 @@ namespace AndroidDebugBridge
         {
             int len = n.Length;
 
-            byte[] buffer = new byte[12 + 8 * len];
+            byte[] buffer = new byte[12 + (8 * len)];
             using MemoryStream memoryStream = new(buffer);
             using BinaryWriter binaryWriter = new(memoryStream);
 
@@ -88,19 +87,19 @@ namespace AndroidDebugBridge
 
             int len = binaryReader.ReadInt32();
 
-            if (buffer.Length != 12 + 8 * len)
+            if (buffer.Length != 12 + (8 * len))
             {
                 throw new InvalidDataException("Invalid ADB RSA Buffer!");
             }
 
             uint n0inv = binaryReader.ReadUInt32();
-            
+
             uint[] n = new uint[len];
             for (int i = 0; i < len; i++)
             {
                 n[i] = binaryReader.ReadUInt32();
             }
-            
+
             uint[] rr = new uint[len];
             for (int i = 0; i < len; i++)
             {

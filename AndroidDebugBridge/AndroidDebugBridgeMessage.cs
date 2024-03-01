@@ -1,5 +1,4 @@
 ﻿using MadWizard.WinUSBNet;
-using System.Linq;
 using System.Text;
 
 namespace AndroidDebugBridge
@@ -37,14 +36,14 @@ namespace AndroidDebugBridge
         public static AndroidDebugBridgeMessage ReadIncomingMessage(USBPipe InputPipe)
         {
             byte[] IncomingMessage = new byte[24];
-            InputPipe.Read(IncomingMessage);
+            _ = InputPipe.Read(IncomingMessage);
 
             (AndroidDebugBridgeCommands CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) = AndroidDebugBridgeMessaging.ParseCommandPacket(IncomingMessage);
 
             if (CommandPayloadLength > 0)
             {
                 byte[] Payload = new byte[CommandPayloadLength];
-                InputPipe.Read(Payload);
+                _ = InputPipe.Read(Payload);
                 AndroidDebugBridgeMessaging.VerifyAdbCrc(Payload, CommandPayloadCrc);
 
                 return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument, Payload);
@@ -58,7 +57,10 @@ namespace AndroidDebugBridge
             byte[] OutgoingMessage = AndroidDebugBridgeMessaging.GetCommandPacket(CommandIdentifier, FirstArgument, SecondArgument, Payload);
 
             OutputPipe.Write(OutgoingMessage);
-            OutputPipe.Write(Payload);
+            if (Payload != null)
+            {
+                OutputPipe.Write(Payload);
+            }
         }
 
         internal static AndroidDebugBridgeMessage GetConnectMessage()
@@ -74,7 +76,7 @@ namespace AndroidDebugBridge
 
         internal static AndroidDebugBridgeMessage GetOpenMessage(uint localId, string dest)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(dest).Append((byte)0).ToArray();
+            byte[] buffer = Encoding.UTF8.GetBytes(dest + "\0");
             return new AndroidDebugBridgeMessage(AndroidDebugBridgeCommands.OPEN, localId, 0, buffer);
         }
 

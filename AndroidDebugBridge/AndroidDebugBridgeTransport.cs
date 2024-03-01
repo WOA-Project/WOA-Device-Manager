@@ -53,11 +53,11 @@ namespace AndroidDebugBridge
 
         private uint localId = 0;
 
-        public void Reboot()
+        public void Reboot(string mode = "")
         {
             uint rebootLocalId = ++localId;
 
-            AndroidDebugBridgeMessage RebootMessage = AndroidDebugBridgeMessage.GetOpenMessage(rebootLocalId, "reboot:");
+            AndroidDebugBridgeMessage RebootMessage = AndroidDebugBridgeMessage.GetOpenMessage(rebootLocalId, $"reboot:{mode}");
 
             RebootMessage.SendMessage(OutputPipe);
 
@@ -74,6 +74,21 @@ namespace AndroidDebugBridge
             {
                 throw new Exception("Message has not sent a second message of type OKAY during reboot open.");
             }
+        }
+
+        public void RebootBootloader()
+        {
+            Reboot("bootloader");
+        }
+
+        public void RebootRecovery()
+        {
+            Reboot("recovery");
+        }
+
+        public void RebootFastBootD()
+        {
+            Reboot("fastboot");
         }
 
         public void Shell()

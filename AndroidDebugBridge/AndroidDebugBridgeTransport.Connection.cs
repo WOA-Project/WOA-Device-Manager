@@ -34,7 +34,10 @@ namespace AndroidDebugBridge
             // -> CNXN + System Information
             AndroidDebugBridgeMessage ConnectMessage = AndroidDebugBridgeMessage.GetConnectMessage();
             SendMessage(ConnectMessage);
+        }
 
+        public void WaitTilConnected()
+        {
             while (!IsConnected)
             {
                 Thread.Sleep(100);

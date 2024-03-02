@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,48 +12,63 @@ namespace AndroidDebugBridge
         {
             uint shellLocalId = ++LocalId;
 
-            // Open shell in 256 colors, v2
-            AndroidDebugBridgeMessage ShellMessage = AndroidDebugBridgeMessage.GetOpenMessage(shellLocalId, "shell,v2,TERM=xterm-256color,pty:");
-            SendMessage(ShellMessage);
-            WaitForOKAYMessage();
-            OpenedStreamIdMap.Add(RemoteId, LocalId);
+            using AndroidDebugBridgeStream stream = OpenStream("shell,v2,TERM=xterm-256color,pty:");
+
+            stream.DataReceived += (object? sender, byte[] incomingMessage) =>
+            {
+                byte messageType = incomingMessage[0];
+                if (messageType == 1)
+                {
+                    uint length = BitConverter.ToUInt32(incomingMessage[1..5]);
+                    Console.Write(Encoding.UTF8.GetString(incomingMessage[5..((int)length + 5)]));
+
+                    (sender as AndroidDebugBridgeStream)?.SendAcknowledgement();
+                }
+                else if (messageType == 3)
+                {
+                    // Close notification.
+                }
+                else
+                {
+                    // Unknown message type
+                }
+            };
 
             // Configure terminal size
             string terminalConfiguration = $"{Console.WindowWidth}x{Console.WindowHeight},0x0";
-            Debug.WriteLine($"Configuring terminal: {terminalConfiguration}");
 
             byte[] ConfigurationRes = Encoding.UTF8.GetBytes($"{terminalConfiguration}\0");
             byte[] StringLength = BitConverter.GetBytes(ConfigurationRes.Length);
-            List<byte> payloadList = ConfigurationRes.ToList();
-            payloadList.Insert(0, 0x05);
-            payloadList.InsertRange(1, StringLength);
 
-            AndroidDebugBridgeMessage ResolutionMessage = AndroidDebugBridgeMessage.GetWriteMessage(shellLocalId, shellLocalId, payloadList.ToArray());
-            SendMessage(ResolutionMessage);
-            WaitForOKAYMessage();
+            List<byte> consoleConfigurationData = ConfigurationRes.ToList();
+            consoleConfigurationData.Insert(0, 0x05);
+            consoleConfigurationData.InsertRange(1, StringLength);
+
+            stream.Write(consoleConfigurationData.ToArray());
+
+            bool closed = false;
 
             Task consoleInputThread = Task.Run(() =>
             {
-                ConsoleKeyInfo readKey;
-
-                while ((readKey = Console.ReadKey(true)).Key != ConsoleKey.Escape && !ClosedStreamIdMap.ContainsValue(shellLocalId) && !PendingStreamIdMap.ContainsValue(shellLocalId))
+                while (!closed)
                 {
+                    ConsoleKeyInfo readKey = Console.ReadKey(true);
+
                     byte[] buffer = Encoding.UTF8.GetBytes(readKey.KeyChar.ToString());
                     byte[] StringLength = BitConverter.GetBytes(buffer.Length);
-                    List<byte> payloadList = buffer.ToList();
-                    payloadList.Insert(0, 0x00);
-                    payloadList.InsertRange(1, StringLength);
 
-                    AndroidDebugBridgeMessage InputMessage = AndroidDebugBridgeMessage.GetWriteMessage(shellLocalId, shellLocalId, payloadList.ToArray());
-                    SendMessage(InputMessage);
-                    WaitForOKAYMessage();
-                }
+                    List<byte> consoleInputData = buffer.ToList();
+                    consoleInputData.Insert(0, 0x00);
+                    consoleInputData.InsertRange(1, StringLength);
 
-                if (readKey.Key == ConsoleKey.Escape)
-                {
-                    // TODO: Closing flow
+                    stream.Write(consoleInputData.ToArray());
                 }
             });
+
+            stream.DataClosed += (object? sender, EventArgs args) =>
+            {
+                closed = true;
+            };
 
             consoleInputThread.Wait();
         }

@@ -1,6 +1,5 @@
 ﻿using MadWizard.WinUSBNet;
 using System;
-using System.Diagnostics;
 using System.Threading;
 
 namespace AndroidDebugBridge
@@ -10,29 +9,25 @@ namespace AndroidDebugBridge
         private readonly USBDevice? USBDevice = null;
         private readonly USBPipe? InputPipe = null;
         private readonly USBPipe? OutputPipe = null;
-        private readonly object UsbLock = new();
 
         private AndroidDebugBridgeMessage ReadMessage(bool VerifyCrc = true)
         {
-            //lock (UsbLock)
+            byte[] IncomingMessage = ReadFromUsb(24);
+            (AndroidDebugBridgeCommands CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) = AndroidDebugBridgeMessaging.ParseCommandPacket(IncomingMessage);
+
+            if (CommandPayloadLength > 0)
             {
-                byte[] IncomingMessage = ReadFromUsb(24);
-                (AndroidDebugBridgeCommands CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) = AndroidDebugBridgeMessaging.ParseCommandPacket(IncomingMessage);
+                byte[] Payload = ReadFromUsb(CommandPayloadLength);
 
-                if (CommandPayloadLength > 0)
+                if (VerifyCrc)
                 {
-                    byte[] Payload = ReadFromUsb(CommandPayloadLength);
-
-                    if (VerifyCrc)
-                    {
-                        AndroidDebugBridgeMessaging.VerifyAdbCrc(Payload, CommandPayloadCrc);
-                    }
-
-                    return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument, Payload);
+                    AndroidDebugBridgeMessaging.VerifyAdbCrc(Payload, CommandPayloadCrc);
                 }
 
-                return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument);
+                return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument, Payload);
             }
+
+            return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument);
         }
 
         private void ReadMessageAsync(Action<AndroidDebugBridgeMessage> asyncCallback, bool VerifyCrc = true)
@@ -96,24 +91,14 @@ namespace AndroidDebugBridge
             }, stateObject);
         }
 
-        private void SendMessage(AndroidDebugBridgeMessage outgoingMessage)
+        internal void SendMessage(AndroidDebugBridgeMessage outgoingMessage)
         {
-            //lock (UsbLock)
+            byte[] OutgoingMessage = AndroidDebugBridgeMessaging.GetCommandPacket(outgoingMessage.CommandIdentifier, outgoingMessage.FirstArgument, outgoingMessage.SecondArgument, outgoingMessage.Payload);
+            WriteToUsb(OutgoingMessage);
+
+            if (outgoingMessage.Payload != null)
             {
-                Debug.WriteLine($"> new AndroidDebugBridgeMessage(AndroidDebugBridgeCommands.{outgoingMessage.CommandIdentifier}, 0x{outgoingMessage.FirstArgument:X8}, 0x{outgoingMessage.FirstArgument:X8}, );");
-                if (outgoingMessage.Payload != null)
-                {
-                    Debug.WriteLine(BitConverter.ToString(outgoingMessage.Payload));
-                    //Debug.WriteLine(Encoding.UTF8.GetString(outgoingMessage.Payload));
-                }
-
-                byte[] OutgoingMessage = AndroidDebugBridgeMessaging.GetCommandPacket(outgoingMessage.CommandIdentifier, outgoingMessage.FirstArgument, outgoingMessage.SecondArgument, outgoingMessage.Payload);
-                WriteToUsb(OutgoingMessage);
-
-                if (outgoingMessage.Payload != null)
-                {
-                    WriteToUsb(outgoingMessage.Payload);
-                }
+                WriteToUsb(outgoingMessage.Payload);
             }
         }
 

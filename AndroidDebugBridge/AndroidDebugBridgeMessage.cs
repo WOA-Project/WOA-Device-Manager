@@ -1,5 +1,4 @@
-﻿using MadWizard.WinUSBNet;
-using System.Text;
+﻿using System.Text;
 
 namespace AndroidDebugBridge
 {
@@ -31,36 +30,6 @@ namespace AndroidDebugBridge
             FirstArgument = firstArgument;
             SecondArgument = secondArgument;
             Payload = payload;
-        }
-
-        public static AndroidDebugBridgeMessage ReadIncomingMessage(USBPipe InputPipe)
-        {
-            byte[] IncomingMessage = new byte[24];
-            _ = InputPipe.Read(IncomingMessage);
-
-            (AndroidDebugBridgeCommands CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) = AndroidDebugBridgeMessaging.ParseCommandPacket(IncomingMessage);
-
-            if (CommandPayloadLength > 0)
-            {
-                byte[] Payload = new byte[CommandPayloadLength];
-                _ = InputPipe.Read(Payload);
-                AndroidDebugBridgeMessaging.VerifyAdbCrc(Payload, CommandPayloadCrc);
-
-                return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument, Payload);
-            }
-
-            return new AndroidDebugBridgeMessage(CommandIdentifier, FirstArgument, SecondArgument);
-        }
-
-        public void SendMessage(USBPipe OutputPipe)
-        {
-            byte[] OutgoingMessage = AndroidDebugBridgeMessaging.GetCommandPacket(CommandIdentifier, FirstArgument, SecondArgument, Payload);
-
-            OutputPipe.Write(OutgoingMessage);
-            if (Payload != null)
-            {
-                OutputPipe.Write(Payload);
-            }
         }
 
         internal static AndroidDebugBridgeMessage GetConnectMessage()

@@ -2,7 +2,7 @@
 
 namespace AndroidDebugBridge
 {
-    internal class AndroidDebugBridgeMessaging
+    public class AndroidDebugBridgeMessaging
     {
         private static uint ComputeAdbCrc(byte[] Payload)
         {
@@ -48,7 +48,7 @@ namespace AndroidDebugBridge
             return packet;
         }
 
-        internal static (uint CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) BufferToCommandPacket(byte[] packet)
+        public static (uint CommandIdentifier, uint FirstArgument, uint SecondArgument, uint CommandPayloadLength, uint CommandPayloadCrc) BufferToCommandPacket(byte[] packet)
         {
             if (packet.Length != 24)
             {

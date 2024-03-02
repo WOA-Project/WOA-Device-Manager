@@ -14,6 +14,9 @@ namespace Playground
             Console.WriteLine("Connecting...");
             androidDebugBridgeTransport.Connect();
 
+            Console.WriteLine($"Connected to: {androidDebugBridgeTransport.PhoneConnectionString}");
+            Console.WriteLine($"Protocol version: {androidDebugBridgeTransport.PhoneSupportedProtocolVersion}");
+
             Console.WriteLine("Opening shell...");
             androidDebugBridgeTransport.Shell();
 

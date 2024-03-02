@@ -4,12 +4,7 @@
     {
         public void Reboot(string mode = "")
         {
-            uint shellLocalId = ++LocalId;
-
-            AndroidDebugBridgeMessage RebootMessage = AndroidDebugBridgeMessage.GetOpenMessage(shellLocalId, $"reboot:{mode}");
-            SendMessage(RebootMessage);
-
-            // The phone can reply ok here but not always the case!
+            using AndroidDebugBridgeStream stream = OpenStream($"reboot:{mode}");
         }
 
         public void RebootBootloader()

@@ -10,8 +10,6 @@ namespace AndroidDebugBridge
     {
         public void Shell()
         {
-            uint shellLocalId = ++LocalId;
-
             using AndroidDebugBridgeStream stream = OpenStream("shell,v2,TERM=xterm-256color,pty:");
 
             stream.DataReceived += (object? sender, byte[] incomingMessage) =>

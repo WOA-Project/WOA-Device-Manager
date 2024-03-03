@@ -3,6 +3,7 @@ using FastBoot;
 using MadWizard.WinUSBNet;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Windows.Devices.Enumeration;
@@ -189,6 +190,23 @@ namespace WOADeviceManager.Managers
 
                 DeviceConnectedEvent?.Invoke(this, device);
             }
+            else if (ID.Contains("USB#VID_045E&PID_066B#"))
+            {
+                Device.State = Device.DeviceStateEnum.UFP;
+                Device.ID = ID;
+                Device.Name = Name;
+                Device.Variant = "N/A";
+                // Device.Product = Device.Product;
+
+                Debug.WriteLine("New Device Found!");
+                Debug.WriteLine($"Device path: {Device.ID}");
+                Debug.WriteLine($"Name: {Device.Name}");
+                Debug.WriteLine($"Variant: {Device.Variant}");
+                Debug.WriteLine($"Product: {Device.Product}");
+                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                DeviceConnectedEvent?.Invoke(this, device);
+            }
             // Normal:
             // Surface Duo Fastboot
             else if (ID.Contains("USB#VID_045E&PID_0C2F#"))
@@ -201,6 +219,37 @@ namespace WOADeviceManager.Managers
                     string ProductName = !result ? null : productGetVar;
                     result = fastBootTransport.GetVariable("is-userspace", out productGetVar);
                     string IsUserSpace = !result ? null : productGetVar;
+
+                    // Attempt to retrieve the device type in bootloader mode
+                    string DeviceVariant = "N/A";
+                    if (IsUserSpace != "yes")
+                    {
+                        (FastBootStatus getBootPropResponseStatus, string getBootPropResponse, byte[] _)[] getBootPropResponses = fastBootTransport.SendCommand("oem get-boot-prop");
+                        if (getBootPropResponses.Length > 0 && getBootPropResponses.Last().getBootPropResponseStatus == FastBootStatus.OKAY)
+                        {
+                            (FastBootStatus _, DeviceVariant, byte[] _) = getBootPropResponses[0];
+                            DeviceVariant = DeviceVariant.Split('=').Last();
+
+                            switch (DeviceVariant)
+                            {
+                                case "gen":
+                                    {
+                                        DeviceVariant = "GEN";
+                                        break;
+                                    }
+                                case "att":
+                                    {
+                                        DeviceVariant = "ATT";
+                                        break;
+                                    }
+                                case "eea":
+                                    {
+                                        DeviceVariant = "EEA";
+                                        break;
+                                    }
+                            }
+                        }
+                    }
 
                     switch (ProductName)
                     {
@@ -217,7 +266,7 @@ namespace WOADeviceManager.Managers
                                 }
                                 Device.ID = ID;
                                 Device.Name = "Surface Duo";
-                                Device.Variant = "N/A";
+                                Device.Variant = DeviceVariant;
                                 Device.Product = Device.DeviceProduct.Epsilon;
 
                                 if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
@@ -253,7 +302,7 @@ namespace WOADeviceManager.Managers
                                 }
                                 Device.ID = ID;
                                 Device.Name = "Surface Duo 2";
-                                Device.Variant = "N/A";
+                                Device.Variant = DeviceVariant;
                                 Device.Product = Device.DeviceProduct.Zeta;
 
                                 if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)

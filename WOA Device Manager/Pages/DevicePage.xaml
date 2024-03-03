@@ -8,29 +8,53 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
-        <Grid x:Name="DeviceWidget" VerticalAlignment="Stretch" Visibility="{x:Bind IsDeviceConnected}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" Visibility="{x:Bind IsDeviceConnected}">
+            <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+                <StackPanel Padding="32" Spacing="32" BorderBrush="{StaticResource SystemChromeDisabledHighColor}" BorderThickness="1">
+                    <TextBlock Text="General Info" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                    <Grid x:Name="DeviceWidget" VerticalAlignment="Stretch" Visibility="{x:Bind IsDeviceConnected}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-            <Grid VerticalAlignment="Top" Grid.RowSpan="4" Height="60" Width="94" Background="{StaticResource AccentFillColorDefaultBrush}" Margin="0,10" />
-            <Image VerticalAlignment="Top" Grid.RowSpan="4" Height="80" Source="/Assets/Devices/SurfaceDuo.png" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-            <TextBlock Margin="10,0,0,0" Grid.Column="1" Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap" />
-            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8" TextWrapping="Wrap" />
-            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="2" Text="{x:Bind device.Variant}" Opacity="0.4" TextWrapping="Wrap" />
-            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}" />
-        </Grid>
-        
+                        <Grid VerticalAlignment="Top" Grid.RowSpan="4" Height="60" Width="94" Background="{StaticResource AccentFillColorDefaultBrush}" Margin="0,10" />
+                        <Image VerticalAlignment="Top" Grid.RowSpan="4" Height="80" Source="/Assets/Devices/SurfaceDuo.png" />
+
+                        <TextBlock Margin="10,0,0,0" Grid.Column="1" Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap" />
+                        <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8" TextWrapping="Wrap" />
+                        <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="2" Text="{x:Bind device.Variant}" Opacity="0.4" TextWrapping="Wrap" />
+                        <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Spacing="32" BorderBrush="{StaticResource SystemChromeDisabledHighColor}" BorderThickness="1">
+                    <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch">
+                        <Expander.Header>
+                            <TextBlock Text="Phone Identity" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="16,32"/>
+                        </Expander.Header>
+
+                        <TextBlock Opacity="0.8" TextWrapping="Wrap" Text="{x:Bind DeviceIdentityString}" />
+                    </Expander>
+                </StackPanel>
+
+                <StackPanel Padding="32" Spacing="32" BorderBrush="{StaticResource SystemChromeDisabledHighColor}" BorderThickness="1">
+                    <TextBlock Text="Security" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
+
+                    <TextBlock x:Name="DeviceSecurityTextBlock" Opacity="0.8" TextWrapping="Wrap" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
         <Grid x:Name="DeviceNeededOverlay" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Visibility="{x:Bind IsDeviceDisconnected}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" MaxWidth="300">
                 <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>

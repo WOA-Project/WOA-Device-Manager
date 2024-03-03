@@ -9,54 +9,60 @@
     mc:Ignorable="d">
 
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
-        <StackPanel Padding="16" Spacing="10">
-            <TextBlock Text="Switch mode" FontSize="36" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
-            <TextBlock FontSize="24" FontWeight="SemiBold">
-                <Run Text="Current mode: "/>
-                <Run Text="{x:Bind manager:DeviceManager.Device.DeviceStateLocalized}"/>
-            </TextBlock>
-            <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.ADBConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Normal-mode"/>
-                    <TextBlock Text="This will switch back to Android OS."/>
+        <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+            <StackPanel Padding="32" Spacing="32" BorderBrush="{StaticResource SystemChromeDisabledHighColor}" BorderThickness="1">
+                <TextBlock Text="Switch mode" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
+
+                <TextBlock FontSize="18" Margin="0,0,0,16">
+                    <Run Text="Current mode: " FontWeight="SemiBold"/>
+                    <Run Text="{x:Bind manager:DeviceManager.Device.DeviceStateLocalized}" />
+                </TextBlock>
+
+                <StackPanel Spacing="16">
+                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.ADBConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Android-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Android OS."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Bootloader-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This is the interface that can be used to switch to additional operating modes. It can also be used to retrieve additional info and security status."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="RebootToFastbootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.FastBootDConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Fastboot-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This is the interface that can be used to flash a new ROM image. It can also be used to retrieve additional info and security status."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="RebootToMassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.MassStorageConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Mass-Storage-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the phone."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="RebootToRecovery_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.RecoveryConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Recovery-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Android Recovery."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="RebootToTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.TWRPConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to TWRP-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to TWRP Recovery."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="RebootToWindows_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.WindowsConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Windows-mode"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Windows OS."/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
-            </Button>
-            <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Bootloader-mode"/>
-                    <TextBlock Text="This is the interface that can be used to switch to additional operating modes. It can also be used to retrieve additional info and security status."/>
-                </StackPanel>
-            </Button>
-            <Button Click="RebootToFastbootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.FastBootDConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Fastboot-mode"/>
-                    <TextBlock Text="This is the interface that can be used to flash a new ROM image. It can also be used to retrieve additional info and security status."/>
-                </StackPanel>
-            </Button>
-            <Button Click="RebootToMassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.MassStorageConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Mass-Storage-mode"/>
-                    <TextBlock Text="This mode allows you to access the complete file-system of the phone."/>
-                </StackPanel>
-            </Button>
-            <Button Click="RebootToRecovery_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.RecoveryConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Recovery-mode"/>
-                    <TextBlock Text="This will switch back to Android Recovery."/>
-                </StackPanel>
-            </Button>
-            <Button Click="RebootToTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.TWRPConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to TWRP-mode"/>
-                    <TextBlock Text="This will switch back to TWRP Recovery."/>
-                </StackPanel>
-            </Button>
-            <Button Click="RebootToWindows_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.WindowsConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                <StackPanel>
-                    <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Windows-mode"/>
-                    <TextBlock Text="This will switch back to Windows OS."/>
-                </StackPanel>
-            </Button>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>

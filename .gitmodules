@@ -1,0 +1,6 @@
+[submodule "FastBoot"]
+	path = FastBoot
+	url = https://github.com/WOA-Project/FastBoot
+[submodule "AndroidDebugBridge"]
+	path = AndroidDebugBridge
+	url = https://github.com/WOA-Project/AndroidDebugBridge

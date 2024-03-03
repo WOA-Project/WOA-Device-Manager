@@ -20,7 +20,15 @@ namespace WOADeviceManager.Managers
         {
             get
             {
-                shell ??= client.StartShell(DeviceManager.Device.AndroidDebugBridgeTransport);
+                try
+                {
+                    DeviceData deviceData = DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID);
+                    shell ??= client.StartShell(deviceData);
+                }
+                catch
+                {
+                    shell = null;
+                }
                 return shell;
             }
         }

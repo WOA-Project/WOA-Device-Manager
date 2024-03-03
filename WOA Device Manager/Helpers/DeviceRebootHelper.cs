@@ -8,11 +8,11 @@ namespace WOADeviceManager.Helpers
     {
         public static async Task RebootToBootloaderAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.ANDROID_ADB_ENABLED or Device.DeviceStateEnum.RECOVERY or Device.DeviceStateEnum.TWRP)
+            if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToBootloader();
             }
-            else if (DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOTD)
+            else if (DeviceManager.Device.IsFastBootCompatible)
             {
                 FastbootProcedures.RebootBootloader();
             }
@@ -32,11 +32,11 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToAndroidAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.BOOTLOADER or Device.DeviceStateEnum.FASTBOOTD)
+            if (DeviceManager.Device.IsFastBootCompatible)
             {
                 FastbootProcedures.Reboot();
             }
-            else if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP or Device.DeviceStateEnum.RECOVERY)
+            else if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToAndroid();
             }
@@ -68,13 +68,13 @@ namespace WOADeviceManager.Helpers
             }
         }
 
-        public static async Task RebootToRecovery()
+        public static async Task RebootToRecoveryAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.ANDROID_ADB_ENABLED or Device.DeviceStateEnum.RECOVERY or Device.DeviceStateEnum.TWRP)
+            if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToRecovery();
             }
-            else if (DeviceManager.Device.State == Device.DeviceStateEnum.FASTBOOTD)
+            else if (DeviceManager.Device.IsFastBootCompatible)
             {
                 FastbootProcedures.RebootRecovery();
             }
@@ -95,11 +95,11 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToFastbootDAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.ANDROID_ADB_ENABLED or Device.DeviceStateEnum.RECOVERY or Device.DeviceStateEnum.TWRP)
+            if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToFastbootD();
             }
-            else if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+            else if (DeviceManager.Device.IsFastBootCompatible)
             {
                 FastbootProcedures.RebootFastbootD();
             }

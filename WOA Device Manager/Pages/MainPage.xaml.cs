@@ -17,7 +17,6 @@ namespace WOADeviceManager.Pages
 
             DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
             DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
-            DeviceManager.ManuallyCheckForADBDevices();
 
             _mainPage = this;
         }

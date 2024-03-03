@@ -1,7 +1,7 @@
 ﻿using FastBoot;
 using SAPTeam.AndroCtrl.Adb;
-using Windows.Devices.Enumeration;
 using WOADeviceManager.Helpers;
+using WOADeviceManager.Managers;
 
 namespace WOADeviceManager
 {
@@ -31,64 +31,35 @@ namespace WOADeviceManager
         {
             get; set;
         }
+
         public string Name
         {
             get; set;
         }
+
         public string Variant
         {
             get; set;
         }
-        public string SerialNumber
-        {
-            get; set;
-        }
+
         public DeviceProduct Product
         {
             get; set;
         }
+
         public DeviceStateEnum State { get; set; } = DeviceStateEnum.DISCONNECTED;
+
         public OEMUnlockStateEnum OEMUnlockState
         {
             get; set;
         }
-        public DeviceInformation Information
-        {
-            get; set;
-        }
-        public DeviceInformationUpdate LastInformationUpdate
-        {
-            get; set;
-        }
 
-        public DeviceData AndroidDebugBridgeTransport
-        {
-            get; set;
-        }
+        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP or DeviceStateEnum.RECOVERY;
+        public bool IsFastBootCompatible => State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER;
 
-        public FastBootTransport FastBootTransport
-        {
-            get; set;
-        }
-
-        public string ADBID
-        {
-            get; set;
-        }
-
-        public string BootloaderID
-        {
-            get; set;
-        }
-
-        public string TWRPID
-        {
-            get; set;
-        }
-
-        public string BatteryLevel => State == DeviceStateEnum.ANDROID_ADB_ENABLED
+        public string BatteryLevel => IsADBCompatible
                     ? ADBProcedures.GetDeviceBatteryLevel()
-                    : State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER ? FastbootProcedures.GetDeviceBatteryLevel() : null;
+                    : IsFastBootCompatible ? FastbootProcedures.GetDeviceBatteryLevel() : null;
 
         public string DeviceStateLocalized => State switch
         {
@@ -97,7 +68,9 @@ namespace WOADeviceManager
             DeviceStateEnum.WINDOWS => "Windows",
             DeviceStateEnum.BOOTLOADER => "Bootloader",
             DeviceStateEnum.FASTBOOTD => "Fastboot",
+            DeviceStateEnum.RECOVERY => "Recovery",
             DeviceStateEnum.TWRP => "TWRP",
+            DeviceStateEnum.UFP => "UFP",
             DeviceStateEnum.DISCONNECTED => "Disconnected",
             _ => null,
         };
@@ -112,12 +85,17 @@ namespace WOADeviceManager
 
         public bool ADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
 
-        public bool ADBORTWRPConnected => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP;
-
         public bool TWRPConnected => State == DeviceStateEnum.TWRP;
 
-        public bool FastbootConnected => State == DeviceStateEnum.FASTBOOTD;
+        public bool FastBootDConnected => State == DeviceStateEnum.FASTBOOTD;
+
+        public bool RecoveryConnected => State == DeviceStateEnum.RECOVERY;
 
         public bool BootloaderConnected => State == DeviceStateEnum.BOOTLOADER;
+
+        public FastBootTransport FastBootTransport
+        {
+            get; internal set;
+        }
     }
 }

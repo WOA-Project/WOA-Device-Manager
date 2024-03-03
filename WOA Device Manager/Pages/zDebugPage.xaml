@@ -11,7 +11,7 @@
     <Grid>
         <StackPanel Padding="16" Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.ADBORTWRPConnected}">🔄️ Reboot to Bootloader</Button>
+                <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsADBCompatible}">🔄️ Reboot to Bootloader</Button>
                 <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected}">🔄️ Reboot to Android</Button>
                 <Button Click="BootTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected}">🔄️ Reboot to TWRP</Button>
             </StackPanel>

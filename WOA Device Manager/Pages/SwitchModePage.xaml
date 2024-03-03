@@ -27,7 +27,7 @@
                     <TextBlock Text="This is the interface that can be used to switch to additional operating modes. It can also be used to retrieve additional info and security status."/>
                 </StackPanel>
             </Button>
-            <Button Click="RebootToFastbootd_Clock" IsEnabled="{x:Bind manager:DeviceManager.Device.FastbootConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+            <Button Click="RebootToFastbootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.FastBootDConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                 <StackPanel>
                     <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Fastboot-mode"/>
                     <TextBlock Text="This is the interface that can be used to flash a new ROM image. It can also be used to retrieve additional info and security status."/>
@@ -39,13 +39,13 @@
                     <TextBlock Text="This mode allows you to access the complete file-system of the phone."/>
                 </StackPanel>
             </Button>
-            <Button Click="RebootToRecovery_Click" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+            <Button Click="RebootToRecovery_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.RecoveryConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                 <StackPanel>
                     <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Recovery-mode"/>
                     <TextBlock Text="This will switch back to Android Recovery."/>
                 </StackPanel>
             </Button>
-            <Button Click="RebootToTWRP_Click" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+            <Button Click="RebootToTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.TWRPConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                 <StackPanel>
                     <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to TWRP-mode"/>
                     <TextBlock Text="This will switch back to TWRP Recovery."/>

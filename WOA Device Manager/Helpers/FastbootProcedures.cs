@@ -1,5 +1,6 @@
 ﻿using FastBoot;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -111,8 +112,20 @@ namespace WOADeviceManager.Helpers
 
         public static async Task<bool> BootTWRP()
         {
-            StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON);
-            return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
+            if (DeviceManager.Device.Product == Device.DeviceProduct.Epsilon)
+            {
+                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON);
+                return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
+            }
+            else if (DeviceManager.Device.Product == Device.DeviceProduct.Zeta)
+            {
+                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA);
+                return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
+            }
+            else
+            {
+                throw new Exception("Unknown device product");
+            }
         }
 
         public static string GetDeviceBatteryLevel()

@@ -17,7 +17,7 @@ namespace WOADeviceManager.Helpers
             ConsoleOutputReceiver receiver = new();
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.model", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.model", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
             }
             catch (Exception) { }
             return receiver.ToString().Trim();
@@ -28,7 +28,7 @@ namespace WOADeviceManager.Helpers
             ConsoleOutputReceiver receiver = new();
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.device", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.device", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
             }
             catch (Exception) { }
             return receiver.ToString().Trim();
@@ -39,7 +39,7 @@ namespace WOADeviceManager.Helpers
             ConsoleOutputReceiver receiver = new();
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.name", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.name", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
             }
             catch (Exception) { }
             return receiver.ToString().Trim();
@@ -50,7 +50,7 @@ namespace WOADeviceManager.Helpers
             ConsoleOutputReceiver receiver = new();
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.version.release", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.version.release", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
                 return "Android " + receiver.ToString().Trim();
             }
             catch (Exception) { }
@@ -62,7 +62,7 @@ namespace WOADeviceManager.Helpers
             ConsoleOutputReceiver receiver = new();
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.id", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.id", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
                 return receiver.ToString().Trim();
             }
             catch (Exception) { }
@@ -76,22 +76,22 @@ namespace WOADeviceManager.Helpers
 
         public static void RebootToBootloader()
         {
-            ADBManager.Client.Reboot("bootloader", DeviceManager.Device.AndroidDebugBridgeTransport);
+            ADBManager.Client.Reboot("bootloader", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
         }
 
         public static void RebootToAndroid()
         {
-            ADBManager.Client.Reboot(null, DeviceManager.Device.AndroidDebugBridgeTransport);
+            ADBManager.Client.Reboot(null, DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
         }
 
         public static void RebootToFastbootD()
         {
-            ADBManager.Client.Reboot("fastboot", DeviceManager.Device.AndroidDebugBridgeTransport);
+            ADBManager.Client.Reboot("fastboot", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
         }
 
         public static void RebootToRecovery()
         {
-            ADBManager.Client.Reboot("recovery", DeviceManager.Device.AndroidDebugBridgeTransport);
+            ADBManager.Client.Reboot("recovery", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
         }
 
         public static async Task<bool> PushParted()
@@ -105,7 +105,7 @@ namespace WOADeviceManager.Helpers
             };
             try
             {
-                using (SyncService service = new(ADBManager.Client, DeviceManager.Device.AndroidDebugBridgeTransport))
+                using (SyncService service = new(ADBManager.Client, DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID)))
                 using (Stream stream = File.OpenRead(@parted.Path))
                 {
                     service.Push(stream, "/sdcard/parted", 755, DateTime.Now, progress, CancellationToken.None);
@@ -133,7 +133,7 @@ namespace WOADeviceManager.Helpers
             };
             try
             {
-                using (SyncService service = new(ADBManager.Client, DeviceManager.Device.AndroidDebugBridgeTransport))
+                using (SyncService service = new(ADBManager.Client, DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID)))
                 using (Stream stream = File.OpenRead(@msc.Path))
                 {
                     service.Push(stream, "/sdcard/msc.tar", 755, DateTime.Now, progress, CancellationToken.None);
@@ -146,7 +146,7 @@ namespace WOADeviceManager.Helpers
                 ConsoleOutputReceiver receiver = new();
                 try
                 {
-                    ADBManager.Client.ExecuteRemoteCommand("tar -xf /sdcard/msc.tar -C /sdcard --no-same-owner", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                    ADBManager.Client.ExecuteRemoteCommand("tar -xf /sdcard/msc.tar -C /sdcard --no-same-owner", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
                 }
                 catch (Exception)
                 {
@@ -164,7 +164,7 @@ namespace WOADeviceManager.Helpers
             ConsoleOutputReceiver receiver = new();
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("dumpsys battery", DeviceManager.Device.AndroidDebugBridgeTransport, receiver);
+                ADBManager.Client.ExecuteRemoteCommand("dumpsys battery", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
                 string result = receiver.ToString()?.Trim();
                 result = result?.Split("level: ")?[1]?.Split("\n")?[0]?.Trim();
                 return result;

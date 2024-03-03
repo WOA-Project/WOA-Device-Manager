@@ -29,7 +29,7 @@ namespace WOADeviceManager.Pages
             MainPage.ToggleLoadingScreen(false);
         }
 
-        private async void RebootToFastbootd_Clock(object sender, RoutedEventArgs e)
+        private async void RebootToFastbootd_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
             await DeviceRebootHelper.RebootToFastbootDAndWait();
@@ -47,10 +47,10 @@ namespace WOADeviceManager.Pages
             MainPage.ToggleLoadingScreen(false);
         }
 
-        private void RebootToRecovery_Click(object sender, RoutedEventArgs e)
+        private async void RebootToRecovery_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            // TODO
+            await DeviceRebootHelper.RebootToRecoveryAndWait();
             MainPage.ToggleLoadingScreen(false);
         }
 

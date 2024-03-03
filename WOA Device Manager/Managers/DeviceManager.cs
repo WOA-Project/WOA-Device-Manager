@@ -1,9 +1,8 @@
 ﻿using FastBoot;
 using SAPTeam.AndroCtrl.Adb;
+using SAPTeam.AndroCtrl.Adb.Receivers;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Windows.Devices.Enumeration;
@@ -14,7 +13,6 @@ namespace WOADeviceManager.Managers
     public class DeviceManager
     {
         private readonly DeviceWatcher watcher;
-        private static DeviceMonitor adbMonitor;
 
         private static DeviceManager _instance;
         public static DeviceManager Instance
@@ -48,11 +46,6 @@ namespace WOADeviceManager.Managers
         {
             device ??= new Device();
 
-            adbMonitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
-            adbMonitor.DeviceConnected += OnADBDeviceConnected;
-            adbMonitor.DeviceDisconnected += OnADBDeviceDisconnected;
-            adbMonitor.Start();
-
             watcher = DeviceInformation.CreateWatcher();
             watcher.Added += DeviceAdded;
             watcher.Removed += DeviceRemoved;
@@ -60,184 +53,229 @@ namespace WOADeviceManager.Managers
             watcher.Start();
         }
 
-        private void OnADBDeviceConnected(object sender, DeviceDataEventArgs e)
-        {
-            Debug.WriteLine($"The device {e.Device.Serial} has connected to this PC");
-            System.Collections.Generic.List<DeviceData> connectedDevices = ADBManager.Client.GetDevices();
-
-            foreach (DeviceData connectedDevice in connectedDevices)
-            {
-                if (e.Device.Serial.Equals(connectedDevice.Serial))
-                {
-                    device.SerialNumber = connectedDevice.Serial;
-                    device.AndroidDebugBridgeTransport = connectedDevice;
-                }
-            }
-        }
-
-        private void OnADBDeviceDisconnected(object sender, DeviceDataEventArgs e)
-        {
-            Debug.WriteLine($"The device {e.Device.Serial} has disconnected from this PC");
-            Device.AndroidDebugBridgeTransport = null;
-        }
-
-        public static void ManuallyCheckForADBDevices()
-        {
-            try
-            {
-                System.Collections.Generic.List<DeviceData> connectedDevices = ADBManager.Client.GetDevices();
-                DeviceData firstDevice = connectedDevices.FirstOrDefault();
-                if (firstDevice != null)
-                {
-                    Device.SerialNumber = firstDevice.Serial;
-                    Device.AndroidDebugBridgeTransport = firstDevice;
-                }
-            }
-            catch { }
-        }
-
         private void Watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             _ = args.Properties.TryGetValue("System.Devices.InterfaceEnabled", out object? IsInterfaceEnabledObjectValue);
             bool IsInterfaceEnabled = (bool?)IsInterfaceEnabledObjectValue ?? false;
 
-            if (args.Id.Equals(Device.ADBID) && IsInterfaceEnabled)
+            if (!IsInterfaceEnabled && args.Id == Device.ID)
             {
-                Thread.Sleep(1000);
-                device.LastInformationUpdate = args;
+                Device.State = Device.DeviceStateEnum.DISCONNECTED;
+                Device.ID = null;
+                Device.Name = null;
+                Device.Variant = null;
+                // TODO: Device.Product = Device.Product;
 
-                switch (ADBProcedures.GetDeviceProductDevice())
+                DeviceDisconnectedEvent?.Invoke(this, device);
+                return;
+            }
+
+            // Normal:
+            // Surface Duo Fastboot
+            if (args.Id.Contains("USB#VID_045E&PID_0C2F#"))
+            {
+                try
                 {
-                    case "duo":
-                        {
-                            device.Name = "Surface Duo";
-                            string productName = ADBProcedures.GetDeviceProductName();
-                            switch (productName)
+                    FastBootTransport fastBootTransport = new(args.Id);
+
+                    bool result = fastBootTransport.GetVariable("product", out string productGetVar);
+                    string ProductName = !result ? null : productGetVar;
+                    result = fastBootTransport.GetVariable("is-userspace", out productGetVar);
+                    string IsUserSpace = !result ? null : productGetVar;
+
+                    switch (ProductName)
+                    {
+                        case "surfaceduo":
+                        case "duo":
                             {
-                                case "duo":
-                                    {
-                                        device.Variant = "GEN";
-                                        break;
-                                    }
-                                case "duo-att":
-                                    {
-                                        device.Variant = "ATT";
-                                        break;
-                                    }
-                                case "duo-eu":
-                                    {
-                                        device.Variant = "EEA";
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        device.Variant = productName;
-                                        break;
-                                    }
+                                if (IsUserSpace == "yes")
+                                {
+                                    Device.State = Device.DeviceStateEnum.FASTBOOTD;
+                                }
+                                else
+                                {
+                                    Device.State = Device.DeviceStateEnum.BOOTLOADER;
+                                }
+                                Device.ID = args.Id;
+                                Device.Name = "Surface Duo";
+                                Device.Variant = "";
+                                Device.Product = Device.DeviceProduct.Epsilon;
+
+                                if (Device.FastBootTransport != null)
+                                {
+                                    Device.FastBootTransport.Dispose();
+                                }
+                                Device.FastBootTransport = fastBootTransport;
+
+                                DeviceDisconnectedEvent?.Invoke(this, device);
+                                return;
                             }
-                            device.Product = Device.DeviceProduct.Epsilon;
-                            device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                        case "surfaceduo2":
+                        case "duo2":
+                            {
+                                if (IsUserSpace == "yes")
+                                {
+                                    Device.State = Device.DeviceStateEnum.FASTBOOTD;
+                                }
+                                else
+                                {
+                                    Device.State = Device.DeviceStateEnum.BOOTLOADER;
+                                }
+                                Device.ID = args.Id;
+                                Device.Name = "Surface Duo 2";
+                                Device.Variant = "";
+                                Device.Product = Device.DeviceProduct.Zeta;
 
-                            DeviceConnectedEvent?.Invoke(null, device);
-                            break;
-                        }
-                    case "duo2":
+                                if (Device.FastBootTransport != null)
+                                {
+                                    Device.FastBootTransport.Dispose();
+                                }
+                                Device.FastBootTransport = fastBootTransport;
+
+                                DeviceDisconnectedEvent?.Invoke(this, device);
+                                return;
+                            }
+                    }
+
+                    fastBootTransport.Dispose();
+                }
+                catch { }
+            }
+            // Normal:
+            // Surface Duo ADB
+            // Surface Duo ADB Sideload
+            // Surface Duo Composite ADB
+            // Surface Duo Composite ADB Tether
+            // Surface Duo Composite ADB File Transfer
+            // Surface Duo Composite ADB PTP
+            // Surface Duo Composite ADB MIDI
+            //
+            // Custom:
+            // Surface Duo TWRP
+            // Surface Duo 2 TWRP
+            else if (args.Id.Contains("USB#VID_045E&PID_0C26#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C30#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C26&MI_01#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C28&MI_02#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C2A&MI_01#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C2C&MI_01#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C2E&MI_02#") ||
+             args.Id.Contains("USB#VID_05C6&PID_9039&MI_00") ||
+             args.Id.Contains("USB#VID_18D1&PID_D001"))
+            {
+                try
+                {
+                    DeviceData adbDeviceData = GetADBDeviceDataFromUSBID(args.Id);
+
+                    if (args.Id.Contains("USB#VID_05C6&PID_9039&MI_00"))
+                    {
+                        Device.State = Device.DeviceStateEnum.TWRP;
+                        Device.ID = args.Id;
+                        Device.Name = "Surface Duo";
+                        Device.Variant = "";
+                        Device.Product = Device.DeviceProduct.Epsilon;
+
+                        DeviceDisconnectedEvent?.Invoke(this, device);
+                        return;
+                    }
+                    else if (args.Id.Contains("USB#VID_18D1&PID_D001"))
+                    {
+                        Device.State = Device.DeviceStateEnum.TWRP;
+                        Device.ID = args.Id;
+                        Device.Name = "Surface Duo 2";
+                        Device.Variant = "";
+                        Device.Product = Device.DeviceProduct.Zeta;
+
+                        DeviceDisconnectedEvent?.Invoke(this, device);
+                        return;
+                    }
+                    else
+                    {
+                        // TODO: Recovery differentiation
+
+                        ConsoleOutputReceiver receiver = new();
+                        try
                         {
-                            device.Name = "Surface Duo 2";
-                            device.Variant = "";
-                            device.Product = Device.DeviceProduct.Zeta;
-                            device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
-
-                            DeviceConnectedEvent?.Invoke(sender, device);
-                            break;
+                            ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.device", adbDeviceData, receiver);
                         }
-                }
-            }
-            else if (args.Id.Equals(Device.BootloaderID) && IsInterfaceEnabled)
-            {
-                Thread.Sleep(1000);
-                device.LastInformationUpdate = args;
+                        catch (Exception) { }
+                        string ProductDevice = receiver.ToString().Trim();
 
-                if (Device.FastBootTransport != null)
-                {
-                    Device.FastBootTransport.Dispose();
-                    Device.FastBootTransport.Close();
-                }
-
-                device.FastBootTransport = new FastBoot.FastBootTransport(device.BootloaderID);
-
-                switch (FastbootProcedures.GetProduct())
-                {
-                    case "surfaceduo":
-                    case "duo":
+                        switch (ProductDevice)
                         {
-                            device.Name = "Surface Duo";
-                            device.Variant = "";
-                            device.Product = Device.DeviceProduct.Epsilon;
-                            break;
+                            case "duo":
+                                {
+                                    Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    Device.ID = args.Id;
+                                    Device.Name = "Surface Duo";
+
+                                    receiver = new();
+                                    try
+                                    {
+                                        ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.name", adbDeviceData, receiver);
+                                    }
+                                    catch (Exception) { }
+                                    string ProductName = receiver.ToString().Trim();
+
+                                    switch (ProductName)
+                                    {
+                                        case "duo":
+                                            {
+                                                Device.Variant = "GEN";
+                                                break;
+                                            }
+                                        case "duo-att":
+                                            {
+                                                Device.Variant = "ATT";
+                                                break;
+                                            }
+                                        case "duo-eu":
+                                            {
+                                                Device.Variant = "EEA";
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                Device.Variant = ProductName;
+                                                break;
+                                            }
+                                    }
+
+                                    Device.Product = Device.DeviceProduct.Epsilon;
+
+                                    DeviceDisconnectedEvent?.Invoke(this, device);
+                                    return;
+                                }
+                            case "duo2":
+                                {
+                                    Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    Device.ID = args.Id;
+                                    Device.Name = "Surface Duo 2";
+                                    Device.Variant = "";
+                                    Device.Product = Device.DeviceProduct.Zeta;
+
+                                    DeviceDisconnectedEvent?.Invoke(this, device);
+                                    return;
+                                }
                         }
-                    case "surfaceduo2":
-                    case "duo2":
-                        {
-                            device.Name = "Surface Duo 2";
-                            device.Variant = "";
-                            device.Product = Device.DeviceProduct.Zeta;
-                            break;
-                        }
+                    }
                 }
-
-                device.FastBootTransport.GetVariable("is-userspace", out string isUserSpaceString);
-                if (isUserSpaceString == "yes")
-                {
-                    device.State = Device.DeviceStateEnum.FASTBOOTD;
-                }
-                else
-                {
-                    device.State = Device.DeviceStateEnum.BOOTLOADER;
-                }
-
-                DeviceConnectedEvent?.Invoke(sender, device);
+                catch { }
             }
-            else if (args.Id.Equals(Device.TWRPID) && IsInterfaceEnabled && args.Id.StartsWith(@"\\?\USB#VID_05C6&PID_9039&MI_00"))
+            else if (args.Id.Contains("USB#VID_045E&PID_0C29"))
             {
-                Thread.Sleep(1000);
-                device.LastInformationUpdate = args;
+                Device.State = Device.DeviceStateEnum.ANDROID;
+                Device.ID = args.Id;
+                Device.Name = "N/A";
+                Device.Variant = "";
+                // TODO: Device.Product = Device.Product;
 
-                device.Name = "Surface Duo";
-                device.Variant = "";
-                device.Product = Device.DeviceProduct.Epsilon;
-                device.State = Device.DeviceStateEnum.TWRP;
-
-                DeviceConnectedEvent?.Invoke(sender, device);
-            }
-            else if (args.Id.Equals(Device.TWRPID) && IsInterfaceEnabled && args.Id.StartsWith(@"\\?\USB#VID_18D1&PID_D001"))
-            {
-                Thread.Sleep(1000);
-                device.LastInformationUpdate = args;
-
-                device.Name = "Surface Duo 2";
-                device.Variant = "";
-                device.Product = Device.DeviceProduct.Zeta;
-                device.State = Device.DeviceStateEnum.TWRP;
-
-                DeviceConnectedEvent?.Invoke(sender, device);
-            }
-            else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED && IsInterfaceEnabled == false)
-                || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP && IsInterfaceEnabled == false)
-                || (args.Id.Equals(device.BootloaderID) && device.State == Device.DeviceStateEnum.BOOTLOADER && IsInterfaceEnabled == false))
-            {
-                device.LastInformationUpdate = args;
-                device.State = Device.DeviceStateEnum.DISCONNECTED;
-
-                DeviceDisconnectedEvent?.Invoke(sender, device);
+                DeviceDisconnectedEvent?.Invoke(this, device);
             }
         }
 
         private void DeviceAdded(DeviceWatcher sender, DeviceInformation args)
         {
-            // TODO: Replace with ID or whatever needed to make it unique
-            // TODO: If we're going to support multiple devices, needs a list of compatible names
-
             // Adb Enabled Android example:
             //
             // Args.ID: \\?\USB#VID_045E&PID_0C26#0F0012E214600A#{dee824ef-729b-4a0e-9c14-b7117d33a817}
@@ -263,152 +301,266 @@ namespace WOADeviceManager.Managers
             // AdbCompositeMIDI   = "Surface Duo Composite ADB MIDI"
 
             bool IsInterfaceEnabled = args.IsEnabled;
-
-            if (args.Name == "Surface Duo ADB" && args.Id.StartsWith(@"\\?\USB#VID_045E&PID_0C26"))
+            if (!IsInterfaceEnabled)
             {
-                device.ADBID = args.Id;
-                device.Information = args;
-                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
-
-                if (IsInterfaceEnabled)
-                {
-                    Thread.Sleep(1000);
-
-                    switch (ADBProcedures.GetDeviceProductDevice())
-                    {
-                        case "duo":
-                            {
-                                device.Name = "Surface Duo";
-                                string productName = ADBProcedures.GetDeviceProductName();
-                                switch (productName)
-                                {
-                                    case "duo":
-                                        {
-                                            device.Variant = "GEN";
-                                            break;
-                                        }
-                                    case "duo-att":
-                                        {
-                                            device.Variant = "ATT";
-                                            break;
-                                        }
-                                    case "duo-eu":
-                                        {
-                                            device.Variant = "EEA";
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            device.Variant = productName;
-                                            break;
-                                        }
-                                }
-                                device.Product = Device.DeviceProduct.Epsilon;
-                                device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
-
-                                DeviceConnectedEvent?.Invoke(null, device);
-                                break;
-                            }
-                        case "duo2":
-                            {
-                                device.Name = "Surface Duo 2";
-                                device.Variant = "";
-                                device.Product = Device.DeviceProduct.Zeta;
-                                device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
-
-                                DeviceConnectedEvent?.Invoke(null, device);
-                                break;
-                            }
-                    }
-                }
+                return;
             }
-            else if (args.Name == "Surface Duo Fastboot" && args.Id.StartsWith(@"\\?\USB#VID_045E&PID_0C2F"))
+
+            // Normal:
+            // Surface Duo Fastboot
+            if (args.Id.Contains("USB#VID_045E&PID_0C2F#"))
             {
-                device.BootloaderID = args.Id;
-                device.Information = args;
-                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
-
-                if (IsInterfaceEnabled)
+                try
                 {
-                    Thread.Sleep(1000);
+                    FastBootTransport fastBootTransport = new(args.Id);
 
-                    if (Device.FastBootTransport != null)
-                    {
-                        Device.FastBootTransport.Dispose();
-                        Device.FastBootTransport.Close();
-                    }
+                    bool result = fastBootTransport.GetVariable("product", out string productGetVar);
+                    string ProductName = !result ? null : productGetVar;
+                    result = fastBootTransport.GetVariable("is-userspace", out productGetVar);
+                    string IsUserSpace = !result ? null : productGetVar;
 
-                    device.FastBootTransport = new FastBootTransport(device.BootloaderID);
-
-                    switch (FastbootProcedures.GetProduct())
+                    switch (ProductName)
                     {
                         case "surfaceduo":
                         case "duo":
                             {
-                                device.Name = "Surface Duo";
-                                device.Variant = "";
-                                device.Product = Device.DeviceProduct.Epsilon;
-                                break;
+                                if (IsUserSpace == "yes")
+                                {
+                                    Device.State = Device.DeviceStateEnum.FASTBOOTD;
+                                }
+                                else
+                                {
+                                    Device.State = Device.DeviceStateEnum.BOOTLOADER;
+                                }
+                                Device.ID = args.Id;
+                                Device.Name = "Surface Duo";
+                                Device.Variant = "";
+                                Device.Product = Device.DeviceProduct.Epsilon;
+
+                                if (Device.FastBootTransport != null)
+                                {
+                                    Device.FastBootTransport.Dispose();
+                                }
+                                Device.FastBootTransport = fastBootTransport;
+
+                                DeviceDisconnectedEvent?.Invoke(this, device);
+                                return;
                             }
                         case "surfaceduo2":
                         case "duo2":
                             {
-                                device.Name = "Surface Duo 2";
-                                device.Variant = "";
-                                device.Product = Device.DeviceProduct.Zeta;
-                                break;
+                                if (IsUserSpace == "yes")
+                                {
+                                    Device.State = Device.DeviceStateEnum.FASTBOOTD;
+                                }
+                                else
+                                {
+                                    Device.State = Device.DeviceStateEnum.BOOTLOADER;
+                                }
+                                Device.ID = args.Id;
+                                Device.Name = "Surface Duo 2";
+                                Device.Variant = "";
+                                Device.Product = Device.DeviceProduct.Zeta;
+
+                                if (Device.FastBootTransport != null)
+                                {
+                                    Device.FastBootTransport.Dispose();
+                                }
+                                Device.FastBootTransport = fastBootTransport;
+
+                                DeviceDisconnectedEvent?.Invoke(this, device);
+                                return;
                             }
                     }
+                }
+                catch { }
+            }
+            // Normal:
+            // Surface Duo ADB
+            // Surface Duo ADB Sideload
+            // Surface Duo Composite ADB
+            // Surface Duo Composite ADB Tether
+            // Surface Duo Composite ADB File Transfer
+            // Surface Duo Composite ADB PTP
+            // Surface Duo Composite ADB MIDI
+            //
+            // Custom:
+            // Surface Duo TWRP
+            // Surface Duo 2 TWRP
+            else if (args.Id.Contains("USB#VID_045E&PID_0C26#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C30#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C26&MI_01#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C28&MI_02#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C2A&MI_01#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C2C&MI_01#") ||
+             args.Id.Contains("USB#VID_045E&PID_0C2E&MI_02#") ||
+             args.Id.Contains("USB#VID_05C6&PID_9039&MI_00") ||
+             args.Id.Contains("USB#VID_18D1&PID_D001"))
+            {
+                try
+                {
+                    DeviceData adbDeviceData = GetADBDeviceDataFromUSBID(args.Id);
 
-                    device.FastBootTransport.GetVariable("is-userspace", out string isUserSpaceString);
-                    if (isUserSpaceString == "yes")
+                    if (args.Id.Contains("USB#VID_05C6&PID_9039&MI_00"))
                     {
-                        device.State = Device.DeviceStateEnum.FASTBOOTD;
+                        Device.State = Device.DeviceStateEnum.TWRP;
+                        Device.ID = args.Id;
+                        Device.Name = "Surface Duo";
+                        Device.Variant = "";
+                        Device.Product = Device.DeviceProduct.Epsilon;
+
+                        DeviceDisconnectedEvent?.Invoke(this, device);
+                        return;
+                    }
+                    else if (args.Id.Contains("USB#VID_18D1&PID_D001"))
+                    {
+                        Device.State = Device.DeviceStateEnum.TWRP;
+                        Device.ID = args.Id;
+                        Device.Name = "Surface Duo 2";
+                        Device.Variant = "";
+                        Device.Product = Device.DeviceProduct.Zeta;
+
+                        DeviceDisconnectedEvent?.Invoke(this, device);
+                        return;
                     }
                     else
                     {
-                        device.State = Device.DeviceStateEnum.BOOTLOADER;
+                        // TODO: Recovery differentiation
+
+                        ConsoleOutputReceiver receiver = new();
+                        try
+                        {
+                            ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.device", adbDeviceData, receiver);
+                        }
+                        catch (Exception) { }
+                        string ProductDevice = receiver.ToString().Trim();
+
+                        switch (ProductDevice)
+                        {
+                            case "duo":
+                                {
+                                    Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    Device.ID = args.Id;
+                                    Device.Name = "Surface Duo";
+
+                                    receiver = new();
+                                    try
+                                    {
+                                        ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.name", adbDeviceData, receiver);
+                                    }
+                                    catch (Exception) { }
+                                    string ProductName = receiver.ToString().Trim();
+
+                                    switch (ProductName)
+                                    {
+                                        case "duo":
+                                            {
+                                                Device.Variant = "GEN";
+                                                break;
+                                            }
+                                        case "duo-att":
+                                            {
+                                                Device.Variant = "ATT";
+                                                break;
+                                            }
+                                        case "duo-eu":
+                                            {
+                                                Device.Variant = "EEA";
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                Device.Variant = ProductName;
+                                                break;
+                                            }
+                                    }
+
+                                    Device.Product = Device.DeviceProduct.Epsilon;
+
+                                    DeviceDisconnectedEvent?.Invoke(this, device);
+                                    return;
+                                }
+                            case "duo2":
+                                {
+                                    Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    Device.ID = args.Id;
+                                    Device.Name = "Surface Duo 2";
+                                    Device.Variant = "";
+                                    Device.Product = Device.DeviceProduct.Zeta;
+
+                                    DeviceDisconnectedEvent?.Invoke(this, device);
+                                    return;
+                                }
+                        }
                     }
-
-                    DeviceConnectedEvent?.Invoke(null, device);
                 }
+                catch { }
             }
-            else if (args.Name == "MTP" && args.Id.StartsWith(@"\\?\USB#VID_05C6&PID_9039&MI_00"))
+            else if (args.Id.Contains("USB#VID_045E&PID_0C29"))
             {
-                device.TWRPID = args.Id;
-                device.Information = args;
-                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
+                Device.State = Device.DeviceStateEnum.ANDROID;
+                Device.ID = args.Id;
+                Device.Name = args.Name;
+                Device.Variant = "";
+                Device.Product = args.Name.Contains("Duo 2") ? Device.DeviceProduct.Zeta : Device.DeviceProduct.Epsilon;
 
-                if (IsInterfaceEnabled)
-                {
-                    Thread.Sleep(1000);
-
-                    device.Name = "Surface Duo";
-                    device.Variant = "";
-                    device.Product = Device.DeviceProduct.Epsilon;
-                    device.State = Device.DeviceStateEnum.TWRP;
-
-                    DeviceConnectedEvent?.Invoke(null, device);
-                }
+                DeviceDisconnectedEvent?.Invoke(this, device);
             }
-            else if (args.Name == "ASUS_I006D" && args.Id.StartsWith(@"\\?\USB#VID_18D1&PID_D001"))
+        }
+
+        private void DeviceRemoved(DeviceWatcher sender, DeviceInformationUpdate args)
+        {
+            if (Device.ID != args.Id)
             {
-                device.TWRPID = args.Id;
-                device.Information = args;
-                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
+                return;
+            }
 
-                if (IsInterfaceEnabled)
+            Device.State = Device.DeviceStateEnum.DISCONNECTED;
+            Device.ID = null;
+            Device.Name = null;
+            Device.Variant = null;
+            // TODO: Device.Product = Device.Product;
+
+            if (Device.FastBootTransport != null)
+            {
+                Device.FastBootTransport.Dispose();
+                Device.FastBootTransport = null;
+            }
+
+            DeviceDisconnectedEvent?.Invoke(this, device);
+        }
+
+        internal static DeviceData GetADBDeviceDataFromUSBID(string USB)
+        {
+            string serialNumberFromUSBID = GetSerialNumberFromUSBID(USB);
+
+            List<DeviceData> connectedDevices = ADBManager.Client.GetDevices();
+            foreach (DeviceData connectedDevice in connectedDevices)
+            {
+                if (connectedDevice.Serial.Equals(serialNumberFromUSBID))
                 {
-                    Thread.Sleep(1000);
-
-                    device.Name = "Surface Duo 2";
-                    device.Variant = "";
-                    device.Product = Device.DeviceProduct.Zeta;
-                    device.State = Device.DeviceStateEnum.TWRP;
-
-                    DeviceConnectedEvent?.Invoke(null, device);
+                    return connectedDevice;
                 }
             }
+
+            Thread.Sleep(1000);
+
+            connectedDevices = ADBManager.Client.GetDevices();
+            foreach (DeviceData connectedDevice in connectedDevices)
+            {
+                if (connectedDevice.Serial.Equals(serialNumberFromUSBID))
+                {
+                    return connectedDevice;
+                }
+            }
+
+            // Fall back...
+            if (connectedDevices.Count == 1)
+            {
+                return connectedDevices[0];
+            }
+
+            throw new Exception("Device not found!");
         }
 
         private static string GetSerialNumberFromUSBID(string USB)
@@ -416,26 +568,6 @@ namespace WOADeviceManager.Managers
             string pattern = @"#(\d+)#";
             Match match = Regex.Match(USB, pattern);
             return match.Groups[1].Value;
-        }
-
-        private void DeviceRemoved(DeviceWatcher sender, DeviceInformationUpdate args)
-        {
-            if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED)
-                || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP)
-                || (args.Id.Equals(device.BootloaderID) && device.State == Device.DeviceStateEnum.BOOTLOADER)
-                || (args.Id.Equals(device.BootloaderID) && device.State == Device.DeviceStateEnum.FASTBOOTD))
-            {
-                if (Device.FastBootTransport != null)
-                {
-                    Device.FastBootTransport.Dispose();
-                    Device.FastBootTransport.Close();
-                }
-
-                device.LastInformationUpdate = args;
-                device.State = Device.DeviceStateEnum.DISCONNECTED;
-
-                DeviceDisconnectedEvent?.Invoke(sender, device);
-            }
         }
     }
 }

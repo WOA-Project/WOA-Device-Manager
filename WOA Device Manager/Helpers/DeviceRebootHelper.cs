@@ -8,6 +8,11 @@ namespace WOADeviceManager.Helpers
     {
         public static async Task RebootToBootloaderAndWait()
         {
+            if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+            {
+                return;
+            }
+
             if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToBootloader();
@@ -32,6 +37,11 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToAndroidAndWait()
         {
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.ANDROID or Device.DeviceStateEnum.ANDROID_ADB_ENABLED)
+            {
+                return;
+            }
+
             if (DeviceManager.Device.IsFastBootCompatible)
             {
                 FastbootProcedures.Reboot();
@@ -52,6 +62,11 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToTWRPAndWait()
         {
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP or Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+            {
+                return;
+            }
+
             if (DeviceManager.Device.State != Device.DeviceStateEnum.BOOTLOADER)
             {
                 await RebootToBootloaderAndWait();
@@ -70,6 +85,11 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToUEFIAndWait()
         {
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.WINDOWS)
+            {
+                return;
+            }
+
             if (DeviceManager.Device.State != Device.DeviceStateEnum.BOOTLOADER)
             {
                 await RebootToBootloaderAndWait();
@@ -79,16 +99,43 @@ namespace WOADeviceManager.Helpers
             {
                 _ = await FastbootProcedures.BootUEFI();
 
-                // TODO : Implement UEFI state
-                /*while (DeviceManager.Device.State != Device.DeviceStateEnum.WINDOWS)
+                while (DeviceManager.Device.State != Device.DeviceStateEnum.WINDOWS)
                 {
                     await Task.Delay(1000);
-                }*/
+                }
+            }
+        }
+
+        public static async Task RebootToMSCAndWait()
+        {
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+            {
+                return;
+            }
+
+            if (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP)
+            {
+                await RebootToTWRPAndWait();
+            }
+
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP)
+            {
+                await ADBProcedures.EnableMassStorageMode();
+
+                while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+                {
+                    await Task.Delay(1000);
+                }
             }
         }
 
         public static async Task RebootToRecoveryAndWait()
         {
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.RECOVERY)
+            {
+                return;
+            }
+
             if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToRecovery();
@@ -114,6 +161,11 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToFastbootDAndWait()
         {
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.FASTBOOTD)
+            {
+                return;
+            }
+
             if (DeviceManager.Device.IsADBCompatible)
             {
                 ADBProcedures.RebootToFastbootD();

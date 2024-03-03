@@ -9,7 +9,7 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, FASTBOOTD, TWRP, UFP, WINDOWS, DISCONNECTED
+            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, DISCONNECTED
         }
 
         public enum OEMUnlockStateEnum
@@ -54,7 +54,7 @@ namespace WOADeviceManager
             get; set;
         }
 
-        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP or DeviceStateEnum.RECOVERY;
+        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP or DeviceStateEnum.TWRP_MASS_STORAGE or DeviceStateEnum.RECOVERY;
         public bool IsFastBootCompatible => State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER;
 
         public string BatteryLevel => IsADBCompatible
@@ -70,6 +70,7 @@ namespace WOADeviceManager
             DeviceStateEnum.FASTBOOTD => "Fastboot",
             DeviceStateEnum.RECOVERY => "Recovery",
             DeviceStateEnum.TWRP => "TWRP",
+            DeviceStateEnum.TWRP_MASS_STORAGE => "TWRP (Mass Storage Connected)",
             DeviceStateEnum.UFP => "UFP",
             DeviceStateEnum.DISCONNECTED => "Disconnected",
             _ => null,
@@ -86,6 +87,8 @@ namespace WOADeviceManager
         public bool ADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
 
         public bool TWRPConnected => State == DeviceStateEnum.TWRP;
+
+        public bool MassStorageConnected => State == DeviceStateEnum.TWRP_MASS_STORAGE;
 
         public bool FastBootDConnected => State == DeviceStateEnum.FASTBOOTD;
 

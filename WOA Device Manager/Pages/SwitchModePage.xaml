@@ -33,7 +33,7 @@
                     <TextBlock Text="This is the interface that can be used to flash a new ROM image. It can also be used to retrieve additional info and security status."/>
                 </StackPanel>
             </Button>
-            <Button Click="RebootToMassStorageMode_Click" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+            <Button Click="RebootToMassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.MassStorageConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                 <StackPanel>
                     <TextBlock FontSize="24" FontWeight="SemiBold" Text="🔄️ Switch to Mass-Storage-mode"/>
                     <TextBlock Text="This mode allows you to access the complete file-system of the phone."/>

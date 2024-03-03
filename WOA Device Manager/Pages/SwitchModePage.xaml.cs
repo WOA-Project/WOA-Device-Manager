@@ -39,11 +39,7 @@ namespace WOADeviceManager.Pages
         private async void RebootToMassStorageMode_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            if (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP)
-            {
-                await DeviceRebootHelper.RebootToTWRPAndWait();
-            }
-            await ADBProcedures.EnableMassStorageMode();
+            await DeviceRebootHelper.RebootToMSCAndWait();
             MainPage.ToggleLoadingScreen(false);
         }
 

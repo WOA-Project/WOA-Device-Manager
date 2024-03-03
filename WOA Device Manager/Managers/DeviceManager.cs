@@ -3,6 +3,7 @@ using SAPTeam.AndroCtrl.Adb;
 using SAPTeam.AndroCtrl.Adb.Receivers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
@@ -131,7 +132,16 @@ namespace WOADeviceManager.Managers
             // AdbCompositePTP    = "Surface Duo Composite ADB PTP"
             // AdbCompositeMIDI   = "Surface Duo Composite ADB MIDI"
 
-            if (ID.Contains("VID_045E&PID_0C2A&MI_00"))
+            if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0414#"))
+            {
+                Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
+                // No ID/Product, to be filled later
+                Device.Name = "Surface Duo";
+                Device.Variant = "";
+                DeviceConnectedEvent?.Invoke(this, device);
+                return;
+            }
+            else if (ID.Contains("VID_045E&PID_0C2A&MI_00"))
             {
                 Device.State = Device.DeviceStateEnum.WINDOWS;
                 Device.ID = ID;
@@ -229,16 +239,19 @@ namespace WOADeviceManager.Managers
              ID.Contains("USB#VID_045E&PID_0C2A&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C2C&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C2E&MI_02#") ||
-             ID.Contains("USB#VID_05C6&PID_9039&MI_00") ||
+             ID.Contains("USB#VID_05C6&PID_9039") ||
              ID.Contains("USB#VID_18D1&PID_D001"))
             {
                 try
                 {
                     DeviceData adbDeviceData = GetADBDeviceDataFromUSBID(ID);
 
-                    if (ID.Contains("USB#VID_05C6&PID_9039&MI_00"))
+                    if (ID.Contains("USB#VID_05C6&PID_9039"))
                     {
-                        Device.State = Device.DeviceStateEnum.TWRP;
+                        if (Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+                        {
+                            Device.State = Device.DeviceStateEnum.TWRP;
+                        }
                         Device.ID = ID;
                         Device.Name = "Surface Duo";
                         Device.Variant = "";

@@ -10,6 +10,9 @@ namespace WOADeviceManager.Pages
         public SwitchModePage()
         {
             InitializeComponent();
+
+            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
         }
 
         private async void RebootToAndroid_Click(object sender, RoutedEventArgs e)
@@ -63,6 +66,22 @@ namespace WOADeviceManager.Pages
             MainPage.ToggleLoadingScreen(true);
             // TODO
             MainPage.ToggleLoadingScreen(false);
+        }
+
+        private void Instance_DeviceDisconnectedEvent(object sender, Device device)
+        {
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
+                Bindings.Update();
+            });
+        }
+
+        private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
+        {
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
+                Bindings.Update();
+            });
         }
     }
 }

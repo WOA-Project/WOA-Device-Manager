@@ -1,10 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using SAPTeam.AndroCtrl.Adb;
-using System;
 using WOADeviceManager.Helpers;
-using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Pages
 {
@@ -36,20 +32,20 @@ namespace WOADeviceManager.Pages
 
         private void FlashLock_Click(object sender, RoutedEventArgs e)
         {
-            FastbootProcedures.FlashLock(this);
+            _ = FastbootProcedures.FlashLock(this);
         }
 
         private async void BootTWRP_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await FastbootProcedures.BootTWRP();
+            _ = await FastbootProcedures.BootTWRP();
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void PushParted_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await ADBProcedures.PushParted();
+            _ = await ADBProcedures.PushParted();
             MainPage.ToggleLoadingScreen(false);
         }
 

@@ -10,7 +10,7 @@ namespace WOADeviceManager.Managers
     {
         public enum DownloadableComponent
         {
-            TWRP, PARTED, MASS_STORAGE_SCRIPT
+            TWRP_EPSILON, TWRP_ZETA, PARTED, MASS_STORAGE_SCRIPT
         }
 
         public static Task<StorageFile> RetrieveFile(DownloadableComponent component)
@@ -19,9 +19,13 @@ namespace WOADeviceManager.Managers
             string fileName = string.Empty;
             switch (component)
             {
-                case DownloadableComponent.TWRP:
+                case DownloadableComponent.TWRP_EPSILON:
                     downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/surfaceduo1-twrp.img";
-                    fileName = "TWRP.img";
+                    fileName = "TWRP_EPSILON.img";
+                    break;
+                case DownloadableComponent.TWRP_ZETA:
+                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/surfaceduo2-twrp.img";
+                    fileName = "TWRP_ZETA.img";
                     break;
                 case DownloadableComponent.PARTED:
                     downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/parted";
@@ -35,23 +39,18 @@ namespace WOADeviceManager.Managers
             return RetrieveFile(downloadPath, fileName);
         }
 
-        public async static Task<StorageFile> RetrieveFile(string path, string fileName)
+        public static async Task<StorageFile> RetrieveFile(string path, string fileName)
         {
             if (!IsFileAlreadyDownloaded(fileName))
             {
                 StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-                using (HttpClient client = new())
-                {
-                    using (var webstream = client.GetStreamAsync(new Uri(path)))
-                    {
-                        using (FileStream fs = new FileStream(file.Path, FileMode.OpenOrCreate))
-                        {
-                            webstream.Result.CopyTo(fs);
-                            return file;
-                        }
-                    }
-                }
-            } else
+                using HttpClient client = new();
+                using Task<Stream> webstream = client.GetStreamAsync(new Uri(path));
+                using FileStream fs = new(file.Path, FileMode.OpenOrCreate);
+                webstream.Result.CopyTo(fs);
+                return file;
+            }
+            else
             {
                 return await ApplicationData.Current.LocalFolder.GetFileAsync(fileName);
             }
@@ -59,11 +58,7 @@ namespace WOADeviceManager.Managers
 
         public static bool IsFileAlreadyDownloaded(string fileName)
         {
-            if (File.Exists(ApplicationData.Current.LocalFolder.Path + "\\" + fileName)) 
-            { 
-                return true;
-            }
-            return false;
+            return File.Exists(ApplicationData.Current.LocalFolder.Path + "\\" + fileName);
         }
     }
 }

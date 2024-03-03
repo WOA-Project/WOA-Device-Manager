@@ -1,9 +1,5 @@
-﻿using SAPTeam.AndroCtrl.Adb;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FastBoot;
+using SAPTeam.AndroCtrl.Adb;
 using Windows.Devices.Enumeration;
 using WOADeviceManager.Helpers;
 
@@ -13,7 +9,7 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID, ANDROID_ADB_ENABLED, WINDOWS, BOOTLOADER, FASTBOOT, TWRP, DISCONNECTED
+            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, FASTBOOTD, TWRP, UFP, WINDOWS, DISCONNECTED
         }
 
         public enum OEMUnlockStateEnum
@@ -21,118 +17,107 @@ namespace WOADeviceManager
             UNLOCKED, LOCKED, UNKNOWN
         }
 
-        public Device() { }
+        public enum DeviceProduct
+        {
+            Epsilon,
+            Zeta
+        }
 
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public string SerialNumber { get; set; }
+        public Device()
+        {
+        }
+
+        public string ID
+        {
+            get; set;
+        }
+        public string Name
+        {
+            get; set;
+        }
+        public string Variant
+        {
+            get; set;
+        }
+        public string SerialNumber
+        {
+            get; set;
+        }
+        public DeviceProduct Product
+        {
+            get; set;
+        }
         public DeviceStateEnum State { get; set; } = DeviceStateEnum.DISCONNECTED;
-        public OEMUnlockStateEnum OEMUnlockState { get; set; }
-        public DeviceInformation Information { get; set; }
-        public DeviceInformationUpdate LastInformationUpdate { get; set; }
-        public DeviceData Data { get; set; }
-
-        public string ADBID { get; set; }
-        public string FastbootID { get; set; }
-        public string TWRPID { get; set; }
-
-        public string BatteryLevel
+        public OEMUnlockStateEnum OEMUnlockState
         {
-            get
-            {
-                if (State == DeviceStateEnum.ANDROID_ADB_ENABLED)
-                    return ADBProcedures.GetDeviceBatteryLevel();
-                else if (State == DeviceStateEnum.FASTBOOT || State == DeviceStateEnum.BOOTLOADER)
-                    return FastbootProcedures.GetDeviceBatteryLevel();
-                else
-                    return null;
-            }
+            get; set;
+        }
+        public DeviceInformation Information
+        {
+            get; set;
+        }
+        public DeviceInformationUpdate LastInformationUpdate
+        {
+            get; set;
         }
 
-        public string DeviceStateLocalized
+        public DeviceData AndroidDebugBridgeTransport
         {
-            get
-            {
-                switch (State) {
-                    case DeviceStateEnum.ANDROID:
-                        return "Android";
-                    case DeviceStateEnum.ANDROID_ADB_ENABLED:
-                        return "Android (ADB Connected)";
-                    case DeviceStateEnum.WINDOWS:
-                        return "Windows";
-                    case DeviceStateEnum.BOOTLOADER:
-                        return "Bootloader";
-                    case DeviceStateEnum.FASTBOOT:
-                        return "Fastboot";
-                    case DeviceStateEnum.TWRP:
-                        return "TWRP";
-                    case DeviceStateEnum.DISCONNECTED:
-                        return "Disconnected";
-                    default:
-                        return null;
-                }
-            }
+            get; set;
         }
 
-        public bool IsConnected
+        public FastBootTransport FastBootTransport
         {
-            get
-            {
-                switch (State)
-                {
-                    case DeviceStateEnum.DISCONNECTED:
-                        return false;
-                    default: return true;
-                }
-            }
+            get; set;
         }
 
-        public bool IsDisconnected
+        public string ADBID
         {
-            get
-            {
-                return !IsConnected;
-            }
+            get; set;
         }
 
-        public bool ADBConnected
+        public string BootloaderID
         {
-            get
-            {
-                return State == DeviceStateEnum.ANDROID_ADB_ENABLED;
-            }
+            get; set;
         }
 
-        public bool ADBORTWRPConnected
+        public string TWRPID
         {
-            get
-            {
-                return State == DeviceStateEnum.ANDROID_ADB_ENABLED || State == DeviceStateEnum.TWRP;
-            }
+            get; set;
         }
 
-        public bool TWRPConnected
-        {
-            get
-            {
-                return State == DeviceStateEnum.TWRP;
-            }
-        }
+        public string BatteryLevel => State == DeviceStateEnum.ANDROID_ADB_ENABLED
+                    ? ADBProcedures.GetDeviceBatteryLevel()
+                    : State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER ? FastbootProcedures.GetDeviceBatteryLevel() : null;
 
-        public bool FastbootConnected
+        public string DeviceStateLocalized => State switch
         {
-            get
-            {
-                return State == DeviceStateEnum.FASTBOOT;
-            }
-        }
+            DeviceStateEnum.ANDROID => "Android",
+            DeviceStateEnum.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
+            DeviceStateEnum.WINDOWS => "Windows",
+            DeviceStateEnum.BOOTLOADER => "Bootloader",
+            DeviceStateEnum.FASTBOOTD => "Fastboot",
+            DeviceStateEnum.TWRP => "TWRP",
+            DeviceStateEnum.DISCONNECTED => "Disconnected",
+            _ => null,
+        };
 
-        public bool BootloaderConnected
+        public bool IsConnected => State switch
         {
-            get
-            {
-                return State == DeviceStateEnum.BOOTLOADER;
-            }
-        }
+            DeviceStateEnum.DISCONNECTED => false,
+            _ => true,
+        };
+
+        public bool IsDisconnected => !IsConnected;
+
+        public bool ADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
+
+        public bool ADBORTWRPConnected => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP;
+
+        public bool TWRPConnected => State == DeviceStateEnum.TWRP;
+
+        public bool FastbootConnected => State == DeviceStateEnum.FASTBOOTD;
+
+        public bool BootloaderConnected => State == DeviceStateEnum.BOOTLOADER;
     }
 }

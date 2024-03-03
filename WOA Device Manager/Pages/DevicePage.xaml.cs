@@ -1,16 +1,4 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using SAPTeam.AndroCtrl.Adb;
-using SAPTeam.AndroCtrl.Adb.Receivers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using WOADeviceManager.Entities;
-using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Pages
@@ -29,7 +17,8 @@ namespace WOADeviceManager.Pages
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
                 this.device = device;
                 Bindings.Update();
             });
@@ -37,41 +26,17 @@ namespace WOADeviceManager.Pages
 
         private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
         {
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
                 this.device = device;
                 Bindings.Update();
             });
         }
 
-        private string BatteryLevelFormatted
-        {
-            get
-            {
-                if (device != null && device.BatteryLevel != null)
-                {
-                    return $"Battery level: {device.BatteryLevel}%";
-                }
-                else
-                {
-                    return "Battery level: Unknown";
-                }
-            }
-        }
+        private string BatteryLevelFormatted => device != null && device.BatteryLevel != null ? $"Battery level: {device.BatteryLevel}%" : "Battery level: Unknown";
 
-        private bool IsDeviceConnected
-        {
-            get
-            {
-                return device != null && device.IsConnected;
-            }
-        }
+        private bool IsDeviceConnected => device != null && device.IsConnected;
 
-        private bool IsDeviceDisconnected
-        {
-            get
-            {
-                return !IsDeviceConnected;
-            }
-        }
+        private bool IsDeviceDisconnected => !IsDeviceConnected;
     }
 }

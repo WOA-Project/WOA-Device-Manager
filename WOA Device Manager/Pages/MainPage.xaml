@@ -9,54 +9,68 @@
     <Grid>
         <NavigationView Background="Transparent" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneToggleButtonVisible="False" IsTitleBarAutoPaddingEnabled="False" SelectionChanged="MainNavigationSelectionChanged">
             <NavigationView.FooterMenuItems>
-                <NavigationViewItemSeparator></NavigationViewItemSeparator>
-                <NavigationViewItem Content="Advanced" Height="30" IsEnabled="False"></NavigationViewItem>
-                <NavigationViewItem Icon="Manage" Content="Partitions" Tag="partitions"></NavigationViewItem>
-                <NavigationViewItem Icon="Setting" Content="zDebug" Margin="0, 0, 0, 20" Tag="debug"></NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItemHeader Content="Advanced" />
+                
+                <NavigationViewItem Icon="Manage" Content="Partitions" Tag="partitions" />
+                <NavigationViewItem Icon="Setting" Content="zDebug" Tag="debug" />
+                
                 <NavigationViewItem IsHitTestVisible="False">
-                    <StackPanel x:Name="BottomWidgetStack" VerticalAlignment="Bottom" Margin="-5, 0, 0, 5" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
-                        <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Height="80" Orientation="Horizontal" Spacing="10" Visibility="{x:Bind IsDeviceConnected}">
-                            <Grid>
-                                <Grid Background="{StaticResource AccentFillColorDefaultBrush}" Margin="4, 6, 4, 6"></Grid>
-                                <Image Source="/Assets/Devices/SurfaceDuo.png"></Image>
-                            </Grid>
-                            <StackPanel>
-                                <TextBlock Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}"></TextBlock>
-                                <TextBlock Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8"></TextBlock>
-                                <TextBlock x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}"></TextBlock>
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel x:Name="NoDevicesConnectedWidget" Spacing="10" Height="30" Visibility="{x:Bind IsDeviceDisconnected}">
-                            <TextBlock Opacity="0.6">No device connected</TextBlock>
-                        </StackPanel>
-                    </StackPanel>
+                    <Grid x:Name="BottomWidgetStack">
+                        <Grid x:Name="DeviceWidget" VerticalAlignment="Stretch" Visibility="{x:Bind IsDeviceConnected}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid VerticalAlignment="Top" Grid.RowSpan="4" Height="60" Width="94" Background="{StaticResource AccentFillColorDefaultBrush}" Margin="0,10" />
+                            <Image VerticalAlignment="Top" Grid.RowSpan="4" Height="80" Source="/Assets/Devices/SurfaceDuo.png" />
+
+                            <TextBlock Margin="10,0,0,0" Grid.Column="1" Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap" />
+                            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8" TextWrapping="Wrap" />
+                            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="2" Text="{x:Bind device.Variant}" Opacity="0.4" TextWrapping="Wrap" />
+                            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}" />
+                        </Grid>
+                        
+                        <Grid x:Name="NoDevicesConnectedWidget" Visibility="{x:Bind IsDeviceDisconnected}">
+                            <TextBlock Opacity="0.6" Text="No device connected" />
+                        </Grid>
+                    </Grid>
                 </NavigationViewItem>
+                    
             </NavigationView.FooterMenuItems>
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="CellPhone" Content="Info" Margin="0, 60, 0, 0" Tag="status"></NavigationViewItem>
-                <NavigationViewItem Icon="Refresh" Content="Manual mode" Tag="manualmode"></NavigationViewItem>
+                <NavigationViewItem Icon="CellPhone" Content="Info" Margin="0,60,0,0" Tag="status" />
+                <NavigationViewItem Icon="Refresh" Content="Manual mode" Tag="manualmode" />
                 <NavigationViewItemSeparator />
-                <NavigationViewItem Icon="Document" Content="Unlock bootloader" Tag="unlockbootloader"></NavigationViewItem>
-                <NavigationViewItem Icon="ProtectedDocument" Content="Restore bootloader" Tag="restorebootloader"></NavigationViewItem>
-                <NavigationViewItem Icon="Document" Content="Enable dual boot" Tag="enabledualboot"></NavigationViewItem>
-                <NavigationViewItem Icon="ProtectedDocument" Content="Disable dual boot" Tag="disabledualboot"></NavigationViewItem>
+                <NavigationViewItem Icon="Document" Content="Unlock bootloader" Tag="unlockbootloader" />
+                <NavigationViewItem Icon="ProtectedDocument" Content="Restore bootloader" Tag="restorebootloader" />
+                <NavigationViewItem Icon="Document" Content="Enable dual boot" Tag="enabledualboot" />
+                <NavigationViewItem Icon="ProtectedDocument" Content="Disable dual boot" Tag="disabledualboot" />
                 <NavigationViewItemSeparator />
-                <NavigationViewItem Icon="Save" Content="Backup" Tag="backupwindows"></NavigationViewItem>
-                <NavigationViewItem Icon="Repair" Content="Flash" Tag="flashwindows"></NavigationViewItem>
-                <NavigationViewItem Icon="PostUpdate" Content="Update" Tag="updatewindows"></NavigationViewItem>
-                <NavigationViewItem Icon="Download" Content="Download" Tag="downloadwindows"></NavigationViewItem>
+                <NavigationViewItem Icon="Save" Content="Backup" Tag="backupwindows" />
+                <NavigationViewItem Icon="Repair" Content="Flash" Tag="flashwindows" />
+                <NavigationViewItem Icon="PostUpdate" Content="Update" Tag="updatewindows" />
+                <NavigationViewItem Icon="Download" Content="Download" Tag="downloadwindows" />
             </NavigationView.MenuItems>
             <Grid>
-                <Grid Margin="0, 40, 20, 20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
+                <Grid Margin="0,40,20,20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
                 <Grid x:Name="WelcomeView">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
                         <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>
                         <TextBlock HorizontalAlignment="Center">Welcome to WOA Device Manager</TextBlock>
                     </StackPanel>
                 </Grid>
-                <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0, 40, 20, 20" CornerRadius="4"></Frame>
+                <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0,40,20,20" CornerRadius="4"></Frame>
                 <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
-                <Grid x:Name="ProgressOverlay" Margin="0, 40, 20, 20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
+                <Grid x:Name="ProgressOverlay" Margin="0,40,20,20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
                         <ProgressRing></ProgressRing>
                         <TextBlock FontSize="36" FontWeight="SemiBold">Waiting for device...</TextBlock>
@@ -64,9 +78,9 @@
                 </Grid>
             </Grid>
         </NavigationView>
-        <StackPanel x:Name="TitleBar" Orientation="Horizontal" Height="44" VerticalAlignment="Top" Spacing="16" Margin="-5, 10, 0, 0">
-            <Grid Width="30" Height="30" Margin="20, 2, 0, 0" VerticalAlignment="Center" CornerRadius="6" Opacity="0.75">
-                <Image x:Name="AppIcon" Width="30" Height="30" Source="/Assets/AppIcon.png" VerticalAlignment="Center"/>
+        <StackPanel x:Name="TitleBar" Orientation="Horizontal" Height="44" VerticalAlignment="Top" Spacing="16" Margin="-5,10,0,0">
+            <Grid Width="30" Height="30" Margin="20,2,0,0" VerticalAlignment="Center" CornerRadius="6" Opacity="0.75">
+                <Image x:Name="AppIcon" Width="30" Height="30" Source="/Assets/AppIcon.png" VerticalAlignment="Center" />
             </Grid>
             <TextBlock x:Name="AppTitle" VerticalAlignment="Center" FontSize="18">WOA Device Manager</TextBlock>
         </StackPanel>

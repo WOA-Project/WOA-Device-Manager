@@ -1,13 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using SAPTeam.AndroCtrl.Adb;
-using SAPTeam.AndroCtrl.Adb.Receivers;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WOADeviceManager.Entities;
 using WOADeviceManager.Helpers;
@@ -17,7 +11,7 @@ namespace WOADeviceManager.Pages
 {
     public sealed partial class PartitionsPage : Page
     {
-        List<Partition> partitions = new List<Partition>();
+        private readonly List<Partition> partitions = new();
 
         public PartitionsPage()
         {
@@ -40,7 +34,7 @@ namespace WOADeviceManager.Pages
         private async Task RetrieveInitialState()
         {
             await DeviceRebootHelper.RebootToTWRPAndWait();
-            await ADBProcedures.PushParted();
+            _ = await ADBProcedures.PushParted();
             Debug.WriteLine(ADBManager.Shell.Interact("mv /sdcard/parted /sbin/parted"));
             await Task.Delay(200);
             Debug.WriteLine(ADBManager.Shell.Interact("chmod 755 /sbin/parted"));
@@ -50,7 +44,7 @@ namespace WOADeviceManager.Pages
             int startingLine = 2;
             for (int i = startingLine; i < lines.Length; i++)
             {
-                var parts = lines[i].Split(':');
+                string[] parts = lines[i].Split(':');
                 if (parts != null && parts.Length == 7)
                 {
                     Debug.WriteLine("Partition found: " + parts[5]);

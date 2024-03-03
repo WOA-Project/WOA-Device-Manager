@@ -9,17 +9,28 @@
     mc:Ignorable="d">
 
     <Grid>
-        <StackPanel x:Name="DeviceWidget" VerticalAlignment="Stretch" Height="80" Orientation="Horizontal" Spacing="10">
-            <Grid>
-                <Grid Background="{StaticResource AccentFillColorDefaultBrush}" Margin="4, 6, 4, 6"></Grid>
-                <Image Source="/Assets/Devices/SurfaceDuo.png"></Image>
-            </Grid>
-            <StackPanel>
-                <TextBlock Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}"></TextBlock>
-                <TextBlock Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8"></TextBlock>
-                <TextBlock x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}"></TextBlock>
-            </StackPanel>
-        </StackPanel>
+        <Grid x:Name="DeviceWidget" VerticalAlignment="Stretch" Visibility="{x:Bind IsDeviceConnected}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid VerticalAlignment="Top" Grid.RowSpan="4" Height="60" Width="94" Background="{StaticResource AccentFillColorDefaultBrush}" Margin="0,10" />
+            <Image VerticalAlignment="Top" Grid.RowSpan="4" Height="80" Source="/Assets/Devices/SurfaceDuo.png" />
+
+            <TextBlock Margin="10,0,0,0" Grid.Column="1" Text="{x:Bind device.Name}" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap" />
+            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Text="{x:Bind device.DeviceStateLocalized}" Opacity="0.8" TextWrapping="Wrap" />
+            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="2" Text="{x:Bind device.Variant}" Opacity="0.4" TextWrapping="Wrap" />
+            <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" x:Name="BatteryLevel" Opacity="0.4" Text="{x:Bind BatteryLevelFormatted}" />
+        </Grid>
+        
         <Grid x:Name="DeviceNeededOverlay" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Visibility="{x:Bind IsDeviceDisconnected}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" MaxWidth="300">
                 <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>

@@ -1,4 +1,6 @@
-﻿using SAPTeam.AndroCtrl.Adb;
+﻿using FastBoot;
+using SAPTeam.AndroCtrl.Adb;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -11,7 +13,7 @@ namespace WOADeviceManager.Managers
 {
     public class DeviceManager
     {
-        private DeviceWatcher watcher;
+        private readonly DeviceWatcher watcher;
         private static DeviceMonitor adbMonitor;
 
         private static DeviceManager _instance;
@@ -19,7 +21,7 @@ namespace WOADeviceManager.Managers
         {
             get
             {
-                if (_instance == null) _instance = new DeviceManager();
+                _instance ??= new DeviceManager();
                 return _instance;
             }
         }
@@ -29,10 +31,10 @@ namespace WOADeviceManager.Managers
         {
             get
             {
-                if (device == null) device = new Device();
+                device ??= new Device();
                 return device;
             }
-            private set { device = value; }
+            private set => device = value;
         }
 
         public delegate void DeviceFoundEventHandler(object sender, Device device);
@@ -44,7 +46,7 @@ namespace WOADeviceManager.Managers
 
         private DeviceManager()
         {
-            if (device == null) device = new Device();
+            device ??= new Device();
 
             adbMonitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
             adbMonitor.DeviceConnected += OnADBDeviceConnected;
@@ -58,75 +60,175 @@ namespace WOADeviceManager.Managers
             watcher.Start();
         }
 
-        void OnADBDeviceConnected(object sender, DeviceDataEventArgs e)
+        private void OnADBDeviceConnected(object sender, DeviceDataEventArgs e)
         {
             Debug.WriteLine($"The device {e.Device.Serial} has connected to this PC");
-            var connectedDevices = ADBManager.Client.GetDevices();
+            System.Collections.Generic.List<DeviceData> connectedDevices = ADBManager.Client.GetDevices();
 
-            foreach (var connectedDevice in connectedDevices)
+            foreach (DeviceData connectedDevice in connectedDevices)
             {
                 if (e.Device.Serial.Equals(connectedDevice.Serial))
                 {
                     device.SerialNumber = connectedDevice.Serial;
-                    device.Data = connectedDevice;
+                    device.AndroidDebugBridgeTransport = connectedDevice;
                 }
             }
         }
 
-        void OnADBDeviceDisconnected(object sender, DeviceDataEventArgs e)
+        private void OnADBDeviceDisconnected(object sender, DeviceDataEventArgs e)
         {
             Debug.WriteLine($"The device {e.Device.Serial} has disconnected from this PC");
+            Device.AndroidDebugBridgeTransport = null;
         }
 
         public static void ManuallyCheckForADBDevices()
         {
             try
             {
-                var connectedDevices = ADBManager.Client.GetDevices();
-                var firstDevice = connectedDevices.FirstOrDefault();
+                System.Collections.Generic.List<DeviceData> connectedDevices = ADBManager.Client.GetDevices();
+                DeviceData firstDevice = connectedDevices.FirstOrDefault();
                 if (firstDevice != null)
                 {
                     Device.SerialNumber = firstDevice.Serial;
-                    Device.Data = firstDevice;
+                    Device.AndroidDebugBridgeTransport = firstDevice;
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         private void Watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            args.Properties.TryGetValue("System.Devices.InterfaceEnabled", out object? IsInterfaceEnabledObjectValue);
+            _ = args.Properties.TryGetValue("System.Devices.InterfaceEnabled", out object? IsInterfaceEnabledObjectValue);
             bool IsInterfaceEnabled = (bool?)IsInterfaceEnabledObjectValue ?? false;
 
-            if (args.Id.Equals(device.ADBID) && IsInterfaceEnabled == true)
+            if (args.Id.Equals(Device.ADBID) && IsInterfaceEnabled)
             {
-                Thread.Sleep(1000); //ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
+                Thread.Sleep(1000);
                 device.LastInformationUpdate = args;
-                device.Name = ADBProcedures.GetDeviceProductModel();
-                device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+
+                switch (ADBProcedures.GetDeviceProductDevice())
+                {
+                    case "duo":
+                        {
+                            device.Name = "Surface Duo";
+                            string productName = ADBProcedures.GetDeviceProductName();
+                            switch (productName)
+                            {
+                                case "duo":
+                                    {
+                                        device.Variant = "GEN";
+                                        break;
+                                    }
+                                case "duo-att":
+                                    {
+                                        device.Variant = "ATT";
+                                        break;
+                                    }
+                                case "duo-eu":
+                                    {
+                                        device.Variant = "EEA";
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        device.Variant = productName;
+                                        break;
+                                    }
+                            }
+                            device.Product = Device.DeviceProduct.Epsilon;
+                            device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+
+                            DeviceConnectedEvent?.Invoke(null, device);
+                            break;
+                        }
+                    case "duo2":
+                        {
+                            device.Name = "Surface Duo 2";
+                            device.Variant = "";
+                            device.Product = Device.DeviceProduct.Zeta;
+                            device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+
+                            DeviceConnectedEvent?.Invoke(sender, device);
+                            break;
+                        }
+                }
+            }
+            else if (args.Id.Equals(Device.BootloaderID) && IsInterfaceEnabled)
+            {
+                Thread.Sleep(1000);
+                device.LastInformationUpdate = args;
+
+                if (Device.FastBootTransport != null)
+                {
+                    Device.FastBootTransport.Dispose();
+                    Device.FastBootTransport.Close();
+                }
+
+                device.FastBootTransport = new FastBoot.FastBootTransport(device.BootloaderID);
+
+                switch (FastbootProcedures.GetProduct())
+                {
+                    case "surfaceduo":
+                    case "duo":
+                        {
+                            device.Name = "Surface Duo";
+                            device.Variant = "";
+                            device.Product = Device.DeviceProduct.Epsilon;
+                            break;
+                        }
+                    case "surfaceduo2":
+                    case "duo2":
+                        {
+                            device.Name = "Surface Duo 2";
+                            device.Variant = "";
+                            device.Product = Device.DeviceProduct.Zeta;
+                            break;
+                        }
+                }
+
+                device.FastBootTransport.GetVariable("is-userspace", out string isUserSpaceString);
+                if (isUserSpaceString == "yes")
+                {
+                    device.State = Device.DeviceStateEnum.FASTBOOTD;
+                }
+                else
+                {
+                    device.State = Device.DeviceStateEnum.BOOTLOADER;
+                }
+
                 DeviceConnectedEvent?.Invoke(sender, device);
             }
-            else if (args.Id.Equals(device.FastbootID) && IsInterfaceEnabled == true)
+            else if (args.Id.Equals(Device.TWRPID) && IsInterfaceEnabled && args.Id.StartsWith(@"\\?\USB#VID_05C6&PID_9039&MI_00"))
             {
-                Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "fastboot devices" each 0.5s until the device is detected
+                Thread.Sleep(1000);
                 device.LastInformationUpdate = args;
-                device.State = Device.DeviceStateEnum.BOOTLOADER;
-                device.Name = FastbootProcedures.GetProduct();
-                DeviceConnectedEvent?.Invoke(sender, device);
-            }
-            else if (args.Id.Equals(device.TWRPID) && IsInterfaceEnabled == true)
-            {
-                Thread.Sleep(1000); //Fastboot doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                device.LastInformationUpdate = args;
+
+                device.Name = "Surface Duo";
+                device.Variant = "";
+                device.Product = Device.DeviceProduct.Epsilon;
                 device.State = Device.DeviceStateEnum.TWRP;
-                device.Name = ADBProcedures.GetDeviceProductModel();
+
                 DeviceConnectedEvent?.Invoke(sender, device);
-            }   
+            }
+            else if (args.Id.Equals(Device.TWRPID) && IsInterfaceEnabled && args.Id.StartsWith(@"\\?\USB#VID_18D1&PID_D001"))
+            {
+                Thread.Sleep(1000);
+                device.LastInformationUpdate = args;
+
+                device.Name = "Surface Duo 2";
+                device.Variant = "";
+                device.Product = Device.DeviceProduct.Zeta;
+                device.State = Device.DeviceStateEnum.TWRP;
+
+                DeviceConnectedEvent?.Invoke(sender, device);
+            }
             else if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED && IsInterfaceEnabled == false)
                 || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP && IsInterfaceEnabled == false)
-                || (args.Id.Equals(device.FastbootID) && device.State == Device.DeviceStateEnum.BOOTLOADER && IsInterfaceEnabled == false))
+                || (args.Id.Equals(device.BootloaderID) && device.State == Device.DeviceStateEnum.BOOTLOADER && IsInterfaceEnabled == false))
             {
                 device.LastInformationUpdate = args;
                 device.State = Device.DeviceStateEnum.DISCONNECTED;
+
                 DeviceDisconnectedEvent?.Invoke(sender, device);
             }
         }
@@ -160,33 +262,114 @@ namespace WOADeviceManager.Managers
             // AdbCompositePTP    = "Surface Duo Composite ADB PTP"
             // AdbCompositeMIDI   = "Surface Duo Composite ADB MIDI"
 
+            bool IsInterfaceEnabled = args.IsEnabled;
+
             if (args.Name == "Surface Duo ADB" && args.Id.StartsWith(@"\\?\USB#VID_045E&PID_0C26"))
             {
                 device.ADBID = args.Id;
                 device.Information = args;
-                string pattern = @"#(\d+)#";
-                Match match = Regex.Match(device.ADBID, pattern);
-                device.SerialNumber = match.Groups[1].Value;
-                if (args.IsEnabled)
+                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
+
+                if (IsInterfaceEnabled)
                 {
-                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
-                    device.Name = ADBProcedures.GetDeviceProductModel();
-                    DeviceConnectedEvent?.Invoke(null, device);
+                    Thread.Sleep(1000);
+
+                    switch (ADBProcedures.GetDeviceProductDevice())
+                    {
+                        case "duo":
+                            {
+                                device.Name = "Surface Duo";
+                                string productName = ADBProcedures.GetDeviceProductName();
+                                switch (productName)
+                                {
+                                    case "duo":
+                                        {
+                                            device.Variant = "GEN";
+                                            break;
+                                        }
+                                    case "duo-att":
+                                        {
+                                            device.Variant = "ATT";
+                                            break;
+                                        }
+                                    case "duo-eu":
+                                        {
+                                            device.Variant = "EEA";
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            device.Variant = productName;
+                                            break;
+                                        }
+                                }
+                                device.Product = Device.DeviceProduct.Epsilon;
+                                device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+
+                                DeviceConnectedEvent?.Invoke(null, device);
+                                break;
+                            }
+                        case "duo2":
+                            {
+                                device.Name = "Surface Duo 2";
+                                device.Variant = "";
+                                device.Product = Device.DeviceProduct.Zeta;
+                                device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+
+                                DeviceConnectedEvent?.Invoke(null, device);
+                                break;
+                            }
+                    }
                 }
             }
             else if (args.Name == "Surface Duo Fastboot" && args.Id.StartsWith(@"\\?\USB#VID_045E&PID_0C2F"))
             {
-                device.FastbootID = args.Id;
+                device.BootloaderID = args.Id;
                 device.Information = args;
-                string pattern = @"#(\d+)#";
-                Match match = Regex.Match(device.FastbootID, pattern);
-                device.SerialNumber = match.Groups[1].Value;
-                if (args.IsEnabled)
+                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
+
+                if (IsInterfaceEnabled)
                 {
-                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceStateEnum.BOOTLOADER;
-                    device.Name = FastbootProcedures.GetProduct();
+                    Thread.Sleep(1000);
+
+                    if (Device.FastBootTransport != null)
+                    {
+                        Device.FastBootTransport.Dispose();
+                        Device.FastBootTransport.Close();
+                    }
+
+                    device.FastBootTransport = new FastBootTransport(device.BootloaderID);
+
+                    switch (FastbootProcedures.GetProduct())
+                    {
+                        case "surfaceduo":
+                        case "duo":
+                            {
+                                device.Name = "Surface Duo";
+                                device.Variant = "";
+                                device.Product = Device.DeviceProduct.Epsilon;
+                                break;
+                            }
+                        case "surfaceduo2":
+                        case "duo2":
+                            {
+                                device.Name = "Surface Duo 2";
+                                device.Variant = "";
+                                device.Product = Device.DeviceProduct.Zeta;
+                                break;
+                            }
+                    }
+
+                    device.FastBootTransport.GetVariable("is-userspace", out string isUserSpaceString);
+                    if (isUserSpaceString == "yes")
+                    {
+                        device.State = Device.DeviceStateEnum.FASTBOOTD;
+                    }
+                    else
+                    {
+                        device.State = Device.DeviceStateEnum.BOOTLOADER;
+                    }
+
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
@@ -194,15 +377,17 @@ namespace WOADeviceManager.Managers
             {
                 device.TWRPID = args.Id;
                 device.Information = args;
-                string pattern = @"#(\d+)#";
-                Match match = Regex.Match(device.TWRPID, pattern);
-                device.SerialNumber = match.Groups[1].Value;
-                if (args.IsEnabled)
+                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
+
+                if (IsInterfaceEnabled)
                 {
-                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceStateEnum.TWRP;
-                    // device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult(); // TODO: Find a way to detect what device is connected, if we want to make this work with other models too
+                    Thread.Sleep(1000);
+
                     device.Name = "Surface Duo";
+                    device.Variant = "";
+                    device.Product = Device.DeviceProduct.Epsilon;
+                    device.State = Device.DeviceStateEnum.TWRP;
+
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
@@ -210,22 +395,47 @@ namespace WOADeviceManager.Managers
             {
                 device.TWRPID = args.Id;
                 device.Information = args;
-                string pattern = @"#(\d+)#";
-                Match match = Regex.Match(device.TWRPID, pattern);
-                device.SerialNumber = match.Groups[1].Value;
-                if (args.IsEnabled)
+                device.SerialNumber = GetSerialNumberFromUSBID(args.Id);
+
+                if (IsInterfaceEnabled)
                 {
-                    Thread.Sleep(1000); // TODO: ADB doesn't get enough time to connect to the device, needs a better way to wait -> maybe run "adb devices" each 0.5s until the device is detected
-                    device.State = Device.DeviceStateEnum.TWRP;
-                    // device.Name = ADBProcedures.GetDeviceProductModel(device.SerialNumber).GetAwaiter().GetResult(); // TODO: Find a way to detect what device is connected, if we want to make this work with other models too
+                    Thread.Sleep(1000);
+
                     device.Name = "Surface Duo 2";
+                    device.Variant = "";
+                    device.Product = Device.DeviceProduct.Zeta;
+                    device.State = Device.DeviceStateEnum.TWRP;
+
                     DeviceConnectedEvent?.Invoke(null, device);
                 }
             }
         }
 
+        private static string GetSerialNumberFromUSBID(string USB)
+        {
+            string pattern = @"#(\d+)#";
+            Match match = Regex.Match(USB, pattern);
+            return match.Groups[1].Value;
+        }
+
         private void DeviceRemoved(DeviceWatcher sender, DeviceInformationUpdate args)
         {
+            if ((args.Id.Equals(device.ADBID) && device.State == Device.DeviceStateEnum.ANDROID_ADB_ENABLED)
+                || (args.Id.Equals(device.TWRPID) && device.State == Device.DeviceStateEnum.TWRP)
+                || (args.Id.Equals(device.BootloaderID) && device.State == Device.DeviceStateEnum.BOOTLOADER)
+                || (args.Id.Equals(device.BootloaderID) && device.State == Device.DeviceStateEnum.FASTBOOTD))
+            {
+                if (Device.FastBootTransport != null)
+                {
+                    Device.FastBootTransport.Dispose();
+                    Device.FastBootTransport.Close();
+                }
+
+                device.LastInformationUpdate = args;
+                device.State = Device.DeviceStateEnum.DISCONNECTED;
+
+                DeviceDisconnectedEvent?.Invoke(sender, device);
+            }
         }
     }
 }

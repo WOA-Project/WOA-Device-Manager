@@ -24,7 +24,8 @@ namespace WOADeviceManager.Pages
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
                 this.device = device;
                 Bindings.Update();
             });
@@ -32,7 +33,8 @@ namespace WOADeviceManager.Pages
 
         private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
         {
-            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () => {
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
                 this.device = device;
                 Bindings.Update();
             });
@@ -43,14 +45,14 @@ namespace WOADeviceManager.Pages
             WelcomeView.Visibility = Visibility.Collapsed;
             if (e.SelectedItem != null)
             {
-                var selectedItem = (e.SelectedItem as NavigationViewItem);
+                NavigationViewItem selectedItem = e.SelectedItem as NavigationViewItem;
                 switch (selectedItem.Tag)
                 {
                     case "status":
-                        MainNavigationFrame.Navigate(typeof(DevicePage));
+                        _ = MainNavigationFrame.Navigate(typeof(DevicePage));
                         break;
                     case "manualmode":
-                        MainNavigationFrame.Navigate(typeof(SwitchModePage));
+                        _ = MainNavigationFrame.Navigate(typeof(SwitchModePage));
                         break;
                     case "unlockbootloader":
                     case "restorebootloader":
@@ -62,10 +64,10 @@ namespace WOADeviceManager.Pages
                     case "downloadwindows":
                         break;
                     case "partitions":
-                        MainNavigationFrame.Navigate(typeof(PartitionsPage));
+                        _ = MainNavigationFrame.Navigate(typeof(PartitionsPage));
                         break;
                     case "debug":
-                        MainNavigationFrame.Navigate(typeof(zDebugPage));
+                        _ = MainNavigationFrame.Navigate(typeof(zDebugPage));
                         break;
                 }
             }
@@ -73,10 +75,14 @@ namespace WOADeviceManager.Pages
 
         public static void ToggleLoadingScreen(bool show)
         {
-            _mainPage.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+            _ = _mainPage.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
             {
-                if (show) _mainPage.ProgressOverlay.Visibility = Visibility.Visible;
-                DoubleAnimation fadeAnimation = new DoubleAnimation
+                if (show)
+                {
+                    _mainPage.ProgressOverlay.Visibility = Visibility.Visible;
+                }
+
+                DoubleAnimation fadeAnimation = new()
                 {
                     From = show ? 0 : 1,
                     To = show ? 1 : 0,
@@ -93,41 +99,16 @@ namespace WOADeviceManager.Pages
 
                 Storyboard.SetTarget(fadeAnimation, _mainPage.ProgressOverlay);
                 Storyboard.SetTargetProperty(fadeAnimation, "Opacity");
-                Storyboard storyboard = new Storyboard();
+                Storyboard storyboard = new();
                 storyboard.Children.Add(fadeAnimation);
                 storyboard.Begin();
             });
         }
 
-        private string BatteryLevelFormatted
-        {
-            get
-            {
-                if (device != null && device.BatteryLevel != null)
-                {
-                    return $"Battery level: {device.BatteryLevel}%";
-                }
-                else
-                {
-                    return "Battery level: Unknown";
-                }
-            }
-        }
+        private string BatteryLevelFormatted => device != null && device.BatteryLevel != null ? $"Battery level: {device.BatteryLevel}%" : "Battery level: Unknown";
 
-        private bool IsDeviceConnected
-        {
-            get
-            {
-                return device != null && device.IsConnected;
-            }
-        }
+        private bool IsDeviceConnected => device != null && device.IsConnected;
 
-        private bool IsDeviceDisconnected
-        {
-            get
-            {
-                return !IsDeviceConnected;
-            }
-        }
+        private bool IsDeviceDisconnected => !IsDeviceConnected;
     }
 }

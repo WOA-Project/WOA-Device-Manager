@@ -1,4 +1,5 @@
 ﻿using AndroidDebugBridge;
+using System.Text;
 
 namespace Playground
 {
@@ -17,8 +18,19 @@ namespace Playground
 
             transport.WaitTilConnected();
 
-            Console.WriteLine($"Connected to: {transport.PhoneConnectionString}");
-            Console.WriteLine($"Protocol version: {transport.PhoneSupportedProtocolVersion}");
+            Console.WriteLine($"Connected to:");
+            Console.WriteLine($"  Protocol version: {transport.PhoneSupportedProtocolVersion}");
+            Console.WriteLine($"  Connection environment: {transport.PhoneConnectionEnvironment}");
+            Console.WriteLine("  Connection variables:");
+            foreach (KeyValuePair<string, string> variable in transport.PhoneConnectionVariables)
+            {
+                Console.WriteLine($"    {variable.Key}: {variable.Value}");
+            }
+            Console.WriteLine("  Connection features:");
+            foreach (string feature in transport.PhoneConnectionFeatures)
+            {
+                Console.WriteLine($"    {feature}");
+            }
 
             Console.WriteLine("Opening shell...");
             transport.Shell();

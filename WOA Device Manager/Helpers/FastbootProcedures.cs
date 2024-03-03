@@ -140,7 +140,7 @@ namespace WOADeviceManager.Helpers
                 }
 
                 string destinationPath = (await uefi.GetParentAsync()).Path;
-                ZipFile.ExtractToDirectory(uefi.Path, destinationPath);
+                ZipFile.ExtractToDirectory(uefi.Path, destinationPath, true);
 
                 return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo (1st Gen) UEFI (Fast Boot)\\uefi.img");
             }
@@ -153,7 +153,7 @@ namespace WOADeviceManager.Helpers
                 }
 
                 string destinationPath = (await uefi.GetParentAsync()).Path;
-                ZipFile.ExtractToDirectory(uefi.Path, destinationPath);
+                ZipFile.ExtractToDirectory(uefi.Path, destinationPath, true);
 
                 return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo 2 UEFI (Fast Boot)\\uefi.img");
             }

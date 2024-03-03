@@ -93,6 +93,8 @@ namespace WOADeviceManager
 
         public bool BootloaderConnected => State == DeviceStateEnum.BOOTLOADER;
 
+        public bool WindowsConnected => State == DeviceStateEnum.WINDOWS;
+
         public FastBootTransport FastBootTransport
         {
             get; internal set;

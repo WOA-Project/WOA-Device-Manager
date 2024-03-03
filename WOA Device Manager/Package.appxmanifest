@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="534c90d2-b36b-4274-8afe-1d5b1fd2436d"
-    Publisher="CN=ratch"
+    Name="DuoWOA.DeviceManager"
+    Publisher="CN=Windows On Andromeda UMCI Codesigning, E=gustave.monce@outlook.com"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>WOA Device Manager</DisplayName>
-    <PublisherDisplayName>ratch</PublisherDisplayName>
+    <PublisherDisplayName>DuoWOA</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -32,12 +32,19 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="WOA Device Manager"
-        Description="WOA Device Manager"
+        Description="This application helps you manage your WOA Project devices"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  ShortName="WOA Device Manager" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo"/>
+            <uap:ShowOn Tile="wide310x150Logo"/>
+            <uap:ShowOn Tile="square310x310Logo"/>
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile >
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badgeAndTileText"/>
       </uap:VisualElements>
     </Application>
   </Applications>

@@ -36,9 +36,8 @@
                 <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" TextAlignment="Center">Connect a compatible device</TextBlock>
                 <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.75">WOA Device Manager helps you install, update and manage Windows on your Android device. Please connect a compatible device.</TextBlock>
-                <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.75">Currently only the Surface Duo 1 is supported.</TextBlock>
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20" Orientation="Horizontal" Margin="0, 20, 0, 0">
-                    <ProgressRing></ProgressRing>
+                    <ProgressRing />
                     <TextBlock VerticalAlignment="Center">Checking for new connected devices...</TextBlock>
                 </StackPanel>
             </StackPanel>

@@ -35,11 +35,11 @@ namespace WOADeviceManager.Pages
         {
             await DeviceRebootHelper.RebootToTWRPAndWait();
             _ = await ADBProcedures.PushParted();
-            Debug.WriteLine(ADBManager.Shell.Interact("mv /sdcard/parted /sbin/parted"));
+            Debug.WriteLine(DeviceManager.Device.AndroidDebugBridgeTransport.Shell("mv /sdcard/parted /sbin/parted"));
             await Task.Delay(200);
-            Debug.WriteLine(ADBManager.Shell.Interact("chmod 755 /sbin/parted"));
+            Debug.WriteLine(DeviceManager.Device.AndroidDebugBridgeTransport.Shell("chmod 755 /sbin/parted"));
             await Task.Delay(200);
-            string output = ADBManager.Shell.Interact("parted -m /dev/block/sda print");
+            string output = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("parted -m /dev/block/sda print");
             string[] lines = output.Split(';');
             int startingLine = 2;
             for (int i = startingLine; i < lines.Length; i++)

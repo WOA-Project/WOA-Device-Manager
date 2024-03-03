@@ -41,7 +41,6 @@ namespace WOADeviceManager.Pages
 
         private void MainNavigationSelectionChanged(object sender, NavigationViewSelectionChangedEventArgs e)
         {
-            WelcomeView.Visibility = Visibility.Collapsed;
             if (e.SelectedItem != null)
             {
                 NavigationViewItem selectedItem = e.SelectedItem as NavigationViewItem;

@@ -7,7 +7,7 @@
     mc:Ignorable="d">
 
     <Grid>
-        <NavigationView Background="Transparent" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneToggleButtonVisible="False" IsTitleBarAutoPaddingEnabled="False" SelectionChanged="MainNavigationSelectionChanged">
+        <NavigationView x:Name="MainNavigationView" Background="Transparent" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" IsPaneToggleButtonVisible="False" IsTitleBarAutoPaddingEnabled="False" SelectionChanged="MainNavigationSelectionChanged">
             <NavigationView.FooterMenuItems>
                 <NavigationViewItemSeparator />
                 <NavigationViewItemHeader Content="Advanced" />
@@ -47,7 +47,7 @@
                     
             </NavigationView.FooterMenuItems>
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="CellPhone" Content="Info" Margin="0,60,0,0" Tag="status" />
+                <NavigationViewItem Icon="CellPhone" Content="Info" Margin="0,60,0,0" Tag="status" IsSelected="True" />
                 <NavigationViewItem Icon="Refresh" Content="Manual mode" Tag="manualmode" />
                 <NavigationViewItemSeparator />
                 <NavigationViewItem Icon="Document" Content="Unlock bootloader" Tag="unlockbootloader" />
@@ -61,18 +61,12 @@
                 <NavigationViewItem Icon="Download" Content="Download" Tag="downloadwindows" />
             </NavigationView.MenuItems>
             <Grid>
-                <Grid Margin="0,40,20,20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65"></Grid>
-                <Grid x:Name="WelcomeView">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
-                        <TextBlock FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50">📱</TextBlock>
-                        <TextBlock HorizontalAlignment="Center">Welcome to WOA Device Manager</TextBlock>
-                    </StackPanel>
-                </Grid>
-                <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0,40,20,20" CornerRadius="4"></Frame>
+                <Grid Margin="0,40,20,20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65" />
+                <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0,40,20,20" CornerRadius="4" />
                 <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
                 <Grid x:Name="ProgressOverlay" Margin="0,40,20,20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
-                        <ProgressRing></ProgressRing>
+                        <ProgressRing />
                         <TextBlock FontSize="36" FontWeight="SemiBold">Waiting for device...</TextBlock>
                     </StackPanel>
                 </Grid>

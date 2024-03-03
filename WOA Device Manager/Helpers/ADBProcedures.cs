@@ -1,72 +1,79 @@
-﻿using SAPTeam.AndroCtrl.Adb;
-using SAPTeam.AndroCtrl.Adb.Receivers;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
-using Windows.Storage;
 using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Helpers
 {
     public class ADBProcedures
     {
+        private static object lockObject = new();
+
         public static string GetDeviceProductModel()
         {
-            ConsoleOutputReceiver receiver = new();
-            try
+            lock (lockObject)
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.model", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
+                string result = null;
+                try
+                {
+                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.product.model");
+                }
+                catch (Exception) { }
+                return result;
             }
-            catch (Exception) { }
-            return receiver.ToString().Trim();
         }
 
         public static string GetDeviceProductDevice()
         {
-            ConsoleOutputReceiver receiver = new();
-            try
+            lock (lockObject)
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.device", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
+                string result = null;
+                try
+                {
+                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.product.device");
+                }
+                catch (Exception) { }
+                return result;
             }
-            catch (Exception) { }
-            return receiver.ToString().Trim();
         }
 
         public static string GetDeviceProductName()
         {
-            ConsoleOutputReceiver receiver = new();
-            try
+            lock (lockObject)
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.name", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
+                string result = null;
+                try
+                {
+                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.product.name");
+                }
+                catch (Exception) { }
+                return result;
             }
-            catch (Exception) { }
-            return receiver.ToString().Trim();
         }
 
         public static string GetDeviceBuildVersionRelease()
         {
-            ConsoleOutputReceiver receiver = new();
-            try
+            lock (lockObject)
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.version.release", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
-                return "Android " + receiver.ToString().Trim();
+                string result = null;
+                try
+                {
+                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.build.version.release");
+                    return "Android " + result;
+                }
+                catch (Exception) { }
+                return result;
             }
-            catch (Exception) { }
-            return null;
         }
 
         public static string GetDeviceBuildId()
         {
-            ConsoleOutputReceiver receiver = new();
+            string result = null;
             try
             {
-                ADBManager.Client.ExecuteRemoteCommand("getprop ro.build.id", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
-                return receiver.ToString().Trim();
+                result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.build.id");
             }
             catch (Exception) { }
-            return null;
+            return result;
         }
 
         public static string GetDeviceWallpaperPath()
@@ -76,27 +83,39 @@ namespace WOADeviceManager.Helpers
 
         public static void RebootToBootloader()
         {
-            ADBManager.Client.Reboot("bootloader", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
+            lock (lockObject)
+            {
+                DeviceManager.Device.AndroidDebugBridgeTransport.RebootBootloader();
+            }
         }
 
         public static void RebootToAndroid()
         {
-            ADBManager.Client.Reboot(null, DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
+            lock (lockObject)
+            {
+                DeviceManager.Device.AndroidDebugBridgeTransport.Reboot();
+            }
         }
 
         public static void RebootToFastbootD()
         {
-            ADBManager.Client.Reboot("fastboot", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
+            lock (lockObject)
+            {
+                DeviceManager.Device.AndroidDebugBridgeTransport.RebootFastBootD();
+            }
         }
 
         public static void RebootToRecovery()
         {
-            ADBManager.Client.Reboot("recovery", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID));
+            lock (lockObject)
+            {
+                DeviceManager.Device.AndroidDebugBridgeTransport.RebootRecovery();
+            }
         }
 
         public static async Task<bool> PushParted()
         {
-            StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);
+            /*StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);
             Progress<int> progress = new();
             bool completed = false;
             progress.ProgressChanged += (object sender, int e) =>
@@ -118,67 +137,46 @@ namespace WOADeviceManager.Helpers
                 return true;
             }
             // TODO: Handle exception (file transfer failed)
-            catch { }
-            return false;
-        }
-
-        public static async Task<bool> PushMSCScript()
-        {
-            StorageFile msc = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.MASS_STORAGE_SCRIPT);
-            Progress<int> progress = new();
-            bool completed = false;
-            progress.ProgressChanged += (object sender, int e) =>
-            {
-                completed = e == 100;
-            };
-            try
-            {
-                using (SyncService service = new(ADBManager.Client, DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID)))
-                using (Stream stream = File.OpenRead(@msc.Path))
-                {
-                    service.Push(stream, "/sdcard/msc.tar", 755, DateTime.Now, progress, CancellationToken.None);
-                }
-                while (!completed)
-                {
-                    await Task.Delay(500);
-                }
-
-                ConsoleOutputReceiver receiver = new();
-                try
-                {
-                    ADBManager.Client.ExecuteRemoteCommand("tar -xf /sdcard/msc.tar -C /sdcard --no-same-owner", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-                return true;
-            }
-            // TODO: Handle exception (file transfer failed)
-            catch { }
+            catch { }*/
             return false;
         }
 
         public static string GetDeviceBatteryLevel()
         {
-            ConsoleOutputReceiver receiver = new();
-            try
+            lock (lockObject)
             {
-                ADBManager.Client.ExecuteRemoteCommand("dumpsys battery", DeviceManager.GetADBDeviceDataFromUSBID(DeviceManager.Device.ID), receiver);
-                string result = receiver.ToString()?.Trim();
-                result = result?.Split("level: ")?[1]?.Split("\n")?[0]?.Trim();
+                string result = null;
+                try
+                {
+                    result = DeviceManager.Device.AndroidDebugBridgeTransport?.Shell("dumpsys battery") ?? "";
+                    if (result.Contains("level: "))
+                    {
+                        result = result.Split("level: ")[1].Split("\n")[0].Trim();
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                    return result;
+                }
+                catch (Exception) { }
                 return result;
             }
-            catch (Exception) { }
-            return null;
         }
 
         public static async Task EnableMassStorageMode()
         {
-            _ = await PushMSCScript();
-            Debug.WriteLine(ADBManager.Shell.Interact("sh /sdcard/msc.sh"));
+            string MassStorageOneLiner = @"setenforce 0; echo 0xEF > /config/usb_gadget/g1/bDeviceClass; echo 0x02 > /config/usb_gadget/g1/bDeviceSubClass; echo 0x01 > /config/usb_gadget/g1/bDeviceProtocol;ln -s /config/usb_gadget/g1/functions/mass_storage.0/ /config/usb_gadget/g1/configs/b.1/;echo /dev/block/sda > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/file;echo 0 > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/removable;sh -c 'echo > /config/usb_gadget/g1/UDC; echo a600000.dwc3 > /config/usb_gadget/g1/UDC' &";
+
+            lock (lockObject)
+            {
+                try
+                {
+                    DeviceManager.Device.AndroidDebugBridgeTransport.Shell(MassStorageOneLiner);
+                }
+                catch (Exception) { }
+            }
             await Task.Delay(200);
-            return;
         }
     }
 }

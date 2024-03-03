@@ -8,6 +8,6 @@
     mc:Ignorable="d">
 
     <Grid x:Name="MainWindowGrid">
-        <Frame x:Name="MainNavigation"></Frame>
+        <Frame x:Name="MainNavigation" />
     </Grid>
 </Window>

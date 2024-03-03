@@ -18,49 +18,77 @@ namespace WOADeviceManager.Pages
         private async void RebootToAndroid_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToAndroidAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToAndroidAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void RebootToBootloader_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToBootloaderAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToBootloaderAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void RebootToFastbootd_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToFastbootDAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToFastbootDAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void RebootToMassStorageMode_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToMSCAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToMSCAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void RebootToRecovery_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToRecoveryAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToRecoveryAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void RebootToTWRP_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToTWRPAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToTWRPAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 
         private async void RebootToWindows_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            await DeviceRebootHelper.RebootToUEFIAndWait();
+            try
+            {
+                await DeviceRebootHelper.RebootToUEFIAndWait();
+            }
+            catch { }
             MainPage.ToggleLoadingScreen(false);
         }
 

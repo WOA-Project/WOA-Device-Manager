@@ -1,7 +1,6 @@
-﻿using FastBoot;
-using SAPTeam.AndroCtrl.Adb;
+﻿using AndroidDebugBridge;
+using FastBoot;
 using WOADeviceManager.Helpers;
-using WOADeviceManager.Managers;
 
 namespace WOADeviceManager
 {
@@ -9,7 +8,7 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, DISCONNECTED
+            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, SIDELOAD, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, DISCONNECTED
         }
 
         public enum OEMUnlockStateEnum
@@ -54,7 +53,7 @@ namespace WOADeviceManager
             get; set;
         }
 
-        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP or DeviceStateEnum.TWRP_MASS_STORAGE or DeviceStateEnum.RECOVERY;
+        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP or DeviceStateEnum.TWRP_MASS_STORAGE or DeviceStateEnum.RECOVERY or DeviceStateEnum.SIDELOAD;
         public bool IsFastBootCompatible => State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER;
 
         public string BatteryLevel => IsADBCompatible
@@ -69,6 +68,7 @@ namespace WOADeviceManager
             DeviceStateEnum.BOOTLOADER => "Bootloader",
             DeviceStateEnum.FASTBOOTD => "Fastboot",
             DeviceStateEnum.RECOVERY => "Recovery",
+            DeviceStateEnum.SIDELOAD => "Sideload",
             DeviceStateEnum.TWRP => "TWRP",
             DeviceStateEnum.TWRP_MASS_STORAGE => "TWRP (Mass Storage Connected)",
             DeviceStateEnum.UFP => "UFP",
@@ -94,11 +94,18 @@ namespace WOADeviceManager
 
         public bool RecoveryConnected => State == DeviceStateEnum.RECOVERY;
 
+        public bool SideloadConnected => State == DeviceStateEnum.SIDELOAD;
+
         public bool BootloaderConnected => State == DeviceStateEnum.BOOTLOADER;
 
         public bool WindowsConnected => State == DeviceStateEnum.WINDOWS;
 
         public FastBootTransport FastBootTransport
+        {
+            get; internal set;
+        }
+
+        public AndroidDebugBridgeTransport AndroidDebugBridgeTransport
         {
             get; internal set;
         }

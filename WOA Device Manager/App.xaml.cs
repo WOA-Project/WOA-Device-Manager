@@ -2,24 +2,41 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System;
+using System.Diagnostics;
 using WOADeviceManager.Managers;
 
 namespace WOADeviceManager
 {
     public partial class App : Application
     {
-        private readonly DeviceManager DeviceManager;
-        private readonly ADBManager ADBManager;
+        public static DeviceManager DeviceManager
+        {
+            get; private set;
+        }
 
         public App()
         {
             InitializeComponent();
-
-            ADBManager = ADBManager.Instance;
+            KillAnyADBInstance();
             DeviceManager = DeviceManager.Instance;
         }
 
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        private static void KillAnyADBInstance()
+        {
+            Process proc = new()
+            {
+                StartInfo = new("taskkill.exe", "/IM adb.exe /F")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                }
+            };
+            proc.Start();
+            proc.WaitForExit();
+        }
+
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             mainWindow = new MainWindow()
             {

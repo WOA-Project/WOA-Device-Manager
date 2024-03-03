@@ -10,7 +10,7 @@ namespace WOADeviceManager.Managers
     {
         public enum DownloadableComponent
         {
-            UEFI_EPSILON, UEFI_ZETA, TWRP_EPSILON, TWRP_ZETA, PARTED, MASS_STORAGE_SCRIPT
+            UEFI_EPSILON, UEFI_ZETA, TWRP_EPSILON, TWRP_ZETA, PARTED
         }
 
         public static Task<StorageFile> RetrieveFile(DownloadableComponent component)
@@ -30,10 +30,6 @@ namespace WOADeviceManager.Managers
                 case DownloadableComponent.PARTED:
                     downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/parted";
                     fileName = "parted";
-                    break;
-                case DownloadableComponent.MASS_STORAGE_SCRIPT:
-                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/msc.tar";
-                    fileName = "msc.tar";
                     break;
                 case DownloadableComponent.UEFI_EPSILON:
                     downloadPath = "https://github.com/WOA-Project/mu_andromeda_platforms/releases/download/2042.85/Surface.Duo.1st.Gen.UEFI.Fast.Boot.zip";

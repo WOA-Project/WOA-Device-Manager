@@ -1,14 +1,11 @@
-﻿using FastBoot;
-using SAPTeam.AndroCtrl.Adb;
-using SAPTeam.AndroCtrl.Adb.Receivers;
+﻿using AndroidDebugBridge;
+using FastBoot;
+using MadWizard.WinUSBNet;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Linq;
 using Windows.Devices.Enumeration;
-using WOADeviceManager.Helpers;
 
 namespace WOADeviceManager.Managers
 {
@@ -62,6 +59,13 @@ namespace WOADeviceManager.Managers
 
             if (!IsInterfaceEnabled && args.Id == Device.ID)
             {
+                Debug.WriteLine("Device Disconnected!");
+                Debug.WriteLine($"Device path: {Device.ID}");
+                Debug.WriteLine($"Name: {Device.Name}");
+                Debug.WriteLine($"Variant: {Device.Variant}");
+                Debug.WriteLine($"Product: {Device.Product}");
+                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
                 Device.State = Device.DeviceStateEnum.DISCONNECTED;
                 Device.ID = null;
                 Device.Name = null;
@@ -135,9 +139,36 @@ namespace WOADeviceManager.Managers
             if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0414#"))
             {
                 Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
-                // No ID/Product, to be filled later
+                // No ID, to be filled later
+                Device.Product = Device.DeviceProduct.Epsilon;
                 Device.Name = "Surface Duo";
-                Device.Variant = "";
+                Device.Variant = "N/A";
+
+                Debug.WriteLine("New Device Found!");
+                Debug.WriteLine($"Device path: {Device.ID}");
+                Debug.WriteLine($"Name: {Device.Name}");
+                Debug.WriteLine($"Variant: {Device.Variant}");
+                Debug.WriteLine($"Product: {Device.Product}");
+                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                DeviceConnectedEvent?.Invoke(this, device);
+                return;
+            }
+            else if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0504#"))
+            {
+                Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
+                // No ID, to be filled later
+                Device.Product = Device.DeviceProduct.Zeta;
+                Device.Name = "Surface Duo 2";
+                Device.Variant = "N/A";
+
+                Debug.WriteLine("New Device Found!");
+                Debug.WriteLine($"Device path: {Device.ID}");
+                Debug.WriteLine($"Name: {Device.Name}");
+                Debug.WriteLine($"Variant: {Device.Variant}");
+                Debug.WriteLine($"Product: {Device.Product}");
+                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
                 DeviceConnectedEvent?.Invoke(this, device);
                 return;
             }
@@ -146,8 +177,15 @@ namespace WOADeviceManager.Managers
                 Device.State = Device.DeviceStateEnum.WINDOWS;
                 Device.ID = ID;
                 Device.Name = Name;
-                Device.Variant = "";
+                Device.Variant = "N/A";
                 Device.Product = Name.Contains("Duo 2") ? Device.DeviceProduct.Zeta : Device.DeviceProduct.Epsilon;
+
+                Debug.WriteLine("New Device Found!");
+                Debug.WriteLine($"Device path: {Device.ID}");
+                Debug.WriteLine($"Name: {Device.Name}");
+                Debug.WriteLine($"Variant: {Device.Variant}");
+                Debug.WriteLine($"Product: {Device.Product}");
+                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                 DeviceConnectedEvent?.Invoke(this, device);
             }
@@ -179,14 +217,25 @@ namespace WOADeviceManager.Managers
                                 }
                                 Device.ID = ID;
                                 Device.Name = "Surface Duo";
-                                Device.Variant = "";
+                                Device.Variant = "N/A";
                                 Device.Product = Device.DeviceProduct.Epsilon;
 
-                                if (Device.FastBootTransport != null)
+                                if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
                                 {
                                     Device.FastBootTransport.Dispose();
+                                    Device.FastBootTransport = fastBootTransport;
                                 }
-                                Device.FastBootTransport = fastBootTransport;
+                                else if (Device.FastBootTransport == null)
+                                {
+                                    Device.FastBootTransport = fastBootTransport;
+                                }
+
+                                Debug.WriteLine("New Device Found!");
+                                Debug.WriteLine($"Device path: {Device.ID}");
+                                Debug.WriteLine($"Name: {Device.Name}");
+                                Debug.WriteLine($"Variant: {Device.Variant}");
+                                Debug.WriteLine($"Product: {Device.Product}");
+                                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                                 DeviceConnectedEvent?.Invoke(this, device);
                                 return;
@@ -204,19 +253,32 @@ namespace WOADeviceManager.Managers
                                 }
                                 Device.ID = ID;
                                 Device.Name = "Surface Duo 2";
-                                Device.Variant = "";
+                                Device.Variant = "N/A";
                                 Device.Product = Device.DeviceProduct.Zeta;
 
-                                if (Device.FastBootTransport != null)
+                                if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
                                 {
                                     Device.FastBootTransport.Dispose();
+                                    Device.FastBootTransport = fastBootTransport;
                                 }
-                                Device.FastBootTransport = fastBootTransport;
+                                else if (Device.FastBootTransport == null)
+                                {
+                                    Device.FastBootTransport = fastBootTransport;
+                                }
+
+                                Debug.WriteLine("New Device Found!");
+                                Debug.WriteLine($"Device path: {Device.ID}");
+                                Debug.WriteLine($"Name: {Device.Name}");
+                                Debug.WriteLine($"Variant: {Device.Variant}");
+                                Debug.WriteLine($"Product: {Device.Product}");
+                                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                                 DeviceConnectedEvent?.Invoke(this, device);
                                 return;
                             }
                     }
+
+                    fastBootTransport.Dispose();
                 }
                 catch { }
             }
@@ -232,7 +294,7 @@ namespace WOADeviceManager.Managers
             // Custom:
             // Surface Duo TWRP
             // Surface Duo 2 TWRP
-            else if (ID.Contains("USB#VID_045E&PID_0C26#") ||
+            else if ((ID.Contains("USB#VID_045E&PID_0C26#") ||
              ID.Contains("USB#VID_045E&PID_0C30#") ||
              ID.Contains("USB#VID_045E&PID_0C26&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C28&MI_02#") ||
@@ -240,11 +302,26 @@ namespace WOADeviceManager.Managers
              ID.Contains("USB#VID_045E&PID_0C2C&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C2E&MI_02#") ||
              ID.Contains("USB#VID_05C6&PID_9039") ||
-             ID.Contains("USB#VID_18D1&PID_D001"))
+             ID.Contains("USB#VID_18D1&PID_D001")) && ID.Contains("{dee824ef-729b-4a0e-9c14-b7117d33a817}"))
             {
+                Thread.Sleep(1000);
                 try
                 {
-                    DeviceData adbDeviceData = GetADBDeviceDataFromUSBID(ID);
+                    AndroidDebugBridgeTransport androidDebugBridgeTransport;
+                    if (ID == Device.ID && Device.AndroidDebugBridgeTransport != null)
+                    {
+                        androidDebugBridgeTransport = Device.AndroidDebugBridgeTransport;
+                    }
+                    else
+                    {
+                        androidDebugBridgeTransport = new(ID);
+                        androidDebugBridgeTransport.Connect();
+                        androidDebugBridgeTransport.WaitTilConnected();
+                        if (androidDebugBridgeTransport.PhoneConnectionEnvironment == "")
+                        {
+                            return;
+                        }
+                    }
 
                     if (ID.Contains("USB#VID_05C6&PID_9039"))
                     {
@@ -254,50 +331,96 @@ namespace WOADeviceManager.Managers
                         }
                         Device.ID = ID;
                         Device.Name = "Surface Duo";
-                        Device.Variant = "";
+                        Device.Variant = "N/A";
                         Device.Product = Device.DeviceProduct.Epsilon;
+
+                        if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
+                        {
+                            Device.AndroidDebugBridgeTransport.Dispose();
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+                        else if (Device.AndroidDebugBridgeTransport == null)
+                        {
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+
+                        Debug.WriteLine("New Device Found!");
+                        Debug.WriteLine($"Device path: {Device.ID}");
+                        Debug.WriteLine($"Name: {Device.Name}");
+                        Debug.WriteLine($"Variant: {Device.Variant}");
+                        Debug.WriteLine($"Product: {Device.Product}");
+                        Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                         DeviceConnectedEvent?.Invoke(this, device);
                         return;
                     }
                     else if (ID.Contains("USB#VID_18D1&PID_D001"))
                     {
-                        Device.State = Device.DeviceStateEnum.TWRP;
+                        if (Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+                        {
+                            Device.State = Device.DeviceStateEnum.TWRP;
+                        }
                         Device.ID = ID;
                         Device.Name = "Surface Duo 2";
-                        Device.Variant = "";
+                        Device.Variant = "N/A";
                         Device.Product = Device.DeviceProduct.Zeta;
+
+                        if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
+                        {
+                            Device.AndroidDebugBridgeTransport.Dispose();
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+                        else if (Device.AndroidDebugBridgeTransport == null)
+                        {
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+
+                        Debug.WriteLine("New Device Found!");
+                        Debug.WriteLine($"Device path: {Device.ID}");
+                        Debug.WriteLine($"Name: {Device.Name}");
+                        Debug.WriteLine($"Variant: {Device.Variant}");
+                        Debug.WriteLine($"Product: {Device.Product}");
+                        Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                         DeviceConnectedEvent?.Invoke(this, device);
                         return;
                     }
                     else
                     {
-                        // TODO: Recovery differentiation
-
-                        ConsoleOutputReceiver receiver = new();
-                        try
+                        string ProductDevice = "duo";
+                        if (androidDebugBridgeTransport.PhoneConnectionVariables.ContainsKey("ro.product.device"))
                         {
-                            ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.device", adbDeviceData, receiver);
+                            ProductDevice = androidDebugBridgeTransport.PhoneConnectionVariables["ro.product.device"];
                         }
-                        catch (Exception) { }
-                        string ProductDevice = receiver.ToString().Trim();
 
                         switch (ProductDevice)
                         {
                             case "duo":
                                 {
-                                    Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    if (androidDebugBridgeTransport.PhoneConnectionEnvironment == "recovery")
+                                    {
+                                        Device.State = Device.DeviceStateEnum.RECOVERY;
+                                    }
+                                    else if (androidDebugBridgeTransport.PhoneConnectionEnvironment == "sideload")
+                                    {
+                                        Device.State = Device.DeviceStateEnum.SIDELOAD;
+                                    }
+                                    else if (androidDebugBridgeTransport.PhoneConnectionEnvironment == "device")
+                                    {
+                                        Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    }
+                                    else
+                                    {
+                                        Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    }
                                     Device.ID = ID;
                                     Device.Name = "Surface Duo";
 
-                                    receiver = new();
-                                    try
+                                    string ProductName = "N/A";
+                                    if (androidDebugBridgeTransport.PhoneConnectionVariables.ContainsKey("ro.product.name"))
                                     {
-                                        ADBManager.Client.ExecuteRemoteCommand("getprop ro.product.name", adbDeviceData, receiver);
+                                        ProductName = androidDebugBridgeTransport.PhoneConnectionVariables["ro.product.name"];
                                     }
-                                    catch (Exception) { }
-                                    string ProductName = receiver.ToString().Trim();
 
                                     switch (ProductName)
                                     {
@@ -325,16 +448,62 @@ namespace WOADeviceManager.Managers
 
                                     Device.Product = Device.DeviceProduct.Epsilon;
 
+                                    if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
+                                    {
+                                        Device.AndroidDebugBridgeTransport.Dispose();
+                                        Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                                    }
+                                    else if (Device.AndroidDebugBridgeTransport == null)
+                                    {
+                                        Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                                    }
+
+                                    Debug.WriteLine("New Device Found!");
+                                    Debug.WriteLine($"Device path: {Device.ID}");
+                                    Debug.WriteLine($"Name: {Device.Name}");
+                                    Debug.WriteLine($"Variant: {Device.Variant}");
+                                    Debug.WriteLine($"Product: {Device.Product}");
+                                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
                                     DeviceConnectedEvent?.Invoke(this, device);
                                     return;
                                 }
                             case "duo2":
                                 {
-                                    Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    if (androidDebugBridgeTransport.PhoneConnectionEnvironment == "recovery")
+                                    {
+                                        Device.State = Device.DeviceStateEnum.RECOVERY;
+                                    }
+                                    else if (androidDebugBridgeTransport.PhoneConnectionEnvironment == "sideload")
+                                    {
+                                        Device.State = Device.DeviceStateEnum.SIDELOAD;
+                                    }
+                                    else
+                                    {
+                                        Device.State = Device.DeviceStateEnum.ANDROID_ADB_ENABLED;
+                                    }
+
                                     Device.ID = ID;
                                     Device.Name = "Surface Duo 2";
-                                    Device.Variant = "";
+                                    Device.Variant = "N/A";
                                     Device.Product = Device.DeviceProduct.Zeta;
+
+                                    if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
+                                    {
+                                        Device.AndroidDebugBridgeTransport.Dispose();
+                                        Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                                    }
+                                    else if (Device.AndroidDebugBridgeTransport == null)
+                                    {
+                                        Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                                    }
+
+                                    Debug.WriteLine("New Device Found!");
+                                    Debug.WriteLine($"Device path: {Device.ID}");
+                                    Debug.WriteLine($"Name: {Device.Name}");
+                                    Debug.WriteLine($"Variant: {Device.Variant}");
+                                    Debug.WriteLine($"Product: {Device.Product}");
+                                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                                     DeviceConnectedEvent?.Invoke(this, device);
                                     return;
@@ -349,8 +518,15 @@ namespace WOADeviceManager.Managers
                 Device.State = Device.DeviceStateEnum.ANDROID;
                 Device.ID = ID;
                 Device.Name = Name;
-                Device.Variant = "";
+                Device.Variant = "N/A";
                 Device.Product = Name.Contains("Duo 2") ? Device.DeviceProduct.Zeta : Device.DeviceProduct.Epsilon;
+
+                Debug.WriteLine("New Device Found!");
+                Debug.WriteLine($"Device path: {Device.ID}");
+                Debug.WriteLine($"Name: {Device.Name}");
+                Debug.WriteLine($"Variant: {Device.Variant}");
+                Debug.WriteLine($"Product: {Device.Product}");
+                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
                 DeviceConnectedEvent?.Invoke(this, device);
             }
@@ -362,6 +538,13 @@ namespace WOADeviceManager.Managers
             {
                 return;
             }
+
+            Debug.WriteLine("Device Disconnected!");
+            Debug.WriteLine($"Device path: {Device.ID}");
+            Debug.WriteLine($"Name: {Device.Name}");
+            Debug.WriteLine($"Variant: {Device.Variant}");
+            Debug.WriteLine($"Product: {Device.Product}");
+            Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
             Device.State = Device.DeviceStateEnum.DISCONNECTED;
             Device.ID = null;
@@ -375,47 +558,12 @@ namespace WOADeviceManager.Managers
                 Device.FastBootTransport = null;
             }
 
+            if (Device.AndroidDebugBridgeTransport != null)
+            {
+                Device.AndroidDebugBridgeTransport.Dispose();
+            }
+
             DeviceDisconnectedEvent?.Invoke(this, device);
-        }
-
-        internal static DeviceData GetADBDeviceDataFromUSBID(string USB)
-        {
-            string serialNumberFromUSBID = GetSerialNumberFromUSBID(USB);
-
-            List<DeviceData> connectedDevices = ADBManager.Client.GetDevices();
-            foreach (DeviceData connectedDevice in connectedDevices)
-            {
-                if (connectedDevice.Serial.Equals(serialNumberFromUSBID))
-                {
-                    return connectedDevice;
-                }
-            }
-
-            Thread.Sleep(1000);
-
-            connectedDevices = ADBManager.Client.GetDevices();
-            foreach (DeviceData connectedDevice in connectedDevices)
-            {
-                if (connectedDevice.Serial.Equals(serialNumberFromUSBID))
-                {
-                    return connectedDevice;
-                }
-            }
-
-            // Fall back...
-            if (connectedDevices.Count == 1)
-            {
-                return connectedDevices[0];
-            }
-
-            throw new Exception("Device not found!");
-        }
-
-        private static string GetSerialNumberFromUSBID(string USB)
-        {
-            string pattern = @"#(\d+)#";
-            Match match = Regex.Match(USB, pattern);
-            return match.Groups[1].Value;
         }
     }
 }

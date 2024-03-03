@@ -4,3 +4,6 @@
 [submodule "AndroidDebugBridge"]
 	path = AndroidDebugBridge
 	url = https://github.com/WOA-Project/AndroidDebugBridge
+[submodule "UnifiedFlashingPlatform"]
+	path = UnifiedFlashingPlatform
+	url = https://github.com/WOA-Project/UnifiedFlashingPlatform

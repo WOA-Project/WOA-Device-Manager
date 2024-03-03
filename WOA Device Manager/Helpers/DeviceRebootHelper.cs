@@ -68,6 +68,25 @@ namespace WOADeviceManager.Helpers
             }
         }
 
+        public static async Task RebootToUEFIAndWait()
+        {
+            if (DeviceManager.Device.State != Device.DeviceStateEnum.BOOTLOADER)
+            {
+                await RebootToBootloaderAndWait();
+            }
+
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.BOOTLOADER)
+            {
+                _ = await FastbootProcedures.BootUEFI();
+
+                // TODO : Implement UEFI state
+                /*while (DeviceManager.Device.State != Device.DeviceStateEnum.WINDOWS)
+                {
+                    await Task.Delay(1000);
+                }*/
+            }
+        }
+
         public static async Task RebootToRecoveryAndWait()
         {
             if (DeviceManager.Device.IsADBCompatible)

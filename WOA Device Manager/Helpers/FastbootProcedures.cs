@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Threading.Tasks;
 using Windows.Storage;
 using WOADeviceManager.Managers;
@@ -121,6 +122,40 @@ namespace WOADeviceManager.Helpers
             {
                 StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA);
                 return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
+            }
+            else
+            {
+                throw new Exception("Unknown device product");
+            }
+        }
+
+        public static async Task<bool> BootUEFI()
+        {
+            if (DeviceManager.Device.Product == Device.DeviceProduct.Epsilon)
+            {
+                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON);
+                if (uefi == null)
+                {
+                    return false;
+                }
+
+                string destinationPath = (await uefi.GetParentAsync()).Path;
+                ZipFile.ExtractToDirectory(uefi.Path, destinationPath);
+
+                return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo (1st Gen) UEFI (Fast Boot)\\uefi.img");
+            }
+            else if (DeviceManager.Device.Product == Device.DeviceProduct.Zeta)
+            {
+                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_ZETA);
+                if (uefi == null)
+                {
+                    return false;
+                }
+
+                string destinationPath = (await uefi.GetParentAsync()).Path;
+                ZipFile.ExtractToDirectory(uefi.Path, destinationPath);
+
+                return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo 2 UEFI (Fast Boot)\\uefi.img");
             }
             else
             {

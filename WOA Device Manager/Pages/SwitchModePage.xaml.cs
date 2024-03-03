@@ -61,10 +61,10 @@ namespace WOADeviceManager.Pages
             MainPage.ToggleLoadingScreen(false);
         }
 
-        private void RebootToWindows_Click(object sender, RoutedEventArgs e)
+        private async void RebootToWindows_Click(object sender, RoutedEventArgs e)
         {
             MainPage.ToggleLoadingScreen(true);
-            // TODO
+            await DeviceRebootHelper.RebootToUEFIAndWait();
             MainPage.ToggleLoadingScreen(false);
         }
 

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using UnifiedFlashingPlatform;
 using Windows.Devices.Enumeration;
 
 namespace WOADeviceManager.Managers
@@ -192,20 +193,86 @@ namespace WOADeviceManager.Managers
             }
             else if (ID.Contains("USB#VID_045E&PID_066B#"))
             {
-                Device.State = Device.DeviceStateEnum.UFP;
-                Device.ID = ID;
-                Device.Name = Name;
-                Device.Variant = "N/A";
-                // Device.Product = Device.Product;
+                try
+                {
+                    UnifiedFlashingPlatformTransport unifiedFlashingPlatformTransport;
+                    if (ID == Device.ID && Device.UnifiedFlashingPlatformTransport != null)
+                    {
+                        unifiedFlashingPlatformTransport = Device.UnifiedFlashingPlatformTransport;
+                    }
+                    else
+                    {
+                        unifiedFlashingPlatformTransport = new(ID);
+                    }
 
-                Debug.WriteLine("New Device Found!");
-                Debug.WriteLine($"Device path: {Device.ID}");
-                Debug.WriteLine($"Name: {Device.Name}");
-                Debug.WriteLine($"Variant: {Device.Variant}");
-                Debug.WriteLine($"Product: {Device.Product}");
-                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+                    // Microsoft Corporation.Surface.Surface Duo.1930
+                    // Microsoft Corporation.Surface.Surface Duo 2.1995
+                    // Microsoft Corporation.Surface.Surface Duo 2.1968
+                    string PlatformID = unifiedFlashingPlatformTransport.ReadDevicePlatformID();
 
-                DeviceConnectedEvent?.Invoke(this, device);
+                    switch (PlatformID)
+                    {
+                        case "Microsoft Corporation.Surface.Surface Duo.1930":
+                            {
+                                Device.State = Device.DeviceStateEnum.UFP;
+                                Device.ID = ID;
+                                Device.Name = "Surface Duo";
+                                Device.Variant = "N/A";
+                                Device.Product = Device.DeviceProduct.Epsilon;
+
+                                if (Device.UnifiedFlashingPlatformTransport != null && Device.UnifiedFlashingPlatformTransport != unifiedFlashingPlatformTransport)
+                                {
+                                    Device.UnifiedFlashingPlatformTransport.Dispose();
+                                    Device.UnifiedFlashingPlatformTransport = unifiedFlashingPlatformTransport;
+                                }
+                                else if (Device.UnifiedFlashingPlatformTransport == null)
+                                {
+                                    Device.UnifiedFlashingPlatformTransport = unifiedFlashingPlatformTransport;
+                                }
+
+                                Debug.WriteLine("New Device Found!");
+                                Debug.WriteLine($"Device path: {Device.ID}");
+                                Debug.WriteLine($"Name: {Device.Name}");
+                                Debug.WriteLine($"Variant: {Device.Variant}");
+                                Debug.WriteLine($"Product: {Device.Product}");
+                                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                                DeviceConnectedEvent?.Invoke(this, device);
+                                return;
+                            }
+                        case "Microsoft Corporation.Surface.Surface Duo 2.1995":
+                        case "Microsoft Corporation.Surface.Surface Duo 2.1968":
+                            {
+                                Device.State = Device.DeviceStateEnum.UFP;
+                                Device.ID = ID;
+                                Device.Name = "Surface Duo 2";
+                                Device.Variant = "N/A";
+                                Device.Product = Device.DeviceProduct.Zeta;
+
+                                if (Device.UnifiedFlashingPlatformTransport != null && Device.UnifiedFlashingPlatformTransport != unifiedFlashingPlatformTransport)
+                                {
+                                    Device.UnifiedFlashingPlatformTransport.Dispose();
+                                    Device.UnifiedFlashingPlatformTransport = unifiedFlashingPlatformTransport;
+                                }
+                                else if (Device.UnifiedFlashingPlatformTransport == null)
+                                {
+                                    Device.UnifiedFlashingPlatformTransport = unifiedFlashingPlatformTransport;
+                                }
+
+                                Debug.WriteLine("New Device Found!");
+                                Debug.WriteLine($"Device path: {Device.ID}");
+                                Debug.WriteLine($"Name: {Device.Name}");
+                                Debug.WriteLine($"Variant: {Device.Variant}");
+                                Debug.WriteLine($"Product: {Device.Product}");
+                                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                                DeviceConnectedEvent?.Invoke(this, device);
+                                return;
+                            }
+                    }
+
+                    unifiedFlashingPlatformTransport.Dispose();
+                } catch { }
             }
             // Normal:
             // Surface Duo Fastboot
@@ -610,6 +677,13 @@ namespace WOADeviceManager.Managers
             if (Device.AndroidDebugBridgeTransport != null)
             {
                 Device.AndroidDebugBridgeTransport.Dispose();
+                Device.AndroidDebugBridgeTransport = null;
+            }
+
+            if (Device.UnifiedFlashingPlatformTransport != null)
+            {
+                Device.UnifiedFlashingPlatformTransport.Dispose();
+                Device.UnifiedFlashingPlatformTransport = null;
             }
 
             DeviceDisconnectedEvent?.Invoke(this, device);

@@ -61,6 +61,30 @@
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Windows OS."/>
                         </StackPanel>
                     </Button>
+                    <Button Click="Shutdown_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Shutdown the phone (UFP)"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will shutdown your phone. After selecting this option, you'll need to unplug your phone from your computer."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="Reboot_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Reboot the phone (UFP)"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will reboot your phone."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="Continue_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Continue to Windows (UFP)"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will continue to Windows OS."/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="MassStorage_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Mass-Storage-mode (UFP)"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the phone."/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

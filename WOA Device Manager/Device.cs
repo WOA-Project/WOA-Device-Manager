@@ -1,5 +1,6 @@
 ﻿using AndroidDebugBridge;
 using FastBoot;
+using UnifiedFlashingPlatform;
 using WOADeviceManager.Helpers;
 
 namespace WOADeviceManager
@@ -100,12 +101,19 @@ namespace WOADeviceManager
 
         public bool WindowsConnected => State == DeviceStateEnum.WINDOWS;
 
+        public bool UFPConnected => State == DeviceStateEnum.UFP;
+
         public FastBootTransport FastBootTransport
         {
             get; internal set;
         }
 
         public AndroidDebugBridgeTransport AndroidDebugBridgeTransport
+        {
+            get; internal set;
+        }
+
+        public UnifiedFlashingPlatformTransport UnifiedFlashingPlatformTransport
         {
             get; internal set;
         }

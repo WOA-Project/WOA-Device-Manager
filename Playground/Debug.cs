@@ -20,7 +20,7 @@ namespace Playground
                 }
             }
 
-            uint CommandPayloadLength = 0;
+            //uint CommandPayloadLength = 0;
 
             for (beginning++; beginning < lines.Length; beginning++)
             {
@@ -79,7 +79,7 @@ namespace Playground
 
                 if (buffer != null && buffer.Length != 0 && driverName == "ACPI")
                 {
-                    if (CommandPayloadLength == 0)
+                    /*if (CommandPayloadLength == 0)
                     {
                         bool Incoming = io == "in";
 
@@ -91,7 +91,23 @@ namespace Playground
                         Console.WriteLine(BitConverter.ToString(buffer));
                         Console.WriteLine(System.Text.Encoding.UTF8.GetString(buffer));
                         CommandPayloadLength = 0;
+                    }*/
+
+                    bool Incoming = io == "in";
+
+                    string res = System.Text.Encoding.ASCII.GetString(buffer);
+                    if (res.StartsWith("NOKXFR"))
+                    {
+                        Console.WriteLine($"{(Incoming ? '<' : '>')} {BitConverter.ToString(buffer[7..])}");
+                        Console.WriteLine("Read Param: " + res[7..]);
                     }
+                    else
+                    {
+                        Console.WriteLine($"{(Incoming ? '<' : '>')} {BitConverter.ToString(buffer)}");
+                        Console.WriteLine($"{(Incoming ? '<' : '>')} {System.Text.Encoding.ASCII.GetString(buffer)}");
+                    }
+
+                    Console.WriteLine();
                 }
             }
         }

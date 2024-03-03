@@ -92,6 +92,52 @@ namespace WOADeviceManager.Pages
             MainPage.ToggleLoadingScreen(false);
         }
 
+        private void Shutdown_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.ToggleLoadingScreen(true);
+            try
+            {
+                UFPProcedures.Shutdown();
+            }
+            catch { }
+            MainPage.ToggleLoadingScreen(false);
+        }
+
+        private void Reboot_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.ToggleLoadingScreen(true);
+            try
+            {
+                UFPProcedures.Reboot();
+            }
+            catch { }
+            MainPage.ToggleLoadingScreen(false);
+        }
+
+        private void Continue_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.ToggleLoadingScreen(true);
+            try
+            {
+                UFPProcedures.ContinueBoot();
+            }
+            catch { }
+            MainPage.ToggleLoadingScreen(false);
+        }
+
+        private void MassStorage_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.ToggleLoadingScreen(true);
+            try
+            {
+                UFPProcedures.MassStorage();
+            }
+            catch { }
+            MainPage.ToggleLoadingScreen(false);
+        }
+
+
+
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
             _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>

@@ -48,6 +48,13 @@ namespace WOADeviceManager.Pages
                     deviceIdentityString = "N/A";
                 }
             }
+            else if (device.UFPConnected && device.UnifiedFlashingPlatformTransport != null)
+            {
+                string PlatformID = device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
+                string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadDeviceProcessorManufacturer();
+
+                deviceIdentityString = $"Platform ID: {PlatformID}\nProcessor Manufacturer: {ProcessorManufacturer}";
+            }
 
             return deviceIdentityString;
         }

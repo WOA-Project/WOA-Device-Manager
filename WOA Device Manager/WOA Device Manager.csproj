@@ -63,6 +63,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AndroidDebugBridge\AndroidDebugBridge.csproj" />
     <ProjectReference Include="..\FastBoot\FastBoot.csproj" />
+    <ProjectReference Include="..\UnifiedFlashingPlatform\UnifiedFlashingPlatform.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Assets\AppIcon.png">

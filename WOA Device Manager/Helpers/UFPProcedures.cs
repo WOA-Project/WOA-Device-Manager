@@ -15,7 +15,7 @@ namespace WOADeviceManager.Helpers
         {
             lock (lockObject)
             {
-                DeviceManager.Device.UnifiedFlashingPlatformTransport.ResetPhone();
+                DeviceManager.Device.UnifiedFlashingPlatformTransport.ExtendedResetPhone();
             }
         }
 

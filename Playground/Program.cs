@@ -38,20 +38,17 @@ namespace Playground
             //ufp.FlashSectors();
 
             //ufp.MassStorage();
-            byte[] phoneInfoResponse = ufp.ReadPhoneInfo();
+            //byte[] phoneInfoResponse = ufp.ReadPhoneInfo();
 
-            Console.WriteLine(Encoding.ASCII.GetString(phoneInfoResponse));
-            Console.WriteLine(BitConverter.ToString(phoneInfoResponse));
+            //Console.WriteLine(Encoding.ASCII.GetString(phoneInfoResponse));
+            //Console.WriteLine(BitConverter.ToString(phoneInfoResponse));
 
-            ufp.ResetPhone();
+            //ufp.ResetPhone();
 
+            string message = " ___  ___  ________ ________        ___  ________           ________  ________  ________  ___          \r\n|\\  \\|\\  \\|\\  _____\\\\   __  \\      |\\  \\|\\   ____\\         |\\   ____\\|\\   __  \\|\\   __  \\|\\  \\         \r\n\\ \\  \\\\\\  \\ \\  \\__/\\ \\  \\|\\  \\     \\ \\  \\ \\  \\___|_        \\ \\  \\___|\\ \\  \\|\\  \\ \\  \\|\\  \\ \\  \\        \r\n \\ \\  \\\\\\  \\ \\   __\\\\ \\   ____\\     \\ \\  \\ \\_____  \\        \\ \\  \\    \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\       \r\n  \\ \\  \\\\\\  \\ \\  \\_| \\ \\  \\___|      \\ \\  \\|____|\\  \\        \\ \\  \\____\\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\____  \r\n   \\ \\_______\\ \\__\\   \\ \\__\\          \\ \\__\\____\\_\\  \\        \\ \\_______\\ \\_______\\ \\_______\\ \\_______\\\r\n    \\|_______|\\|__|    \\|__|           \\|__|\\_________\\        \\|_______|\\|_______|\\|_______|\\|_______|\r\n                                           \\|_________|                                                \r\n                                                                                                       \r\n                                                                                                       ";
 
-
-
-
-
-
-
+            
+            ufp.DisplayCustomMessage(message, 0);
 
 
 

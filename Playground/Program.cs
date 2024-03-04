@@ -1,5 +1,6 @@
 ﻿using AndroidDebugBridge;
 using System.Text;
+using UnifiedFlashingPlatform;
 
 namespace Playground
 {
@@ -10,9 +11,60 @@ namespace Playground
             string usbid = @"\\?\USB#VID_045E&PID_066B#B6697D4B#{dee824ef-729b-4a0e-9c14-b7117d33a817}";
 
             UnifiedFlashingPlatform.UnifiedFlashingPlatformTransport ufp = new(usbid);
-            ufp.ReadDevicePlatformID();
-            ufp.ReadDeviceProcessorManufacturer();
-            ufp.Shutdown();
+
+            // OK
+            //ufp.Hello();
+
+            // Returns 2...
+            /*GPT gpt = ufp.ReadGPT();
+            foreach (var partition in gpt.Partitions)
+            {
+                Console.WriteLine(partition.Name);
+                Console.WriteLine(partition.PartitionGuid);
+                Console.WriteLine(partition.PartitionTypeGuid);
+                Console.WriteLine(partition.FirstSectorAsString);
+                Console.WriteLine(partition.LastSectorAsString);
+                Console.WriteLine(partition.AttributesAsString);
+                Console.WriteLine("-------------------------------");
+            }*/
+
+            // TODO: Reboots phone (need to not read the reply for this to work ok)
+            //ufp.Shutdown();
+
+            // OK
+            //ufp.ResetPhone();
+
+            // TODO: Test on the MTP for safety
+            //ufp.FlashSectors();
+
+            //ufp.MassStorage();
+            byte[] phoneInfoResponse = ufp.ReadPhoneInfo();
+
+            Console.WriteLine(Encoding.ASCII.GetString(phoneInfoResponse));
+            Console.WriteLine(BitConverter.ToString(phoneInfoResponse));
+
+            ufp.ResetPhone();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //Console.WriteLine(ufp.ReadLog());
 
             //Debug.ParseUsbLyzerTrace(@"C:\Users\Gus\Downloads\Telegram Desktop\UFP.csv");

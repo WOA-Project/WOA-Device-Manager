@@ -6,11 +6,59 @@ namespace Playground
 {
     internal class Program
     {
+
+        private static void TestReadParam(UnifiedFlashingPlatformTransport ufp)
+        {
+            Console.WriteLine("App Type: " + ufp.ReadAppType());
+            Console.WriteLine("Reset Protection: " + ufp.ReadResetProtection());
+            Console.WriteLine("Bitlocker: " + ufp.ReadBitlocker());
+            Console.WriteLine("Build Info: " + ufp.ReadBuildInfo());
+            Console.WriteLine("Current Boot Option: " + ufp.ReadCurrentBootOption());
+            Console.WriteLine("Device Async Support: " + ufp.ReadDeviceAsyncSupport());
+            Console.WriteLine("Directory Entry Sizes: " + ufp.ReadDirectoryEntriesSize("esp", "EFI"));
+            Console.WriteLine("Device Platform ID: " + ufp.ReadDevicePlatformID());
+            Console.WriteLine("Device Properties: " + ufp.ReadDeviceProperties());
+            Console.WriteLine("Device Targeting Info: " + ufp.ReadDeviceTargetInfo());
+            ufp.ReadDataVerifySpeed();
+            ufp.ReadDeviceID();
+            ufp.ReadEmmcTestResult();
+            ufp.ReadEmmcSize();
+            ufp.ReadEmmcWriteSpeed();
+            ufp.ReadFlashAppInfo();
+            ufp.ReadFlashOptions();
+            ufp.ReadFlashingStatus();
+            ufp.ReadFileSize();
+            ufp.ReadSecureBootStatus();
+            ufp.ReadUEFIVariable();
+            ufp.ReadUEFIVariableSize();
+            ufp.ReadLargestMemoryRegion();
+            ufp.ReadLogSize();
+            ufp.ReadMacAddress();
+            ufp.ReadModeData();
+            ufp.ReadProcessorManufacturer();
+            ufp.ReadSDCardSize();
+            ufp.ReadSupportedFFUProtocolInfo();
+            ufp.ReadSMBIOSData();
+            ufp.ReadSerialNumber();
+            ufp.ReadSizeOfSystemMemory();
+            ufp.ReadSecurityStatus();
+            ufp.ReadTelemetryLogSize();
+            ufp.ReadTransferSize();
+            ufp.ReadUEFIBootFlag();
+            ufp.ReadUEFIBootOptions();
+            ufp.ReadUnlockID();
+            ufp.ReadUnlockTokenFiles();
+            ufp.ReadUSBSpeed();
+            ufp.ReadWriteBufferSize();
+        }
+
         static void Main(string[] args)
         {
             string usbid = @"\\?\USB#VID_045E&PID_066B#B6697D4B#{dee824ef-729b-4a0e-9c14-b7117d33a817}";
 
-            UnifiedFlashingPlatform.UnifiedFlashingPlatformTransport ufp = new(usbid);
+            UnifiedFlashingPlatformTransport ufp = new(usbid);
+            TestReadParam(ufp);
+            return;
 
             // OK
             //ufp.Hello();

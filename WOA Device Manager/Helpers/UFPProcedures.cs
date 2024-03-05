@@ -15,7 +15,7 @@ namespace WOADeviceManager.Helpers
         {
             lock (lockObject)
             {
-                DeviceManager.Device.UnifiedFlashingPlatformTransport.ExtendedResetPhone();
+                DeviceManager.Device.UnifiedFlashingPlatformTransport.RebootPhone();
             }
         }
 
@@ -39,7 +39,7 @@ namespace WOADeviceManager.Helpers
         {
             lock (lockObject)
             {
-                DeviceManager.Device.UnifiedFlashingPlatformTransport.SwitchToMassStorageContext();
+                DeviceManager.Device.UnifiedFlashingPlatformTransport.MassStorage();
             }
         }
     }

@@ -6,7 +6,6 @@ namespace Playground
 {
     internal class Program
     {
-
         private static void TestReadParam(UnifiedFlashingPlatformTransport ufp)
         {
             Console.WriteLine("App Type: " + ufp.ReadAppType());
@@ -19,7 +18,7 @@ namespace Playground
             Console.WriteLine("Device Platform ID: " + ufp.ReadDevicePlatformID());
             Console.WriteLine("Device Properties: " + ufp.ReadDeviceProperties());
             Console.WriteLine("Device Targeting Info: " + ufp.ReadDeviceTargetInfo());
-            Console.WriteLine("Data Verify Speed: " + ufp.ReadDataVerifySpeed());
+            Console.WriteLine("Data Verify Speed: " + ufp.ReadDataVerifySpeed() + "  kB/s");
             Console.WriteLine("Device ID: " + ufp.ReadDeviceID());
             Console.WriteLine("eMMC Test Result: " + ufp.ReadEmmcTestResult());
             Console.WriteLine("eMMC Size: " + ufp.ReadEmmcSize());
@@ -29,18 +28,18 @@ namespace Playground
             Console.WriteLine("Flashing Status: " + ufp.ReadFlashingStatus());
             Console.WriteLine("File Size (Partition: ESP, File: EFI\\Boot\\bootaa64.efi): " + ufp.ReadFileSize("esp", "EFI\\Boot\\bootaa64.efi"));
             Console.WriteLine("SecureBoot Status: " + ufp.ReadSecureBootStatus());
-            Console.WriteLine("UEFI Variable: " + ufp.ReadUEFIVariable());
-            Console.WriteLine("UEFI Variable Size: " + ufp.ReadUEFIVariableSize());
+            Console.WriteLine("UEFI Variable: " + ufp.ReadUEFIVariable(new("{3811BE0C-6AEF-44DD-9382-CD99A24C6619}"), "CurrentMsSurfaceUefiRuntimeModeVariableName", 1));
+            Console.WriteLine("UEFI Variable Size: " + ufp.ReadUEFIVariableSize(new("{3811BE0C-6AEF-44DD-9382-CD99A24C6619}"), "CurrentMsSurfaceUefiRuntimeModeVariableName"));
             Console.WriteLine("Largest Memory Region: " + ufp.ReadLargestMemoryRegion());
-            Console.WriteLine("Log Size (Type: Flashing): " + ufp.ReadLogSize(UnifiedFlashingPlatformTransport.LogType.Flashing));
+            Console.WriteLine("Log Size (Type: Flashing): " + ufp.ReadLogSize(UnifiedFlashingPlatformTransport.DeviceLogType.Flashing));
             Console.WriteLine("Mac Address: " + ufp.ReadMacAddress());
-            Console.WriteLine("Mode Data: " + ufp.ReadModeData());
+            Console.WriteLine("Mode Data: " + ufp.ReadModeData(UnifiedFlashingPlatformTransport.Mode.DiagnosticMode));
             Console.WriteLine("Processor Manufacturer: " + ufp.ReadProcessorManufacturer());
             Console.WriteLine("SD Card Size: " + ufp.ReadSDCardSize());
             Console.WriteLine("Supported FFU Protocol Info: " + ufp.ReadSupportedFFUProtocolInfo());
             Console.WriteLine("SMBIOS Data: " + ufp.ReadSMBIOSData());
             Console.WriteLine("S/N: " + ufp.ReadSerialNumber());
-            Console.WriteLine("Size of System Memory: " + ufp.ReadSizeOfSystemMemory());
+            Console.WriteLine("Size of System Memory: " + ufp.ReadSizeOfSystemMemory() + " kB");
             Console.WriteLine("Security Status: " + ufp.ReadSecurityStatus());
             Console.WriteLine("Telemetry Log Size: " + ufp.ReadTelemetryLogSize());
             Console.WriteLine("Read Transfer Size: " + ufp.ReadTransferSize());

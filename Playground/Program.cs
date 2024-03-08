@@ -31,9 +31,9 @@ namespace Playground
             Console.WriteLine("UEFI Variable: " + ufp.ReadUEFIVariable(new("{3811BE0C-6AEF-44DD-9382-CD99A24C6619}"), "CurrentMsSurfaceUefiRuntimeModeVariableName", 1));
             Console.WriteLine("UEFI Variable Size: " + ufp.ReadUEFIVariableSize(new("{3811BE0C-6AEF-44DD-9382-CD99A24C6619}"), "CurrentMsSurfaceUefiRuntimeModeVariableName"));
             Console.WriteLine("Largest Memory Region: " + ufp.ReadLargestMemoryRegion());
-            Console.WriteLine("Log Size (Type: Flashing): " + ufp.ReadLogSize(UnifiedFlashingPlatformTransport.DeviceLogType.Flashing));
+            Console.WriteLine("Log Size (Type: Flashing): " + ufp.ReadLogSize(DeviceLogType.Flashing));
             Console.WriteLine("Mac Address: " + ufp.ReadMacAddress());
-            Console.WriteLine("Mode Data: " + ufp.ReadModeData(UnifiedFlashingPlatformTransport.Mode.DiagnosticMode));
+            Console.WriteLine("Mode Data: " + ufp.ReadModeData(Mode.DiagnosticMode));
             Console.WriteLine("Processor Manufacturer: " + ufp.ReadProcessorManufacturer());
             Console.WriteLine("SD Card Size: " + ufp.ReadSDCardSize());
             Console.WriteLine("Supported FFU Protocol Info: " + ufp.ReadSupportedFFUProtocolInfo());
@@ -53,10 +53,12 @@ namespace Playground
 
         static void Main(string[] args)
         {
-            string usbid = @"\\?\USB#VID_045E&PID_066B#B6697D4B#{dee824ef-729b-4a0e-9c14-b7117d33a817}";
+            string usbid = @"\\?\USB#VID_045E&PID_066B#899F1DDB#{dee824ef-729b-4a0e-9c14-b7117d33a817}";
 
             UnifiedFlashingPlatformTransport ufp = new(usbid);
-            TestReadParam(ufp);
+            ufp.ReadPhoneInfo();
+            //TestReadParam(ufp);
+            //ufp.RebootPhone();
             return;
 
             // OK

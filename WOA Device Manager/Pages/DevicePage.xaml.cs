@@ -51,7 +51,7 @@ namespace WOADeviceManager.Pages
             else if (device.UFPConnected && device.UnifiedFlashingPlatformTransport != null)
             {
                 string PlatformID = device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
-                string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadDeviceProcessorManufacturer();
+                string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadProcessorManufacturer();
 
                 deviceIdentityString = $"Platform ID: {PlatformID}\nProcessor Manufacturer: {ProcessorManufacturer}";
             }

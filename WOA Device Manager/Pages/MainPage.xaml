@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:controls="using:WOADeviceManager.Controls"
     Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
@@ -68,7 +68,7 @@
                 <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0,40,20,20" CornerRadius="4" />
                 <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
                 <Grid x:Name="ProgressOverlay" Margin="0,40,20,20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
-                    <local:BusyControl x:Name="BusyControl" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                    <controls:BusyControl x:Name="BusyControl" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
                 </Grid>
             </Grid>
         </NavigationView>

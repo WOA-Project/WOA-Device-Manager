@@ -12,7 +12,7 @@
 
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
         <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
-            <StackPanel x:Name="FlashFFUPanel" Padding="32" Spacing="32" BorderBrush="{StaticResource SystemChromeDisabledHighColor}" BorderThickness="1">
+            <StackPanel x:Name="FlashFFUPanel" Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <TextBlock Text="Flash FFU" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
 
                 <RichTextBlock>

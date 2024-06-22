@@ -2,7 +2,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace WOADeviceManager.Pages
+namespace WOADeviceManager.Controls
 {
     public sealed partial class BusyControl : UserControl
     {

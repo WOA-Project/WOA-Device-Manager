@@ -107,4 +107,7 @@
   <ItemGroup>
     <Resource Remove="Pages\BusyControl.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\" />
+  </ItemGroup>
 </Project>

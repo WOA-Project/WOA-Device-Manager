@@ -8,19 +8,64 @@
     mc:Ignorable="d">
 
     <StackPanel Padding="32" Spacing="20" MaxWidth="800">
-        <TextBlock x:Name="ProgressEmoji" FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" FontSize="50" Text="📱" Visibility="Collapsed" />
+        <StackPanel x:Name="OverlayStackPanel" Spacing="20" Margin="0,20">
+            <TextBlock x:Name="OverlayEmoji" 
+                       FontFamily="Segoe UI Emoji" 
+                       HorizontalAlignment="Center" 
+                       FontSize="50" 
+                       Text="📱" 
+                       Visibility="Collapsed" />
 
-        <TextBlock x:Name="ProgressTitle" HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" TextAlignment="Center" Text="Connect a compatible device" Visibility="Collapsed" />
-        <TextBlock x:Name="ProgressSubTitle" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.75" Text="WOA Device Manager helps you install, update and manage Windows on your Android device. Please connect a compatible device."  Visibility="Collapsed" />
+            <TextBlock x:Name="OverlayTitle" 
+                       HorizontalAlignment="Center" 
+                       FontSize="24" 
+                       TextWrapping="Wrap" 
+                       TextAlignment="Center" 
+                       Text="Connect a compatible device" 
+                       Visibility="Collapsed" />
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20" Orientation="Horizontal">
-            <ProgressRing x:Name="LoadingRing" />
-            <TextBlock x:Name="ProgressMessage" FontSize="18" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Text="Initializing..." />
+            <TextBlock x:Name="OverlaySubTitle" 
+                       HorizontalAlignment="Center" 
+                       TextWrapping="Wrap" 
+                       TextAlignment="Center" 
+                       Opacity="0.75" 
+                       Text="WOA Device Manager helps you install, update and manage Windows on your Android device. Please connect a compatible device."
+                       Visibility="Collapsed" />
         </StackPanel>
-        
-        <ProgressBar x:Name="ProgressPercentageBar" MaxWidth="700" MinWidth="300" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Visibility="Collapsed" />
 
-        <TextBlock x:Name="ProgressText" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.75" Visibility="Collapsed" />
-        <TextBlock x:Name="ProgressSubMessage" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Visibility="Collapsed" />
+        <StackPanel x:Name="ProgressStackPanel" Spacing="20" Margin="0,20">
+            <StackPanel HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Spacing="20" 
+                        Orientation="Horizontal">
+                <ProgressRing x:Name="LoadingRing" />
+                
+                <TextBlock x:Name="ProgressMessage" 
+                           FontSize="18" 
+                           TextWrapping="Wrap" 
+                           TextAlignment="Center" 
+                           VerticalAlignment="Center" 
+                           Text="Initializing..." />
+            </StackPanel>
+
+            <ProgressBar x:Name="ProgressPercentageBar" 
+                         MinWidth="300" 
+                         HorizontalAlignment="Stretch" 
+                         HorizontalContentAlignment="Stretch" 
+                         Visibility="Collapsed" />
+
+            <TextBlock x:Name="ProgressText" 
+                       HorizontalAlignment="Center" 
+                       TextWrapping="Wrap" 
+                       TextAlignment="Center" 
+                       Opacity="0.75" 
+                       Visibility="Collapsed" />
+
+            <TextBlock x:Name="ProgressSubMessage" 
+                       HorizontalAlignment="Center" 
+                       TextWrapping="Wrap" 
+                       TextAlignment="Center" 
+                       Visibility="Collapsed" />
+        </StackPanel>
     </StackPanel>
 </UserControl>

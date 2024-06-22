@@ -23,32 +23,32 @@ namespace WOADeviceManager.Pages
 
                 if (Emoji != null)
                 {
-                    ProgressEmoji.Text = Emoji;
-                    ProgressEmoji.Visibility = Visibility.Visible;
+                    OverlayEmoji.Text = Emoji;
+                    OverlayEmoji.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    ProgressEmoji.Visibility = Visibility.Collapsed;
+                    OverlayEmoji.Visibility = Visibility.Collapsed;
                 }
 
                 if (Title != null)
                 {
-                    ProgressTitle.Text = Title;
-                    ProgressTitle.Visibility = Visibility.Visible;
+                    OverlayTitle.Text = Title;
+                    OverlayTitle.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    ProgressTitle.Visibility = Visibility.Collapsed;
+                    OverlayTitle.Visibility = Visibility.Collapsed;
                 }
 
                 if (SubTitle != null)
                 {
-                    ProgressSubTitle.Text = SubTitle;
-                    ProgressSubTitle.Visibility = Visibility.Visible;
+                    OverlaySubTitle.Text = SubTitle;
+                    OverlaySubTitle.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    ProgressSubTitle.Visibility = Visibility.Collapsed;
+                    OverlaySubTitle.Visibility = Visibility.Collapsed;
                 }
 
                 if (Message != null)

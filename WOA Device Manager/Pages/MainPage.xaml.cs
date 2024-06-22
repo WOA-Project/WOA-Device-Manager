@@ -58,6 +58,8 @@ namespace WOADeviceManager.Pages
                     case "disabledualboot":
                     case "backupwindows":
                     case "flashwindows":
+                        _ = MainNavigationFrame.Navigate(typeof(FlashPage));
+                        break;
                     case "updatewindows":
                     case "downloadwindows":
                         break;

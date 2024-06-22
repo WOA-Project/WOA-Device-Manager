@@ -32,6 +32,7 @@
   <ItemGroup>
     <None Remove="Assets\AppIcon.png" />
     <None Remove="Pages\DevicePage.xaml" />
+    <None Remove="Pages\FlashPage.xaml" />
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\PartitionsPage.xaml" />
     <None Remove="Pages\SwitchModePage.xaml" />
@@ -69,6 +70,11 @@
     <Content Update="Assets\AppIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\FlashPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\MainPage.xaml">

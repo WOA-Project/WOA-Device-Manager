@@ -115,12 +115,12 @@ namespace WOADeviceManager.Helpers
         {
             if (DeviceManager.Device.Product == Device.DeviceProduct.Epsilon)
             {
-                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON);
+                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON, true);
                 return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
             }
             else if (DeviceManager.Device.Product == Device.DeviceProduct.Zeta)
             {
-                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA);
+                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA, true);
                 return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
             }
             else
@@ -133,7 +133,7 @@ namespace WOADeviceManager.Helpers
         {
             if (DeviceManager.Device.Product == Device.DeviceProduct.Epsilon)
             {
-                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON);
+                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON, true);
                 if (uefi == null)
                 {
                     return false;
@@ -146,7 +146,7 @@ namespace WOADeviceManager.Helpers
             }
             else if (DeviceManager.Device.Product == Device.DeviceProduct.Zeta)
             {
-                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_ZETA);
+                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_ZETA, true);
                 if (uefi == null)
                 {
                     return false;

@@ -13,39 +13,40 @@ namespace WOADeviceManager.Managers
             UEFI_EPSILON, UEFI_ZETA, TWRP_EPSILON, TWRP_ZETA, PARTED
         }
 
-        public static Task<StorageFile> RetrieveFile(DownloadableComponent component)
+        public static Task<StorageFile> RetrieveFile(DownloadableComponent component, bool redownload = false)
         {
+            string releaseVersion = "2406.36";
             string downloadPath = string.Empty;
             string fileName = string.Empty;
             switch (component)
             {
                 case DownloadableComponent.TWRP_EPSILON:
-                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/surfaceduo1-twrp.img";
-                    fileName = "TWRP_EPSILON.img";
+                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/Files/surfaceduo1-twrp.img";
+                    fileName = "surfaceduo1-twrp.img";
                     break;
                 case DownloadableComponent.TWRP_ZETA:
-                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/surfaceduo2-twrp.img";
-                    fileName = "TWRP_ZETA.img";
+                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/Files/surfaceduo2-twrp.img";
+                    fileName = "surfaceduo2-twrp.img";
                     break;
                 case DownloadableComponent.PARTED:
-                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/InstallWindows/Files/parted";
+                    downloadPath = "https://github.com/WOA-Project/SurfaceDuo-Guides/raw/main/Files/parted";
                     fileName = "parted";
                     break;
                 case DownloadableComponent.UEFI_EPSILON:
-                    downloadPath = "https://github.com/WOA-Project/mu_andromeda_platforms/releases/download/2042.85/Surface.Duo.1st.Gen.UEFI.Fast.Boot.zip";
-                    fileName = "Surface.Duo.1st.Gen.UEFI.Fast.Boot.zip";
+                    downloadPath = $"https://github.com/WOA-Project/SurfaceDuo-Releases/releases/download/{releaseVersion}/Surface.Duo.1st.Gen.UEFI-v{releaseVersion}.Fast.Boot.zip";
+                    fileName = $"Surface.Duo.1st.Gen.UEFI-v{releaseVersion}.Fast.Boot.zip";
                     break;
                 case DownloadableComponent.UEFI_ZETA:
-                    downloadPath = "https://github.com/WOA-Project/mu_andromeda_platforms/releases/download/2042.85/Surface.Duo.2.UEFI.Fast.Boot.zip";
-                    fileName = "Surface.Duo.2.UEFI.Fast.Boot.zip";
+                    downloadPath = $"https://github.com/WOA-Project/SurfaceDuo-Releases/releases/download/{releaseVersion}/Surface.Duo.2.UEFI-v{releaseVersion}.Fast.Boot.zip";
+                    fileName = $"Surface.Duo.2.UEFI-v{releaseVersion}.Fast.Boot.zip";
                     break;
             }
-            return RetrieveFile(downloadPath, fileName);
+            return RetrieveFile(downloadPath, fileName, redownload);
         }
 
-        public static async Task<StorageFile> RetrieveFile(string path, string fileName)
+        public static async Task<StorageFile> RetrieveFile(string path, string fileName, bool redownload = false)
         {
-            if (!IsFileAlreadyDownloaded(fileName))
+            if (redownload || !IsFileAlreadyDownloaded(fileName))
             {
                 StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
                 using HttpClient client = new();

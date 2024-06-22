@@ -84,49 +84,14 @@ namespace WOADeviceManager.Pages
             using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
             SignedImage signedImage = new(FFUStream);
             int chunkSize = signedImage.ChunkSize;
-            ulong totalChunkSize = (ulong)FFUStream.Length / (ulong)chunkSize;
+            ulong totalChunkCount = (ulong)FFUStream.Length / (ulong)chunkSize;
 
             FFUStream.Seek(0, SeekOrigin.Begin);
 
-            UnifiedFlashingPlatformTransport.ProgressUpdater updater = new(totalChunkSize, (percentage, eta) =>
-            {
-                _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
-                {
-                    string NewText = null;
-                    if (percentage != null)
-                    {
-                        NewText = $"Progress: {percentage}%";
-                    }
-
-                    if (eta != null)
-                    {
-                        if (NewText == null)
-                        {
-                            NewText = "";
-                        }
-                        else
-                        {
-                            NewText += " - ";
-                        }
-
-                        NewText += $"Estimated time remaining: {eta:h\\:mm\\:ss}";
-                    }
-
-                    if (NewText != null)
-                    {
-                        SetStatus("Flashing FFU...", (uint)percentage, NewText);
-                    }
-                    else
-                    {
-                        SetStatus("Initializing...");
-                    }
-                });
-            });
+            UnifiedFlashingPlatformTransport.ProgressUpdater updater = GetProgressUpdater(totalChunkCount, "Flashing FFU...");
 
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                SetStatus("Initializing...");
-
                 using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
                 DeviceManager.Device.UnifiedFlashingPlatformTransport.FlashFFU(FFUStream, updater);
 
@@ -159,6 +124,44 @@ namespace WOADeviceManager.Pages
                 }
 
                 SetStatus();
+            });
+        }
+
+        private UnifiedFlashingPlatformTransport.ProgressUpdater GetProgressUpdater(ulong MaxValue, string Message, string? SubMessage = null)
+        {
+            return new(MaxValue, (percentage, eta) =>
+            {
+                _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+                {
+                    string NewText = null;
+                    if (percentage != null)
+                    {
+                        NewText = $"Progress: {percentage}%";
+                    }
+
+                    if (eta != null)
+                    {
+                        if (NewText == null)
+                        {
+                            NewText = "";
+                        }
+                        else
+                        {
+                            NewText += " - ";
+                        }
+
+                        NewText += $"Estimated time remaining: {eta:h\\:mm\\:ss}";
+                    }
+
+                    if (NewText != null)
+                    {
+                        SetStatus(Message, (uint)percentage, NewText, SubMessage);
+                    }
+                    else
+                    {
+                        SetStatus("Initializing...");
+                    }
+                });
             });
         }
 

@@ -166,7 +166,8 @@ namespace WOADeviceManager.Helpers
 
         public static async Task EnableMassStorageMode()
         {
-            string MassStorageOneLiner = @"setenforce 0; echo 0xEF > /config/usb_gadget/g1/bDeviceClass; echo 0x02 > /config/usb_gadget/g1/bDeviceSubClass; echo 0x01 > /config/usb_gadget/g1/bDeviceProtocol;ln -s /config/usb_gadget/g1/functions/mass_storage.0/ /config/usb_gadget/g1/configs/b.1/;echo /dev/block/sda > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/file;echo 0 > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/removable;sh -c 'echo > /config/usb_gadget/g1/UDC; echo a600000.dwc3 > /config/usb_gadget/g1/UDC' &";
+            string MassStorageOneLiner = @"setenforce 0; echo 0x05C6 > /config/usb_gadget/g1/idVendor; echo 0x9039 > /config/usb_gadget/g1/idProduct; echo 0xEF > /config/usb_gadget/g1/bDeviceClass; echo 0x02 > /config/usb_gadget/g1/bDeviceSubClass; echo 0x01 > /config/usb_gadget/g1/bDeviceProtocol; ln -s /config/usb_gadget/g1/functions/mass_storage.0/ /config/usb_gadget/g1/configs/b.1/; echo /dev/block/sda > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/file; echo 0 > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/removable; sh -c 'echo > /config/usb_gadget/g1/UDC; echo a600000.dwc3 > /config/usb_gadget/g1/UDC' &
+setenforce 0; echo 0x05C6 > /config/usb_gadget/g1/idVendor; echo 0x9039 > /config/usb_gadget/g1/idProduct; echo 0xEF > /config/usb_gadget/g1/bDeviceClass; echo 0x02 > /config/usb_gadget/g1/bDeviceSubClass; echo 0x01 > /config/usb_gadget/g1/bDeviceProtocol; ln -s /config/usb_gadget/g1/functions/mass_storage.0/ /config/usb_gadget/g1/configs/b.1/; echo /dev/block/sda > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/file; echo 0 > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/removable; sh -c 'echo > /config/usb_gadget/g1/UDC; echo a600000.dwc3 > /config/usb_gadget/g1/UDC' &";
 
             lock (lockObject)
             {

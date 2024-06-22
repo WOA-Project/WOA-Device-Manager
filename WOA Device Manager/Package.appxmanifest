@@ -9,7 +9,7 @@
   <Identity
     Name="DuoWOA.DeviceManager"
     Publisher="CN=Windows On Andromeda UMCI Codesigning, E=gustave.monce@outlook.com"
-    Version="1.0.0.0" />
+    Version="1.0.2.0" />
 
   <Properties>
     <DisplayName>WOA Device Manager</DisplayName>

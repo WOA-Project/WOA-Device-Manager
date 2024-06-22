@@ -1,4 +1,4 @@
-using FastBoot;
+﻿using FastBoot;
 using Img2Ffu.Reader.Data;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -21,18 +21,6 @@ namespace WOADeviceManager.Pages
         public FlashPage()
         {
             InitializeComponent();
-
-            if (DeviceManager.Device.UFPConnected)
-            {
-                StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
-            }
-            else
-            {
-                StatusText.Text = "You have to connect your phone before you can continue.";
-            }
-
-            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
-            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
         }
 
         private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
@@ -79,7 +67,7 @@ namespace WOADeviceManager.Pages
                 return;
             }
 
-            MainPage.SetStatus("Initializing...");
+            MainPage.SetStatus("Initializing...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process. Make sure your computer does not go to sleep, nor that this window gets closed. This process may take a while.", SubMessage: "During this process, your phone may reboot into different operating modes. This is expected behavior, do not interfere with this process.", Emoji: "🔧");
 
             using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
             SignedImage signedImage = new(FFUStream);
@@ -88,14 +76,14 @@ namespace WOADeviceManager.Pages
 
             FFUStream.Seek(0, SeekOrigin.Begin);
 
-            UnifiedFlashingPlatformTransport.ProgressUpdater updater = MainPage.GetProgressUpdater(totalChunkCount, "Flashing FFU...");
+            UnifiedFlashingPlatformTransport.ProgressUpdater updater = MainPage.GetProgressUpdater(totalChunkCount, $"Flashing {Path.GetFileName(SelectedFFUPath)}...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process. Make sure your computer does not go to sleep, nor that this window gets closed. This process may take a while.", SubMessage: "During this process, your phone may reboot into different operating modes. This is expected behavior, do not interfere with this process.", Emoji: "🔧");
 
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
                 using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
                 DeviceManager.Device.UnifiedFlashingPlatformTransport.FlashFFU(FFUStream, updater);
 
-                MainPage.SetStatus("Rebooting Phone...");
+                MainPage.SetStatus("Rebooting Phone...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process. Make sure your computer does not go to sleep, nor that this window gets closed. This process may take a while.", SubMessage: "During this process, your phone may reboot into different operating modes. This is expected behavior, do not interfere with this process.", Emoji: "🔧");
 
                 while (DeviceManager.Device.State == Device.DeviceStateEnum.UFP || DeviceManager.Device.State == Device.DeviceStateEnum.DISCONNECTED)
                 {
@@ -104,7 +92,7 @@ namespace WOADeviceManager.Pages
 
                 if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
                 {
-                    MainPage.SetStatus("Escaping Bootloader Menu...");
+                    MainPage.SetStatus("Escaping Bootloader Menu...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process. Make sure your computer does not go to sleep, nor that this window gets closed. This process may take a while.", SubMessage: "During this process, your phone may reboot into different operating modes. This is expected behavior, do not interfere with this process.", Emoji: "🔧");
 
                     DeviceManager.Device.FastBootTransport.SetActiveOther();
                     DeviceManager.Device.FastBootTransport.SetActiveOther();
@@ -115,7 +103,7 @@ namespace WOADeviceManager.Pages
                         await Task.Delay(1000);
                     }
 
-                    MainPage.SetStatus("Booting Phone...");
+                    MainPage.SetStatus("Booting Phone...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process. Make sure your computer does not go to sleep, nor that this window gets closed. This process may take a while.", SubMessage: "During this process, your phone may reboot into different operating modes. This is expected behavior, do not interfere with this process.", Emoji: "🔧");
 
                     while (DeviceManager.Device.State == Device.DeviceStateEnum.DISCONNECTED)
                     {
@@ -183,6 +171,27 @@ namespace WOADeviceManager.Pages
 
                 Bindings.Update();
             });
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DeviceManager.Device.UFPConnected)
+            {
+                StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
+            }
+            else
+            {
+                StatusText.Text = "You have to connect your phone before you can continue.";
+            }
+
+            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            DeviceManager.DeviceConnectedEvent -= DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent -= Instance_DeviceDisconnectedEvent;
         }
     }
 }

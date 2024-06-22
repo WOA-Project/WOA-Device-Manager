@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
@@ -10,14 +10,11 @@ namespace WOADeviceManager.Pages
         public SwitchModePage()
         {
             InitializeComponent();
-
-            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
-            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
         }
 
         private async void RebootToAndroid_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Android mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToAndroidAndWait();
@@ -28,7 +25,7 @@ namespace WOADeviceManager.Pages
 
         private async void RebootToBootloader_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToBootloaderAndWait();
@@ -39,7 +36,7 @@ namespace WOADeviceManager.Pages
 
         private async void RebootToFastbootd_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Fastbootd mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToFastbootDAndWait();
@@ -50,7 +47,7 @@ namespace WOADeviceManager.Pages
 
         private async void RebootToMassStorageMode_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Mass Storage mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToMSCAndWait();
@@ -61,7 +58,7 @@ namespace WOADeviceManager.Pages
 
         private async void RebootToRecovery_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Recovery mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToRecoveryAndWait();
@@ -72,7 +69,7 @@ namespace WOADeviceManager.Pages
 
         private async void RebootToTWRP_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to TWRP mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToTWRPAndWait();
@@ -83,7 +80,7 @@ namespace WOADeviceManager.Pages
 
         private async void RebootToWindows_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Windows mode...", Emoji: "🔄️");
             try
             {
                 await DeviceRebootHelper.RebootToUEFIAndWait();
@@ -94,7 +91,7 @@ namespace WOADeviceManager.Pages
 
         private void Shutdown_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Shutting Down Phone (UFP)...", SubMessage: "Please disconnect your phone now in order to shut it down!", Emoji: "🔄️");
             try
             {
                 UFPProcedures.Shutdown();
@@ -105,7 +102,7 @@ namespace WOADeviceManager.Pages
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone (UFP)...", Emoji: "🔄️");
             try
             {
                 UFPProcedures.Reboot();
@@ -116,7 +113,7 @@ namespace WOADeviceManager.Pages
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Continuing Boot (UFP)...", Emoji: "🔄️");
             try
             {
                 UFPProcedures.ContinueBoot();
@@ -127,7 +124,7 @@ namespace WOADeviceManager.Pages
 
         private void MassStorage_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.ToggleLoadingScreen(true);
+            MainPage.SetStatus("Rebooting phone to Mass Storage mode (UFP)...", Emoji: "🔄️");
             try
             {
                 UFPProcedures.MassStorage();
@@ -135,8 +132,6 @@ namespace WOADeviceManager.Pages
             catch { }
             MainPage.ToggleLoadingScreen(false);
         }
-
-
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
@@ -152,6 +147,18 @@ namespace WOADeviceManager.Pages
             {
                 Bindings.Update();
             });
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            DeviceManager.DeviceConnectedEvent -= DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent -= Instance_DeviceDisconnectedEvent;
         }
     }
 }

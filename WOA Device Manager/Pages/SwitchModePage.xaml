@@ -6,6 +6,8 @@
     xmlns:manager="using:WOADeviceManager.Managers"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
     mc:Ignorable="d">
 
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">

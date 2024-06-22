@@ -62,9 +62,5 @@ namespace WOADeviceManager.Pages
         private string DeviceIdentityString => device != null ? GetDeviceIdentityString() : "Unknown";
 
         private string BatteryLevelFormatted => device != null && device.BatteryLevel != null ? $"Battery level: {device.BatteryLevel}%" : "Battery level: Unknown";
-
-        private bool IsDeviceConnected => device != null && device.IsConnected;
-
-        private bool IsDeviceDisconnected => !IsDeviceConnected;
     }
 }

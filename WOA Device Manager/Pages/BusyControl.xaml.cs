@@ -11,14 +11,44 @@ namespace WOADeviceManager.Pages
             InitializeComponent();
         }
 
-        public void SetStatus(string? Message = null, uint? Percentage = null, string? Text = null, string? SubMessage = null)
+        public void SetStatus(string? Message = null, uint? Percentage = null, string? Text = null, string? SubMessage = null, string? Title = null, string? SubTitle = null, string? Emoji = null)
         {
             _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
             {
-                if (Message == null && Percentage == null && Text == null && SubMessage == null)
+                if (Message == null && Percentage == null && Text == null && SubMessage == null && Title == null && SubTitle == null && Emoji == null)
                 {
                     // Hide
                     return;
+                }
+
+                if (Emoji != null)
+                {
+                    ProgressEmoji.Text = Emoji;
+                    ProgressEmoji.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressEmoji.Visibility = Visibility.Collapsed;
+                }
+
+                if (Title != null)
+                {
+                    ProgressTitle.Text = Title;
+                    ProgressTitle.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressTitle.Visibility = Visibility.Collapsed;
+                }
+
+                if (SubTitle != null)
+                {
+                    ProgressSubTitle.Text = SubTitle;
+                    ProgressSubTitle.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressSubTitle.Visibility = Visibility.Collapsed;
                 }
 
                 if (Message != null)

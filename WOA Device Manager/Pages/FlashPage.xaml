@@ -33,16 +33,6 @@
                     <Button x:Name="FlashFFUImageButton" Content="Flash FFU image" Click="FlashFFUImageButton_Click" IsEnabled="False"/>
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel x:Name="ProgressOverlay" Padding="32" Spacing="32" BorderBrush="{StaticResource SystemChromeDisabledHighColor}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Collapsed">
-                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-                    <ProgressRing x:Name="LoadingRing" />
-                    <TextBlock x:Name="ProgressMessage" FontSize="24" FontWeight="SemiBold">Initializing...</TextBlock>
-                </StackPanel>
-                <ProgressBar x:Name="ProgressPercentageBar" MaxWidth="700" MinWidth="300" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Visibility="Collapsed" />
-                <TextBlock x:Name="ProgressText" HorizontalAlignment="Center" Visibility="Collapsed" />
-                <TextBlock x:Name="ProgressSubMessage" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed" />
-            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>

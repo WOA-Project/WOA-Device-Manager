@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\AppIcon.png" />
+    <None Remove="Pages\BusyControl.xaml" />
     <None Remove="Pages\DevicePage.xaml" />
     <None Remove="Pages\FlashPage.xaml" />
     <None Remove="Pages\MainPage.xaml" />
@@ -100,4 +101,10 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Pages\BusyControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Pages\BusyControl.xaml" />
+  </ItemGroup>
 </Project>

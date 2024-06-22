@@ -1,20 +1,13 @@
 using FastBoot;
+using Img2Ffu.Reader.Data;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
-using System.Windows.Forms;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Threading.Tasks;
+using UnifiedFlashingPlatform;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using WOADeviceManager.Managers;
@@ -75,7 +68,7 @@ namespace WOADeviceManager.Pages
             Bindings.Update();
         }
 
-        private async void FlashFFUImageButton_Click(object sender, RoutedEventArgs e)
+        private void FlashFFUImageButton_Click(object sender, RoutedEventArgs e)
         {
             if (!File.Exists(SelectedFFUPath))
             {
@@ -86,31 +79,23 @@ namespace WOADeviceManager.Pages
                 return;
             }
 
-            LoadingRing.Visibility = Visibility.Visible;
-            ProgressMessage.Text = "Initializing...";
-
-            ProgressPercentageBar.Visibility = Visibility.Collapsed;
-            ProgressSubMessage.Visibility = Visibility.Collapsed;
-            ProgressText.Visibility = Visibility.Collapsed;
-
-            FlashFFUPanel.Visibility = Visibility.Collapsed;
-            ProgressOverlay.Visibility = Visibility.Visible;
+            SetStatus("Initializing...");
 
             using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
-            Img2Ffu.Reader.Data.SignedImage signedImage = new(FFUStream);
+            SignedImage signedImage = new(FFUStream);
             int chunkSize = signedImage.ChunkSize;
             ulong totalChunkSize = (ulong)FFUStream.Length / (ulong)chunkSize;
 
             FFUStream.Seek(0, SeekOrigin.Begin);
 
-            UnifiedFlashingPlatform.UnifiedFlashingPlatformTransport.ProgressUpdater updater = new(totalChunkSize, (percentage, eta) =>
+            UnifiedFlashingPlatformTransport.ProgressUpdater updater = new(totalChunkSize, (percentage, eta) =>
             {
-                _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+                _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
                 {
                     string NewText = null;
                     if (percentage != null)
                     {
-                        NewText = "Progress: " + ((int)percentage).ToString() + "%";
+                        NewText = $"Progress: {percentage}%";
                     }
 
                     if (eta != null)
@@ -124,105 +109,126 @@ namespace WOADeviceManager.Pages
                             NewText += " - ";
                         }
 
-                        NewText += "Estimated time remaining: " + ((TimeSpan)eta).ToString(@"h\:mm\:ss");
+                        NewText += $"Estimated time remaining: {eta:h\\:mm\\:ss}";
                     }
 
                     if (NewText != null)
                     {
-                        LoadingRing.Visibility = Visibility.Collapsed;
-                        ProgressSubMessage.Visibility = Visibility.Collapsed;
-
-                        ProgressPercentageBar.Visibility = Visibility.Visible;
-                        ProgressPercentageBar.Maximum = 100;
-                        ProgressPercentageBar.Minimum = 0;
-
-                        ProgressText.Visibility = Visibility.Visible;
-
-                        ProgressMessage.Text = "Flashing FFU...";
-                        ProgressText.Text = NewText;
-                        ProgressPercentageBar.Value = percentage;
+                        SetStatus("Flashing FFU...", (uint)percentage, NewText);
                     }
                     else
                     {
-                        LoadingRing.Visibility = Visibility.Visible;
-                        ProgressMessage.Text = "Initializing...";
-
-                        ProgressPercentageBar.Visibility = Visibility.Collapsed;
-                        ProgressSubMessage.Visibility = Visibility.Collapsed;
-                        ProgressText.Visibility = Visibility.Collapsed;
+                        SetStatus("Initializing...");
                     }
                 });
             });
 
-            ThreadPool.QueueUserWorkItem((o) =>
+            ThreadPool.QueueUserWorkItem(async (o) =>
             {
+                SetStatus("Initializing...");
+
                 using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
-                DeviceManager.Device.UnifiedFlashingPlatformTransport.FlashFFU(FFUStream, updater, true, 0);
+                DeviceManager.Device.UnifiedFlashingPlatformTransport.FlashFFU(FFUStream, updater);
 
-                DeviceManager.DeviceConnectedEvent += BootloaderMenuEscape_DeviceConnectedEvent;
+                SetStatus("Rebooting Phone...");
 
-                _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+                while (DeviceManager.Device.State == Device.DeviceStateEnum.UFP || DeviceManager.Device.State == Device.DeviceStateEnum.DISCONNECTED)
                 {
-                    LoadingRing.Visibility = Visibility.Visible;
-                    ProgressMessage.Text = "Initializing...";
+                    await Task.Delay(1000);
+                }
 
-                    ProgressPercentageBar.Visibility = Visibility.Collapsed;
-                    ProgressSubMessage.Visibility = Visibility.Collapsed;
-                    ProgressText.Visibility = Visibility.Collapsed;
+                if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+                {
+                    SetStatus("Escaping Bootloader Menu...");
 
+                    DeviceManager.Device.FastBootTransport.SetActiveOther();
+                    DeviceManager.Device.FastBootTransport.SetActiveOther();
+                    DeviceManager.Device.FastBootTransport.ContinueBoot();
+
+                    while (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+                    {
+                        await Task.Delay(1000);
+                    }
+
+                    SetStatus("Booting Phone...");
+
+                    while (DeviceManager.Device.State == Device.DeviceStateEnum.DISCONNECTED)
+                    {
+                        await Task.Delay(1000);
+                    }
+                }
+
+                SetStatus();
+            });
+        }
+
+        private void SetStatus(string? Message = null, uint? Percentage = null, string? Text = null, string? SubMessage = null)
+        {
+            _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+            {
+                if (Message == null && Percentage == null && Text == null && SubMessage == null)
+                {
                     ProgressOverlay.Visibility = Visibility.Collapsed;
                     FlashFFUPanel.Visibility = Visibility.Visible;
-                });
-            });
-        }
+                    return;
+                }
+                else
+                {
+                    FlashFFUPanel.Visibility = Visibility.Collapsed;
+                    ProgressOverlay.Visibility = Visibility.Visible;
+                }
 
-        private void BootloaderMenuEscape_DeviceConnectedEvent(object sender, Device device)
-        {
-            EscapeBootloaderMenu();
-            DeviceManager.DeviceConnectedEvent -= BootloaderMenuEscape_DeviceConnectedEvent;
-        }
+                if (Message != null)
+                {
+                    ProgressMessage.Text = Message;
+                    ProgressMessage.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressMessage.Visibility = Visibility.Collapsed;
+                }
 
-        private void EscapeBootloaderMenu()
-        {
-            if (!DeviceManager.Device.BootloaderConnected)
-            {
-                return;
-            }
+                if (Percentage != null)
+                {
+                    LoadingRing.Visibility = Visibility.Collapsed;
 
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
-            {
-                LoadingRing.Visibility = Visibility.Visible;
-                ProgressMessage.Text = "Escaping Bootloader Menu...";
+                    ProgressPercentageBar.Maximum = 100;
+                    ProgressPercentageBar.Minimum = 0;
+                    ProgressPercentageBar.Value = (int)Percentage;
 
-                ProgressPercentageBar.Visibility = Visibility.Collapsed;
-                ProgressSubMessage.Visibility = Visibility.Collapsed;
-                ProgressText.Visibility = Visibility.Collapsed;
+                    ProgressPercentageBar.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressPercentageBar.Visibility = Visibility.Collapsed;
+                    LoadingRing.Visibility = Visibility.Visible;
+                }
 
-                FlashFFUPanel.Visibility = Visibility.Collapsed;
-                ProgressOverlay.Visibility = Visibility.Visible;
-            });
+                if (Text != null)
+                {
+                    ProgressText.Text = Text;
+                    ProgressText.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressText.Visibility = Visibility.Collapsed;
+                }
 
-            DeviceManager.Device.FastBootTransport.SetActiveOther();
-            DeviceManager.Device.FastBootTransport.SetActiveOther();
-            DeviceManager.Device.FastBootTransport.ContinueBoot();
-
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
-            {
-                LoadingRing.Visibility = Visibility.Visible;
-                ProgressMessage.Text = "Initializing...";
-
-                ProgressPercentageBar.Visibility = Visibility.Collapsed;
-                ProgressSubMessage.Visibility = Visibility.Collapsed;
-                ProgressText.Visibility = Visibility.Collapsed;
-
-                ProgressOverlay.Visibility = Visibility.Collapsed;
-                FlashFFUPanel.Visibility = Visibility.Visible;
+                if (SubMessage != null)
+                {
+                    ProgressSubMessage.Text = SubMessage;
+                    ProgressSubMessage.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProgressSubMessage.Visibility = Visibility.Collapsed;
+                }
             });
         }
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
             {
                 if (!File.Exists(SelectedFFUPath))
                 {
@@ -251,7 +257,7 @@ namespace WOADeviceManager.Pages
 
         private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
         {
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
             {
                 if (!File.Exists(SelectedFFUPath))
                 {

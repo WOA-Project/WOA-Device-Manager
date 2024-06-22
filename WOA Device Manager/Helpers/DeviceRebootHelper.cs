@@ -99,10 +99,10 @@ namespace WOADeviceManager.Helpers
             {
                 _ = await FastbootProcedures.BootUEFI();
 
-                while (DeviceManager.Device.State != Device.DeviceStateEnum.WINDOWS)
+                /*while (DeviceManager.Device.State != Device.DeviceStateEnum.WINDOWS)
                 {
                     await Task.Delay(1000);
-                }
+                }*/
             }
         }
 

@@ -46,7 +46,7 @@
                 </Expander>
             </StackPanel>
 
-            <StackPanel Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
+            <StackPanel Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed">
                 <TextBlock Text="Security" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
 
                 <TextBlock x:Name="DeviceSecurityTextBlock" Opacity="0.8" TextWrapping="Wrap" />

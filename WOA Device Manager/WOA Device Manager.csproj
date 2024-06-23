@@ -32,6 +32,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\AppIcon.png" />
+    <None Remove="Controls\NavigationViewWindowControl.xaml" />
+    <None Remove="Pages\AboutPage.xaml" />
     <None Remove="Pages\BusyControl.xaml" />
     <None Remove="Pages\DevicePage.xaml" />
     <None Remove="Pages\FlashPage.xaml" />
@@ -111,7 +113,14 @@
     <Resource Remove="Pages\BusyControl.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
+    <Page Update="Controls\NavigationViewWindowControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\AboutPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\LockBootloaderPage.xaml">

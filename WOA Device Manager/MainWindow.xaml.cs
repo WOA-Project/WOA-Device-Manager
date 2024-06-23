@@ -6,9 +6,12 @@ namespace WOADeviceManager
 {
     public sealed partial class MainWindow : Window
     {
+        public static Window WindowInstance { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            WindowInstance = this;
 
             SystemBackdrop = new MicaBackdrop();
 

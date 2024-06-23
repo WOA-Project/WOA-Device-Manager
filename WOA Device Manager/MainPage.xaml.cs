@@ -54,7 +54,7 @@ namespace WOADeviceManager
             });
         }
 
-        private void MainNavigationSelectionChanged(object sender, NavigationViewSelectionChangedEventArgs e)
+        private async void MainNavigationSelectionChanged(object sender, NavigationViewSelectionChangedEventArgs e)
         {
             if (e.SelectedItem != null)
             {
@@ -62,19 +62,19 @@ namespace WOADeviceManager
                 switch (selectedItem.Tag)
                 {
                     case "status":
-                        _ = MainNavigationFrame.Navigate(typeof(DevicePage));
+                        _ = MainNavigationFrame.Navigate(typeof(DevicePage), null, e.RecommendedNavigationTransitionInfo);
                         break;
                     case "manualmode":
-                        _ = MainNavigationFrame.Navigate(typeof(SwitchModePage));
+                        _ = MainNavigationFrame.Navigate(typeof(SwitchModePage), null, e.RecommendedNavigationTransitionInfo);
                         break;
                     case "flashwindows":
-                        _ = MainNavigationFrame.Navigate(typeof(FlashPage));
+                        _ = MainNavigationFrame.Navigate(typeof(FlashPage), null, e.RecommendedNavigationTransitionInfo);
                         break;
                     case "unlockbootloader":
-                        _ = MainNavigationFrame.Navigate(typeof(UnlockBootloaderPage));
+                        _ = MainNavigationFrame.Navigate(typeof(UnlockBootloaderPage), null, e.RecommendedNavigationTransitionInfo);
                         break;
                     case "restorebootloader":
-                        _ = MainNavigationFrame.Navigate(typeof(LockBootloaderPage));
+                        _ = MainNavigationFrame.Navigate(typeof(LockBootloaderPage), null, e.RecommendedNavigationTransitionInfo);
                         break;
                     case "enabledualboot":
                     case "disabledualboot":
@@ -83,10 +83,16 @@ namespace WOADeviceManager
                     case "downloadwindows":
                         break;
                     case "partitions":
-                        _ = MainNavigationFrame.Navigate(typeof(PartitionsPage));
+                        _ = MainNavigationFrame.Navigate(typeof(PartitionsPage), null, e.RecommendedNavigationTransitionInfo);
                         break;
-                    case "debug":
-                        _ = MainNavigationFrame.Navigate(typeof(zDebugPage));
+                    case "about":
+                        _ = MainNavigationFrame.Navigate(typeof(AboutPage), null, e.RecommendedNavigationTransitionInfo);
+                        break;
+                    case "guides":
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/WOA-Project/SurfaceDuo-Guides/blob/main/README.md"));
+                        break;
+                    case "downloadffu":
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://fullflash.pvabel.net/DuoWOA/"));
                         break;
                 }
             }

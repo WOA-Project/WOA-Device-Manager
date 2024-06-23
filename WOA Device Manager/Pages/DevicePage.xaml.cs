@@ -39,29 +39,33 @@ namespace WOADeviceManager.Pages
         {
             string deviceIdentityString = "N/A";
 
-            if (device.IsADBCompatible && device.AndroidDebugBridgeTransport != null)
+            try
             {
-                (string variableName, string variableValue)[] allVariables = device.AndroidDebugBridgeTransport.GetAllVariables();
-
-                if (allVariables != null)
+                if (device.IsADBCompatible && device.AndroidDebugBridgeTransport != null)
                 {
-                    deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
+                    (string variableName, string variableValue)[] allVariables = device.AndroidDebugBridgeTransport.GetAllVariables();
+
+                    if (allVariables != null)
+                    {
+                        deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
+                    }
+                }
+                else if (device.IsFastBootCompatible && device.FastBootTransport != null)
+                {
+                    if (device.FastBootTransport.GetAllVariables(out (string variableName, string variableValue)[] allVariables))
+                    {
+                        deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
+                    }
+                }
+                else if (device.UFPConnected && device.UnifiedFlashingPlatformTransport != null)
+                {
+                    string PlatformID = device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
+                    string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadProcessorManufacturer();
+
+                    deviceIdentityString = $"Platform ID: {PlatformID}\nProcessor Manufacturer: {ProcessorManufacturer}";
                 }
             }
-            else if (device.IsFastBootCompatible && device.FastBootTransport != null)
-            {
-                if (device.FastBootTransport.GetAllVariables(out (string variableName, string variableValue)[] allVariables))
-                {
-                    deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
-                }
-            }
-            else if (device.UFPConnected && device.UnifiedFlashingPlatformTransport != null)
-            {
-                string PlatformID = device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
-                string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadProcessorManufacturer();
-
-                deviceIdentityString = $"Platform ID: {PlatformID}\nProcessor Manufacturer: {ProcessorManufacturer}";
-            }
+            catch { }
 
             return deviceIdentityString;
         }

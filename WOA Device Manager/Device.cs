@@ -9,18 +9,22 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID,
-            ANDROID_ADB_ENABLED,
             ANDROID_ADB_DISABLED,
+            ANDROID_ADB_ENABLED,
+            ANDROID,
             BOOTLOADER,
-            RECOVERY,
-            SIDELOAD,
             FASTBOOTD,
-            TWRP,
-            TWRP_MASS_STORAGE,
+            OFFLINE_CHARGING,
+            RECOVERY_ADB_DISABLED,
+            RECOVERY_ADB_ENABLED,
+            SIDELOAD_ADB_DISABLED,
+            SIDELOAD_ADB_ENABLED,
+            TWRP_ADB_DISABLED,
+            TWRP_ADB_ENABLED,
+            TWRP_MASS_STORAGE_ADB_DISABLED,
+            TWRP_MASS_STORAGE_ADB_ENABLED,
             UFP,
             WINDOWS,
-            OFFLINE_CHARGING,
             DISCONNECTED
         }
 
@@ -71,7 +75,7 @@ namespace WOADeviceManager
             get; set;
         }
 
-        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP or DeviceStateEnum.TWRP_MASS_STORAGE or DeviceStateEnum.RECOVERY or DeviceStateEnum.SIDELOAD;
+        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP_ADB_ENABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceStateEnum.RECOVERY_ADB_ENABLED or DeviceStateEnum.SIDELOAD_ADB_ENABLED;
         public bool IsFastBootCompatible => State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER;
 
         public string BatteryLevel => IsADBCompatible
@@ -80,18 +84,22 @@ namespace WOADeviceManager
 
         public string DeviceStateLocalized => State switch
         {
-            DeviceStateEnum.ANDROID => "Android",
-            DeviceStateEnum.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
             DeviceStateEnum.ANDROID_ADB_DISABLED => "Android (ADB Disconnected)",
-            DeviceStateEnum.WINDOWS => "Windows",
+            DeviceStateEnum.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
+            DeviceStateEnum.ANDROID => "Android",
             DeviceStateEnum.BOOTLOADER => "Bootloader",
             DeviceStateEnum.FASTBOOTD => "Fastboot",
-            DeviceStateEnum.RECOVERY => "Recovery",
-            DeviceStateEnum.SIDELOAD => "Sideload",
-            DeviceStateEnum.TWRP => "TWRP",
-            DeviceStateEnum.TWRP_MASS_STORAGE => "TWRP (Mass Storage Connected)",
-            DeviceStateEnum.UFP => "UFP",
             DeviceStateEnum.OFFLINE_CHARGING => "Offline Charging",
+            DeviceStateEnum.RECOVERY_ADB_DISABLED => "Recovery (ADB Disconnected)",
+            DeviceStateEnum.RECOVERY_ADB_ENABLED => "Recovery (ADB Connected)",
+            DeviceStateEnum.SIDELOAD_ADB_DISABLED => "Sideload (ADB Disconnected)",
+            DeviceStateEnum.SIDELOAD_ADB_ENABLED => "Sideload (ADB Connected)",
+            DeviceStateEnum.TWRP_ADB_DISABLED => "TWRP (ADB Disconnected)",
+            DeviceStateEnum.TWRP_ADB_ENABLED => "TWRP (ADB Connected)",
+            DeviceStateEnum.TWRP_MASS_STORAGE_ADB_DISABLED => "TWRP (Mass Storage Connected) (ADB Disconnected)",
+            DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED => "TWRP (Mass Storage Connected) (ADB Connected)",
+            DeviceStateEnum.UFP => "UFP",
+            DeviceStateEnum.WINDOWS => "Windows",
             DeviceStateEnum.DISCONNECTED => "Disconnected",
             _ => null,
         };
@@ -106,15 +114,15 @@ namespace WOADeviceManager
 
         public bool ADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
 
-        public bool TWRPConnected => State == DeviceStateEnum.TWRP;
+        public bool TWRPConnected => State == DeviceStateEnum.TWRP_ADB_ENABLED;
 
-        public bool MassStorageConnected => State == DeviceStateEnum.TWRP_MASS_STORAGE;
+        public bool MassStorageConnected => State == DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
 
         public bool FastBootDConnected => State == DeviceStateEnum.FASTBOOTD;
 
-        public bool RecoveryConnected => State == DeviceStateEnum.RECOVERY;
+        public bool RecoveryConnected => State == DeviceStateEnum.RECOVERY_ADB_ENABLED;
 
-        public bool SideloadConnected => State == DeviceStateEnum.SIDELOAD;
+        public bool SideloadConnected => State == DeviceStateEnum.SIDELOAD_ADB_ENABLED;
 
         public bool BootloaderConnected => State == DeviceStateEnum.BOOTLOADER;
 

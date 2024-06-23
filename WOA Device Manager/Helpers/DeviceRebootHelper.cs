@@ -62,7 +62,7 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToTWRPAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP or Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP_ADB_ENABLED or Device.DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED)
             {
                 return;
             }
@@ -76,7 +76,7 @@ namespace WOADeviceManager.Helpers
             {
                 _ = await FastbootProcedures.BootTWRP();
 
-                while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP)
+                while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP_ADB_ENABLED)
                 {
                     await Task.Delay(1000);
                 }
@@ -108,21 +108,21 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToMSCAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED)
             {
                 return;
             }
 
-            if (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP)
+            if (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP_ADB_ENABLED)
             {
                 await RebootToTWRPAndWait();
             }
 
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP)
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.TWRP_ADB_ENABLED)
             {
                 await ADBProcedures.EnableMassStorageMode();
 
-                while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+                while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED)
                 {
                     await Task.Delay(1000);
                 }
@@ -131,7 +131,7 @@ namespace WOADeviceManager.Helpers
 
         public static async Task RebootToRecoveryAndWait()
         {
-            if (DeviceManager.Device.State is Device.DeviceStateEnum.RECOVERY)
+            if (DeviceManager.Device.State is Device.DeviceStateEnum.RECOVERY_ADB_ENABLED)
             {
                 return;
             }
@@ -153,7 +153,7 @@ namespace WOADeviceManager.Helpers
                 throw new Exception("Rebooting from Windows to the bootloader is still unsupported.");
             }
 
-            while (DeviceManager.Device.State != Device.DeviceStateEnum.RECOVERY)
+            while (DeviceManager.Device.State != Device.DeviceStateEnum.RECOVERY_ADB_ENABLED)
             {
                 await Task.Delay(1000);
             }

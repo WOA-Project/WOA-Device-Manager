@@ -17,7 +17,7 @@ namespace WOADeviceManager.Pages
         {
             InitializeComponent();
 
-            if (DeviceManager.Device.State == Device.DeviceStateEnum.TWRP)
+            if (DeviceManager.Device.State == Device.DeviceStateEnum.TWRP_ADB_ENABLED)
             {
                 MainPage.ToggleLoadingScreen(true);
                 _ = RetrieveInitialState();

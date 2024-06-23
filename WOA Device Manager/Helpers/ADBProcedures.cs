@@ -6,74 +6,30 @@ namespace WOADeviceManager.Helpers
 {
     public class ADBProcedures
     {
-        private static object lockObject = new();
-
         public static string GetDeviceProductModel()
         {
-            lock (lockObject)
-            {
-                string result = null;
-                try
-                {
-                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.product.model");
-                }
-                catch (Exception) { }
-                return result;
-            }
+            return DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("ro.product.model");
         }
 
         public static string GetDeviceProductDevice()
         {
-            lock (lockObject)
-            {
-                string result = null;
-                try
-                {
-                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.product.device");
-                }
-                catch (Exception) { }
-                return result;
-            }
+            return DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("ro.product.device");
         }
 
         public static string GetDeviceProductName()
         {
-            lock (lockObject)
-            {
-                string result = null;
-                try
-                {
-                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.product.name");
-                }
-                catch (Exception) { }
-                return result;
-            }
+            return DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("ro.product.name");
         }
 
         public static string GetDeviceBuildVersionRelease()
         {
-            lock (lockObject)
-            {
-                string result = null;
-                try
-                {
-                    result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.build.version.release");
-                    return "Android " + result;
-                }
-                catch (Exception) { }
-                return result;
-            }
+            string? result = DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("ro.build.version.release");
+            return result == null ? null : $"Android {result}";
         }
 
         public static string GetDeviceBuildId()
         {
-            string result = null;
-            try
-            {
-                result = DeviceManager.Device.AndroidDebugBridgeTransport.Shell("getprop ro.build.id");
-            }
-            catch (Exception) { }
-            return result;
+            return DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("ro.build.id");
         }
 
         public static string GetDeviceWallpaperPath()
@@ -83,34 +39,22 @@ namespace WOADeviceManager.Helpers
 
         public static void RebootToBootloader()
         {
-            lock (lockObject)
-            {
-                DeviceManager.Device.AndroidDebugBridgeTransport.RebootBootloader();
-            }
+            DeviceManager.Device.AndroidDebugBridgeTransport.RebootBootloader();
         }
 
         public static void RebootToAndroid()
         {
-            lock (lockObject)
-            {
-                DeviceManager.Device.AndroidDebugBridgeTransport.Reboot();
-            }
+            DeviceManager.Device.AndroidDebugBridgeTransport.Reboot();
         }
 
         public static void RebootToFastbootD()
         {
-            lock (lockObject)
-            {
-                DeviceManager.Device.AndroidDebugBridgeTransport.RebootFastBootD();
-            }
+            DeviceManager.Device.AndroidDebugBridgeTransport.RebootFastBootD();
         }
 
         public static void RebootToRecovery()
         {
-            lock (lockObject)
-            {
-                DeviceManager.Device.AndroidDebugBridgeTransport.RebootRecovery();
-            }
+            DeviceManager.Device.AndroidDebugBridgeTransport.RebootRecovery();
         }
 
         public static async Task<bool> PushParted()
@@ -143,25 +87,22 @@ namespace WOADeviceManager.Helpers
 
         public static string GetDeviceBatteryLevel()
         {
-            lock (lockObject)
+            string result = null;
+            try
             {
-                string result = null;
-                try
+                result = DeviceManager.Device.AndroidDebugBridgeTransport?.Shell("dumpsys battery") ?? "";
+                if (result.Contains("level: "))
                 {
-                    result = DeviceManager.Device.AndroidDebugBridgeTransport?.Shell("dumpsys battery") ?? "";
-                    if (result.Contains("level: "))
-                    {
-                        result = result.Split("level: ")[1].Split("\n")[0].Trim();
-                    }
-                    else
-                    {
-                        result = null;
-                    }
-                    return result;
+                    result = result.Split("level: ")[1].Split("\n")[0].Trim();
                 }
-                catch (Exception) { }
+                else
+                {
+                    result = null;
+                }
                 return result;
             }
+            catch (Exception) { }
+            return result;
         }
 
         public static async Task EnableMassStorageMode()
@@ -169,14 +110,12 @@ namespace WOADeviceManager.Helpers
             string MassStorageOneLiner = @"setenforce 0; echo 0x05C6 > /config/usb_gadget/g1/idVendor; echo 0x9039 > /config/usb_gadget/g1/idProduct; echo 0xEF > /config/usb_gadget/g1/bDeviceClass; echo 0x02 > /config/usb_gadget/g1/bDeviceSubClass; echo 0x01 > /config/usb_gadget/g1/bDeviceProtocol; ln -s /config/usb_gadget/g1/functions/mass_storage.0/ /config/usb_gadget/g1/configs/b.1/; echo /dev/block/sda > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/file; echo 0 > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/removable; sh -c 'echo > /config/usb_gadget/g1/UDC; echo a600000.dwc3 > /config/usb_gadget/g1/UDC' &
 setenforce 0; echo 0x05C6 > /config/usb_gadget/g1/idVendor; echo 0x9039 > /config/usb_gadget/g1/idProduct; echo 0xEF > /config/usb_gadget/g1/bDeviceClass; echo 0x02 > /config/usb_gadget/g1/bDeviceSubClass; echo 0x01 > /config/usb_gadget/g1/bDeviceProtocol; ln -s /config/usb_gadget/g1/functions/mass_storage.0/ /config/usb_gadget/g1/configs/b.1/; echo /dev/block/sda > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/file; echo 0 > /config/usb_gadget/g1/configs/b.1/mass_storage.0/lun.0/removable; sh -c 'echo > /config/usb_gadget/g1/UDC; echo a600000.dwc3 > /config/usb_gadget/g1/UDC' &";
 
-            lock (lockObject)
+            try
             {
-                try
-                {
-                    DeviceManager.Device.AndroidDebugBridgeTransport.Shell(MassStorageOneLiner);
-                }
-                catch (Exception) { }
+                DeviceManager.Device.AndroidDebugBridgeTransport.Shell(MassStorageOneLiner);
             }
+            catch (Exception) { }
+
             await Task.Delay(200);
         }
     }

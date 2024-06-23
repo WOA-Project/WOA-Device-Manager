@@ -68,6 +68,24 @@ namespace WOADeviceManager.Managers
                 Debug.WriteLine($"Product: {Device.Product}");
                 Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
 
+                if (Device.AndroidDebugBridgeTransport != null)
+                {
+                    Device.AndroidDebugBridgeTransport.Dispose();
+                    Device.AndroidDebugBridgeTransport = null;
+                }
+
+                if (Device.FastBootTransport != null)
+                {
+                    Device.FastBootTransport.Dispose();
+                    Device.FastBootTransport = null;
+                }
+
+                if (Device.UnifiedFlashingPlatformTransport != null)
+                {
+                    Device.UnifiedFlashingPlatformTransport.Dispose();
+                    Device.UnifiedFlashingPlatformTransport = null;
+                }
+
                 Device.State = Device.DeviceStateEnum.DISCONNECTED;
                 Device.ID = null;
                 Device.Name = null;

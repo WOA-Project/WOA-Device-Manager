@@ -4,8 +4,9 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using UnifiedFlashingPlatform;
 using WOADeviceManager.Managers;
+using WOADeviceManager.Pages;
 
-namespace WOADeviceManager.Pages
+namespace WOADeviceManager
 {
     public sealed partial class MainPage : Page
     {

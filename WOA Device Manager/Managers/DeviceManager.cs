@@ -59,45 +59,68 @@ namespace WOADeviceManager.Managers
             _ = args.Properties.TryGetValue("System.Devices.InterfaceEnabled", out object? IsInterfaceEnabledObjectValue);
             bool IsInterfaceEnabled = (bool?)IsInterfaceEnabledObjectValue ?? false;
 
-            if (!IsInterfaceEnabled && args.Id == Device.ID)
+            // Disconnection
+            if (!IsInterfaceEnabled)
             {
-                Debug.WriteLine("Device Disconnected!");
-                Debug.WriteLine($"Device path: {Device.ID}");
-                Debug.WriteLine($"Name: {Device.Name}");
-                Debug.WriteLine($"Variant: {Device.Variant}");
-                Debug.WriteLine($"Product: {Device.Product}");
-                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                if (Device.AndroidDebugBridgeTransport != null)
+                if (args.Id == Device.ID)
                 {
-                    Device.AndroidDebugBridgeTransport.OnConnectionEstablished -= AndroidDebugBridgeTransport_OnConnectionEstablished;
-                    Device.AndroidDebugBridgeTransport.Dispose();
-                    Device.AndroidDebugBridgeTransport = null;
+                    Debug.WriteLine("Device Disconnected!");
+                    Debug.WriteLine($"Device path: {Device.ID}");
+                    Debug.WriteLine($"Name: {Device.Name}");
+                    Debug.WriteLine($"Variant: {Device.Variant}");
+                    Debug.WriteLine($"Product: {Device.Product}");
+                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                    if (Device.AndroidDebugBridgeTransport != null)
+                    {
+                        Device.AndroidDebugBridgeTransport.OnConnectionEstablished -= AndroidDebugBridgeTransport_OnConnectionEstablished;
+                        Device.AndroidDebugBridgeTransport.Dispose();
+                        Device.AndroidDebugBridgeTransport = null;
+                    }
+
+                    if (Device.FastBootTransport != null)
+                    {
+                        Device.FastBootTransport.Dispose();
+                        Device.FastBootTransport = null;
+                    }
+
+                    if (Device.UnifiedFlashingPlatformTransport != null)
+                    {
+                        Device.UnifiedFlashingPlatformTransport.Dispose();
+                        Device.UnifiedFlashingPlatformTransport = null;
+                    }
+
+                    Device.State = Device.DeviceStateEnum.DISCONNECTED;
+                    Device.ID = null;
+                    Device.Name = null;
+                    Device.Variant = null;
+                    // TODO: Device.Product = Device.Product;
+
+                    DeviceDisconnectedEvent?.Invoke(this, device);
+                }
+                else if (args.Id == Device.MassStorageID)
+                {
+                    Debug.WriteLine("Device Disconnected!");
+                    Debug.WriteLine($"Device path: {Device.MassStorageID}");
+                    Debug.WriteLine($"Name: {Device.Name}");
+                    Debug.WriteLine($"Variant: {Device.Variant}");
+                    Debug.WriteLine($"Product: {Device.Product}");
+                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                    switch (Device.State)
+                    {
+                        case Device.DeviceStateEnum.TWRP_MASS_STORAGE:
+                            {
+                                Device.State = Device.DeviceStateEnum.TWRP;
+                                break;
+                            }
+                    }
+
+                    Device.MassStorageID = null;
+
+                    DeviceDisconnectedEvent?.Invoke(this, device);
                 }
 
-                if (Device.FastBootTransport != null)
-                {
-                    Device.FastBootTransport.Dispose();
-                    Device.FastBootTransport = null;
-                }
-
-                if (Device.UnifiedFlashingPlatformTransport != null)
-                {
-                    Device.UnifiedFlashingPlatformTransport.Dispose();
-                    Device.UnifiedFlashingPlatformTransport = null;
-                }
-
-                Device.State = Device.DeviceStateEnum.DISCONNECTED;
-                Device.ID = null;
-                Device.Name = null;
-                Device.Variant = null;
-                // TODO: Device.Product = Device.Product;
-
-                DeviceDisconnectedEvent?.Invoke(this, device);
-                return;
-            }
-            else if (!IsInterfaceEnabled)
-            {
                 return;
             }
 
@@ -162,24 +185,14 @@ namespace WOADeviceManager.Managers
                 if (Device.State != Device.DeviceStateEnum.TWRP)
                 {
                     Device.State = Device.DeviceStateEnum.OFFLINE_CHARGING;
-                    Device.ID = ID;
-                    Device.Product = Device.DeviceProduct.Epsilon;
-                    Device.Name = "Surface Duo";
-                    Device.Variant = "N/A";
-
-                    Debug.WriteLine("New Device Found!");
-                    Debug.WriteLine($"Device path: {Device.ID}");
-                    Debug.WriteLine($"Name: {Device.Name}");
-                    Debug.WriteLine($"Variant: {Device.Variant}");
-                    Debug.WriteLine($"Product: {Device.Product}");
-                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                    DeviceConnectedEvent?.Invoke(this, device);
-                    return;
+                }
+                else
+                {
+                    Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 }
 
-                Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 // No ID, to be filled later
+                Device.MassStorageID = ID;
                 Device.Product = Device.DeviceProduct.Epsilon;
                 Device.Name = "Surface Duo";
                 Device.Variant = "N/A";
@@ -199,24 +212,14 @@ namespace WOADeviceManager.Managers
                 if (Device.State != Device.DeviceStateEnum.TWRP)
                 {
                     Device.State = Device.DeviceStateEnum.OFFLINE_CHARGING;
-                    Device.ID = ID;
-                    Device.Product = Device.DeviceProduct.Zeta;
-                    Device.Name = "Surface Duo 2";
-                    Device.Variant = "N/A";
-
-                    Debug.WriteLine("New Device Found!");
-                    Debug.WriteLine($"Device path: {Device.ID}");
-                    Debug.WriteLine($"Name: {Device.Name}");
-                    Debug.WriteLine($"Variant: {Device.Variant}");
-                    Debug.WriteLine($"Product: {Device.Product}");
-                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                    DeviceConnectedEvent?.Invoke(this, device);
-                    return;
+                }
+                else
+                {
+                    Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 }
 
-                Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 // No ID, to be filled later
+                Device.MassStorageID = ID;
                 Device.Product = Device.DeviceProduct.Zeta;
                 Device.Name = "Surface Duo 2";
                 Device.Variant = "N/A";
@@ -550,12 +553,11 @@ namespace WOADeviceManager.Managers
 
             if (ID.Contains("USB#VID_05C6&PID_9039"))
             {
-                if (Device.State == Device.DeviceStateEnum.OFFLINE_CHARGING)
+                if (Device.MassStorageID != null)
                 {
                     Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 }
-
-                if (Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+                else
                 {
                     Device.State = Device.DeviceStateEnum.TWRP;
                 }
@@ -587,12 +589,11 @@ namespace WOADeviceManager.Managers
             }
             else if (ID.Contains("USB#VID_18D1&PID_D001"))
             {
-                if (Device.State == Device.DeviceStateEnum.OFFLINE_CHARGING)
+                if (Device.MassStorageID != null)
                 {
                     Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 }
-
-                if (Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
+                else
                 {
                     Device.State = Device.DeviceStateEnum.TWRP;
                 }

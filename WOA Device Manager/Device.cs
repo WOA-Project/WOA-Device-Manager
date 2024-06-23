@@ -9,7 +9,19 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID, ANDROID_ADB_ENABLED, ANDROID_ADB_DISABLED, BOOTLOADER, RECOVERY, SIDELOAD, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, OFFLINE_CHARGING, DISCONNECTED
+            ANDROID,
+            ANDROID_ADB_ENABLED,
+            ANDROID_ADB_DISABLED,
+            BOOTLOADER,
+            RECOVERY,
+            SIDELOAD,
+            FASTBOOTD,
+            TWRP,
+            TWRP_MASS_STORAGE,
+            UFP,
+            WINDOWS,
+            OFFLINE_CHARGING,
+            DISCONNECTED
         }
 
         public enum OEMUnlockStateEnum
@@ -28,6 +40,11 @@ namespace WOADeviceManager
         }
 
         public string ID
+        {
+            get; set;
+        }
+
+        public string MassStorageID
         {
             get; set;
         }

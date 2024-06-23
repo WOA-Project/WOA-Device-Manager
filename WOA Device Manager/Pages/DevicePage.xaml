@@ -10,6 +10,12 @@
 
     <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto">
         <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+            <InfoBar x:Name="AllowADBInfoBar"
+                     IsOpen="{x:Bind device.IsADBDisconnected}"
+                     Severity="Warning"
+                     Title="Check your phone!"
+                     Message="Your phone should be showing a dialog asking your permission to allow this computer to connect. The tool needs the connection to be allowed in order to communicate with your device. Please tap allow." />
+            
             <StackPanel Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <TextBlock Text="General Info" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
 

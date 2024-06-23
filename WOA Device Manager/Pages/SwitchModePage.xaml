@@ -12,6 +12,12 @@
 
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
         <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+            <InfoBar x:Name="AllowADBInfoBar"
+                     IsOpen="{x:Bind manager:DeviceManager.Device.IsADBDisconnected}"
+                     Severity="Warning"
+                     Title="Check your phone!"
+                     Message="Your phone should be showing a dialog asking your permission to allow this computer to connect. The tool needs the connection to be allowed in order to communicate with your device. Please tap allow." />
+            
             <StackPanel Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <TextBlock Text="Switch mode" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
 
@@ -21,7 +27,7 @@
                 </TextBlock>
 
                 <StackPanel Spacing="16">
-                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.ADBConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.AndroidADBConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Android-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Android OS."/>

@@ -114,7 +114,11 @@ namespace WOADeviceManager
 
         public bool IsDisconnected => !IsConnected;
 
-        public bool ADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
+        public bool IsADBDisconnected => State == DeviceStateEnum.ANDROID_ADB_DISABLED || State == DeviceStateEnum.RECOVERY_ADB_DISABLED || State == DeviceStateEnum.SIDELOAD_ADB_DISABLED || State == DeviceStateEnum.TWRP_ADB_DISABLED || State == DeviceStateEnum.TWRP_MASS_STORAGE_ADB_DISABLED;
+
+        public bool IsADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED || State == DeviceStateEnum.RECOVERY_ADB_ENABLED || State == DeviceStateEnum.SIDELOAD_ADB_ENABLED || State == DeviceStateEnum.TWRP_ADB_ENABLED || State == DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
+
+        public bool AndroidADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
 
         public bool TWRPConnected => State == DeviceStateEnum.TWRP_ADB_ENABLED;
 

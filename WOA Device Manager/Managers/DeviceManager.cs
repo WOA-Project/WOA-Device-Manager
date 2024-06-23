@@ -22,6 +22,15 @@ namespace WOADeviceManager.Managers
         private const string OEMEP_TWRP_USBID = "USB#VID_05C6&PID_9039";
         private const string OEMZE_TWRP_USBID = "USB#VID_18D1&PID_D001";
 
+        private const string OEMEP_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo.1930";
+        private const string OEMZE_MMWAVE_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo 2.1995";
+        private const string OEMZE_NR_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo 2.1968";
+
+        private const string ADB_USB_INTERFACEGUID = "{dee824ef-729b-4a0e-9c14-b7117d33a817}";
+
+        private const string OEMEP_FRIENDLY_NAME = "Surface Duo";
+        private const string OEMZE_FRIENDLY_NAME = "Surface Duo 2";
+
         private readonly DeviceWatcher watcher;
 
         private static DeviceManager _instance;
@@ -224,7 +233,7 @@ namespace WOADeviceManager.Managers
                 // No ID, to be filled later
                 Device.MassStorageID = ID;
                 Device.Product = DeviceProduct.Epsilon;
-                Device.Name = "Surface Duo";
+                Device.Name = OEMEP_FRIENDLY_NAME;
                 Device.Variant = "N/A";
 
                 NotifyDeviceArrival();
@@ -249,7 +258,7 @@ namespace WOADeviceManager.Managers
                 // No ID, to be filled later
                 Device.MassStorageID = ID;
                 Device.Product = DeviceProduct.Zeta;
-                Device.Name = "Surface Duo 2";
+                Device.Name = OEMZE_FRIENDLY_NAME;
                 Device.Variant = "N/A";
 
                 NotifyDeviceArrival();
@@ -291,7 +300,7 @@ namespace WOADeviceManager.Managers
 
                     switch (PlatformID)
                     {
-                        case "Microsoft Corporation.Surface.Surface Duo.1930":
+                        case OEMEP_PLATFORMID:
                             {
                                 if (Device.State != DeviceState.DISCONNECTED)
                                 {
@@ -300,7 +309,7 @@ namespace WOADeviceManager.Managers
 
                                 Device.State = DeviceState.UFP;
                                 Device.ID = ID;
-                                Device.Name = "Surface Duo";
+                                Device.Name = OEMEP_FRIENDLY_NAME;
                                 Device.Variant = "N/A";
                                 Device.Product = DeviceProduct.Epsilon;
 
@@ -317,8 +326,8 @@ namespace WOADeviceManager.Managers
                                 NotifyDeviceArrival();
                                 return;
                             }
-                        case "Microsoft Corporation.Surface.Surface Duo 2.1995":
-                        case "Microsoft Corporation.Surface.Surface Duo 2.1968":
+                        case OEMZE_MMWAVE_PLATFORMID:
+                        case OEMZE_NR_PLATFORMID:
                             {
                                 if (Device.State != DeviceState.DISCONNECTED)
                                 {
@@ -327,7 +336,7 @@ namespace WOADeviceManager.Managers
 
                                 Device.State = DeviceState.UFP;
                                 Device.ID = ID;
-                                Device.Name = "Surface Duo 2";
+                                Device.Name = OEMZE_FRIENDLY_NAME;
                                 Device.Variant = "N/A";
                                 Device.Product = DeviceProduct.Zeta;
 
@@ -413,7 +422,7 @@ namespace WOADeviceManager.Managers
                                 }
 
                                 Device.ID = ID;
-                                Device.Name = "Surface Duo";
+                                Device.Name = OEMEP_FRIENDLY_NAME;
                                 Device.Variant = DeviceVariant;
                                 Device.Product = DeviceProduct.Epsilon;
 
@@ -448,7 +457,7 @@ namespace WOADeviceManager.Managers
                                 }
 
                                 Device.ID = ID;
-                                Device.Name = "Surface Duo 2";
+                                Device.Name = OEMZE_FRIENDLY_NAME;
                                 Device.Variant = DeviceVariant;
                                 Device.Product = DeviceProduct.Zeta;
 
@@ -491,7 +500,7 @@ namespace WOADeviceManager.Managers
              ID.Contains("USB#VID_045E&PID_0C2C&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C2E&MI_02#") ||
              ID.Contains(OEMEP_TWRP_USBID) ||
-             ID.Contains(OEMZE_TWRP_USBID)) && ID.Contains("{dee824ef-729b-4a0e-9c14-b7117d33a817}"))
+             ID.Contains(OEMZE_TWRP_USBID)) && ID.Contains(ADB_USB_INTERFACEGUID))
             {
                 Thread.Sleep(1000);
                 try
@@ -559,7 +568,7 @@ namespace WOADeviceManager.Managers
                 }
 
                 Device.ID = ID;
-                Device.Name = "Surface Duo";
+                Device.Name = OEMEP_FRIENDLY_NAME;
 
                 string DeviceVariant = Device.AndroidDebugBridgeTransport.GetVariableValue("ro.boot.product.hardware.sku");
                 switch (DeviceVariant)
@@ -600,14 +609,7 @@ namespace WOADeviceManager.Managers
                     Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
                 }
 
-                Debug.WriteLine("New Device Found!");
-                Debug.WriteLine($"Device path: {Device.ID}");
-                Debug.WriteLine($"Name: {Device.Name}");
-                Debug.WriteLine($"Variant: {Device.Variant}");
-                Debug.WriteLine($"Product: {Device.Product}");
-                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                DeviceConnectedEvent?.Invoke(this, device);
+                NotifyDeviceArrival();
                 return;
             }
             else if (ID.Contains(OEMZE_TWRP_USBID))
@@ -622,7 +624,7 @@ namespace WOADeviceManager.Managers
                 }
 
                 Device.ID = ID;
-                Device.Name = "Surface Duo 2";
+                Device.Name = OEMZE_FRIENDLY_NAME;
                 Device.Variant = "N/A";
                 Device.Product = DeviceProduct.Zeta;
 
@@ -636,14 +638,7 @@ namespace WOADeviceManager.Managers
                     Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
                 }
 
-                Debug.WriteLine("New Device Found!");
-                Debug.WriteLine($"Device path: {Device.ID}");
-                Debug.WriteLine($"Name: {Device.Name}");
-                Debug.WriteLine($"Variant: {Device.Variant}");
-                Debug.WriteLine($"Product: {Device.Product}");
-                Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                DeviceConnectedEvent?.Invoke(this, device);
+                NotifyDeviceArrival();
                 return;
             }
             else
@@ -675,7 +670,7 @@ namespace WOADeviceManager.Managers
                                 Device.State = DeviceState.ANDROID_ADB_ENABLED;
                             }
                             Device.ID = ID;
-                            Device.Name = "Surface Duo";
+                            Device.Name = OEMEP_FRIENDLY_NAME;
 
                             string ProductName = "N/A";
                             if (androidDebugBridgeTransport.GetPhoneConnectionVariables().ContainsKey("ro.product.name"))
@@ -719,14 +714,7 @@ namespace WOADeviceManager.Managers
                                 Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
                             }
 
-                            Debug.WriteLine("New Device Found!");
-                            Debug.WriteLine($"Device path: {Device.ID}");
-                            Debug.WriteLine($"Name: {Device.Name}");
-                            Debug.WriteLine($"Variant: {Device.Variant}");
-                            Debug.WriteLine($"Product: {Device.Product}");
-                            Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                            DeviceConnectedEvent?.Invoke(this, device);
+                            NotifyDeviceArrival();
                             return;
                         }
                     case "duo2":
@@ -745,7 +733,7 @@ namespace WOADeviceManager.Managers
                             }
 
                             Device.ID = ID;
-                            Device.Name = "Surface Duo 2";
+                            Device.Name = OEMZE_FRIENDLY_NAME;
                             Device.Variant = "N/A";
                             Device.Product = DeviceProduct.Zeta;
 
@@ -759,14 +747,7 @@ namespace WOADeviceManager.Managers
                                 Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
                             }
 
-                            Debug.WriteLine("New Device Found!");
-                            Debug.WriteLine($"Device path: {Device.ID}");
-                            Debug.WriteLine($"Name: {Device.Name}");
-                            Debug.WriteLine($"Variant: {Device.Variant}");
-                            Debug.WriteLine($"Product: {Device.Product}");
-                            Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
-
-                            DeviceConnectedEvent?.Invoke(this, device);
+                            NotifyDeviceArrival();
                             return;
                         }
                 }
@@ -799,7 +780,7 @@ namespace WOADeviceManager.Managers
                 }
 
                 Device.ID = ID;
-                Device.Name = "Surface Duo";
+                Device.Name = OEMEP_FRIENDLY_NAME;
                 Device.Variant = "N/A";
                 Device.Product = DeviceProduct.Epsilon;
 
@@ -833,7 +814,7 @@ namespace WOADeviceManager.Managers
                 }
 
                 Device.ID = ID;
-                Device.Name = "Surface Duo 2";
+                Device.Name = OEMZE_FRIENDLY_NAME;
                 Device.Variant = "N/A";
                 Device.Product = DeviceProduct.Zeta;
 
@@ -865,7 +846,7 @@ namespace WOADeviceManager.Managers
 
                             Device.State = DeviceState.ANDROID_ADB_DISABLED;
                             Device.ID = ID;
-                            Device.Name = "Surface Duo";
+                            Device.Name = OEMEP_FRIENDLY_NAME;
                             Device.Variant = "N/A";
                             Device.Product = DeviceProduct.Epsilon;
 
@@ -892,7 +873,7 @@ namespace WOADeviceManager.Managers
                             Device.State = DeviceState.ANDROID_ADB_DISABLED;
 
                             Device.ID = ID;
-                            Device.Name = "Surface Duo 2";
+                            Device.Name = OEMZE_FRIENDLY_NAME;
                             Device.Variant = "N/A";
                             Device.Product = DeviceProduct.Zeta;
 

@@ -12,6 +12,15 @@ namespace WOADeviceManager.Managers
 {
     public class DeviceManager
     {
+        private const string OEMEP_MassStorage_LinuxGadget_USBID = "USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0414#";
+        private const string OEMZE_MassStorage_LinuxGadget_USBID = "USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0504#";
+        private const string WINDOWS_USBID = "VID_045E&PID_0C2A&MI_00";
+        private const string UFP_USBID = "USB#VID_045E&PID_066B#";
+        private const string FASTBOOT_USBID = "USB#VID_045E&PID_0C2F#";
+        private const string ANDROID_USBID = "USB#VID_045E&PID_0C29";
+        private const string OEMEP_TWRP_USBID = "USB#VID_05C6&PID_9039";
+        private const string OEMZE_TWRP_USBID = "USB#VID_18D1&PID_D001";
+
         private readonly DeviceWatcher watcher;
 
         private static DeviceManager _instance;
@@ -195,7 +204,7 @@ namespace WOADeviceManager.Managers
             // AdbCompositePTP    = "Surface Duo Composite ADB PTP"
             // AdbCompositeMIDI   = "Surface Duo Composite ADB MIDI"
 
-            if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0414#"))
+            if (ID.Contains(OEMEP_MassStorage_LinuxGadget_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
                 {
@@ -220,7 +229,7 @@ namespace WOADeviceManager.Managers
                 NotifyDeviceArrival();
                 return;
             }
-            else if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0504#"))
+            else if (ID.Contains(OEMZE_MassStorage_LinuxGadget_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
                 {
@@ -245,7 +254,7 @@ namespace WOADeviceManager.Managers
                 NotifyDeviceArrival();
                 return;
             }
-            else if (ID.Contains("VID_045E&PID_0C2A&MI_00"))
+            else if (ID.Contains(WINDOWS_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
                 {
@@ -260,7 +269,7 @@ namespace WOADeviceManager.Managers
 
                 NotifyDeviceArrival();
             }
-            else if (ID.Contains("USB#VID_045E&PID_066B#"))
+            else if (ID.Contains(UFP_USBID))
             {
                 try
                 {
@@ -341,7 +350,7 @@ namespace WOADeviceManager.Managers
             }
             // Normal:
             // Surface Duo Fastboot
-            else if (ID.Contains("USB#VID_045E&PID_0C2F#"))
+            else if (ID.Contains(FASTBOOT_USBID))
             {
                 try
                 {
@@ -480,8 +489,8 @@ namespace WOADeviceManager.Managers
              ID.Contains("USB#VID_045E&PID_0C2A&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C2C&MI_01#") ||
              ID.Contains("USB#VID_045E&PID_0C2E&MI_02#") ||
-             ID.Contains("USB#VID_05C6&PID_9039") ||
-             ID.Contains("USB#VID_18D1&PID_D001")) && ID.Contains("{dee824ef-729b-4a0e-9c14-b7117d33a817}"))
+             ID.Contains(OEMEP_TWRP_USBID) ||
+             ID.Contains(OEMZE_TWRP_USBID)) && ID.Contains("{dee824ef-729b-4a0e-9c14-b7117d33a817}"))
             {
                 Thread.Sleep(1000);
                 try
@@ -511,7 +520,7 @@ namespace WOADeviceManager.Managers
                 }
                 catch { }
             }
-            else if (ID.Contains("USB#VID_045E&PID_0C29"))
+            else if (ID.Contains(ANDROID_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
                 {
@@ -537,7 +546,7 @@ namespace WOADeviceManager.Managers
 
             string ID = androidDebugBridgeTransport.DevicePath;
 
-            if (ID.Contains("USB#VID_05C6&PID_9039"))
+            if (ID.Contains(OEMEP_TWRP_USBID))
             {
                 if (Device.MassStorageID != null)
                 {
@@ -573,7 +582,7 @@ namespace WOADeviceManager.Managers
                 DeviceConnectedEvent?.Invoke(this, device);
                 return;
             }
-            else if (ID.Contains("USB#VID_18D1&PID_D001"))
+            else if (ID.Contains(OEMZE_TWRP_USBID))
             {
                 if (Device.MassStorageID != null)
                 {
@@ -745,7 +754,7 @@ namespace WOADeviceManager.Managers
 
             string ID = androidDebugBridgeTransport.DevicePath;
 
-            if (ID.Contains("USB#VID_05C6&PID_9039"))
+            if (ID.Contains(OEMEP_TWRP_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
                 {
@@ -779,7 +788,7 @@ namespace WOADeviceManager.Managers
                 NotifyDeviceArrival();
                 return;
             }
-            else if (ID.Contains("USB#VID_18D1&PID_D001"))
+            else if (ID.Contains(OEMZE_TWRP_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
                 {

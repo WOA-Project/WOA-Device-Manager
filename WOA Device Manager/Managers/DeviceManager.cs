@@ -158,6 +158,25 @@ namespace WOADeviceManager.Managers
 
             if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0414#"))
             {
+                if (Device.State != Device.DeviceStateEnum.TWRP)
+                {
+                    Device.State = Device.DeviceStateEnum.OFFLINE_CHARGING;
+                    Device.ID = ID;
+                    Device.Product = Device.DeviceProduct.Epsilon;
+                    Device.Name = "Surface Duo";
+                    Device.Variant = "N/A";
+
+                    Debug.WriteLine("New Device Found!");
+                    Debug.WriteLine($"Device path: {Device.ID}");
+                    Debug.WriteLine($"Name: {Device.Name}");
+                    Debug.WriteLine($"Variant: {Device.Variant}");
+                    Debug.WriteLine($"Product: {Device.Product}");
+                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                    DeviceConnectedEvent?.Invoke(this, device);
+                    return;
+                }
+
                 Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 // No ID, to be filled later
                 Device.Product = Device.DeviceProduct.Epsilon;
@@ -176,6 +195,25 @@ namespace WOADeviceManager.Managers
             }
             else if (ID.Contains("USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0504#"))
             {
+                if (Device.State != Device.DeviceStateEnum.TWRP)
+                {
+                    Device.State = Device.DeviceStateEnum.OFFLINE_CHARGING;
+                    Device.ID = ID;
+                    Device.Product = Device.DeviceProduct.Zeta;
+                    Device.Name = "Surface Duo 2";
+                    Device.Variant = "N/A";
+
+                    Debug.WriteLine("New Device Found!");
+                    Debug.WriteLine($"Device path: {Device.ID}");
+                    Debug.WriteLine($"Name: {Device.Name}");
+                    Debug.WriteLine($"Variant: {Device.Variant}");
+                    Debug.WriteLine($"Product: {Device.Product}");
+                    Debug.WriteLine($"State: {Device.DeviceStateLocalized}");
+
+                    DeviceConnectedEvent?.Invoke(this, device);
+                    return;
+                }
+
                 Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
                 // No ID, to be filled later
                 Device.Product = Device.DeviceProduct.Zeta;
@@ -459,10 +497,16 @@ namespace WOADeviceManager.Managers
 
                     if (ID.Contains("USB#VID_05C6&PID_9039"))
                     {
+                        if (Device.State == Device.DeviceStateEnum.OFFLINE_CHARGING)
+                        {
+                            Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
+                        }
+
                         if (Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
                         {
                             Device.State = Device.DeviceStateEnum.TWRP;
                         }
+
                         Device.ID = ID;
                         Device.Name = "Surface Duo";
                         Device.Variant = "N/A";
@@ -490,10 +534,16 @@ namespace WOADeviceManager.Managers
                     }
                     else if (ID.Contains("USB#VID_18D1&PID_D001"))
                     {
+                        if (Device.State == Device.DeviceStateEnum.OFFLINE_CHARGING)
+                        {
+                            Device.State = Device.DeviceStateEnum.TWRP_MASS_STORAGE;
+                        }
+
                         if (Device.State != Device.DeviceStateEnum.TWRP_MASS_STORAGE)
                         {
                             Device.State = Device.DeviceStateEnum.TWRP;
                         }
+
                         Device.ID = ID;
                         Device.Name = "Surface Duo 2";
                         Device.Variant = "N/A";

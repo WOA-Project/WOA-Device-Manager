@@ -9,7 +9,7 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, SIDELOAD, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, DISCONNECTED
+            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, SIDELOAD, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, OFFLINE_CHARGING, DISCONNECTED
         }
 
         public enum OEMUnlockStateEnum
@@ -73,6 +73,7 @@ namespace WOADeviceManager
             DeviceStateEnum.TWRP => "TWRP",
             DeviceStateEnum.TWRP_MASS_STORAGE => "TWRP (Mass Storage Connected)",
             DeviceStateEnum.UFP => "UFP",
+            DeviceStateEnum.OFFLINE_CHARGING => "Offline Charging",
             DeviceStateEnum.DISCONNECTED => "Disconnected",
             _ => null,
         };

@@ -104,10 +104,12 @@ namespace WOADeviceManager
             _ => null,
         };
 
+        public bool JustDisconnected = false;
+
         public bool IsConnected => State switch
         {
             DeviceStateEnum.DISCONNECTED => false,
-            _ => true,
+            _ => !JustDisconnected,
         };
 
         public bool IsDisconnected => !IsConnected;

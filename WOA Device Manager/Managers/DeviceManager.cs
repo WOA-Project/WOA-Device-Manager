@@ -142,6 +142,8 @@ namespace WOADeviceManager.Managers
 
         private void NotifyDeviceArrival()
         {
+            Device.JustDisconnected = false;
+
             Debug.WriteLine("New Device Found!");
             Debug.WriteLine($"Device path: {Device.ID}");
             Debug.WriteLine($"Name: {Device.Name}");
@@ -154,6 +156,8 @@ namespace WOADeviceManager.Managers
 
         private void NotifyDeviceDeparture()
         {
+            Device.JustDisconnected = true;
+
             Debug.WriteLine("Device Disconnected!");
             Debug.WriteLine($"Device path: {Device.ID}");
             Debug.WriteLine($"Name: {Device.Name}");

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnifiedFlashingPlatform;
 using Windows.Devices.Enumeration;
 using WOADeviceManager.Managers.Connectivity;
@@ -559,7 +560,34 @@ namespace WOADeviceManager.Managers
 
                 Device.ID = ID;
                 Device.Name = "Surface Duo";
-                Device.Variant = "N/A";
+
+                string DeviceVariant = Device.AndroidDebugBridgeTransport.GetVariableValue("ro.boot.product.hardware.sku");
+                switch (DeviceVariant)
+                {
+                    case "gen":
+                        {
+                            DeviceVariant = "GEN";
+                            break;
+                        }
+                    case "att":
+                        {
+                            DeviceVariant = "ATT";
+                            break;
+                        }
+                    case "eea":
+                        {
+                            DeviceVariant = "EEA";
+                            break;
+                        }
+                    default:
+                        {
+                            DeviceVariant = "N/A";
+                            break;
+                        }
+                }
+
+                Device.Variant = DeviceVariant;
+
                 Device.Product = DeviceProduct.Epsilon;
 
                 if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)

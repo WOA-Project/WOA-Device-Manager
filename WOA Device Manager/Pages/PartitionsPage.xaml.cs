@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WOADeviceManager.Entities;
 using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
+using WOADeviceManager.Managers.Connectivity;
 
 namespace WOADeviceManager.Pages
 {
@@ -17,7 +18,7 @@ namespace WOADeviceManager.Pages
         {
             InitializeComponent();
 
-            if (DeviceManager.Device.State == Device.DeviceStateEnum.TWRP_ADB_ENABLED)
+            if (DeviceManager.Device.State == DeviceState.TWRP_ADB_ENABLED)
             {
                 MainPage.ToggleLoadingScreen(true);
                 _ = RetrieveInitialState();

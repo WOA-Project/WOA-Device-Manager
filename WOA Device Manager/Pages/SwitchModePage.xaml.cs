@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
+using WOADeviceManager.Managers.Connectivity;
 
 namespace WOADeviceManager.Pages
 {

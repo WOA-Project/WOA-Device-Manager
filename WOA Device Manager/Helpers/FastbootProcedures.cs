@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Windows.Storage;
 using WOADeviceManager.Managers;
+using WOADeviceManager.Managers.Connectivity;
 
 namespace WOADeviceManager.Helpers
 {
@@ -37,7 +38,18 @@ namespace WOADeviceManager.Helpers
             _ = DeviceManager.Device.FastBootTransport.RebootFastBootD();
         }
 
-        public static bool FlashUnlock(Control frameHost = null)
+        public static bool IsUnlocked()
+        {
+            bool result = DeviceManager.Device.FastBootTransport.GetVariable("unlocked", out string unlockedVariable);
+            if (result)
+            {
+                return false;
+            }
+
+            return unlockedVariable == "yes";
+        }
+
+        public static bool CanUnlock()
         {
             bool result = DeviceManager.Device.FastBootTransport.FlashingGetUnlockAbility(out bool canUnlock);
             if (result)
@@ -45,7 +57,12 @@ namespace WOADeviceManager.Helpers
                 return false;
             }
 
-            if (canUnlock)
+            return canUnlock;
+        }
+
+        public static bool FlashUnlock(Control frameHost = null)
+        {
+            if (CanUnlock())
             {
                 ContentDialog dialog = new()
                 {
@@ -53,19 +70,21 @@ namespace WOADeviceManager.Helpers
                     Content = "Flash unlocking requires everything to be formatted. MAKE SURE YOU HAVE MADE A COPY OF EVERYTHING. We're not responsible for data loss.",
                     PrimaryButtonText = "⚠️ Proceed"
                 };
+
                 dialog.PrimaryButtonClick += (ContentDialog dialog, ContentDialogButtonClickEventArgs args) =>
                 {
-                    Debug.WriteLine("hi");
-                    // TODO: Disabled for safety
-                    //return DeviceManager.Device.FastBootTransport.FlashingUnlock(); // TODO: error handling here, always returns true rn ofc
+                    DeviceManager.Device.FastBootTransport.FlashingUnlock();
                     dialog.Hide();
                 };
+
                 dialog.CloseButtonText = "Cancel";
+
                 if (frameHost != null)
                 {
                     dialog.XamlRoot = frameHost.XamlRoot;
                 }
                 _ = dialog.ShowAsync();
+
                 return true;
             }
             else
@@ -76,14 +95,16 @@ namespace WOADeviceManager.Helpers
                     Content = "Flash Unlocking is disabled from Developer Settings in Android. Please enable it manually from there.",
                     CloseButtonText = "OK"
                 };
+
                 if (frameHost != null)
                 {
                     dialog.XamlRoot = frameHost.XamlRoot;
                 }
+
                 _ = dialog.ShowAsync();
+
                 return false;
             }
-
         }
 
         public static bool FlashLock(Control frameHost = null)
@@ -95,30 +116,33 @@ namespace WOADeviceManager.Helpers
                 Content = "This procedure will lock your bootloader. You usually don't want to do this unless you have to sell your device.",
                 PrimaryButtonText = "⚠️ Proceed"
             };
+
             dialog.PrimaryButtonClick += (ContentDialog dialog, ContentDialogButtonClickEventArgs args) =>
             {
-                Debug.WriteLine("hi");
-                // TODO: Disabled for safety
-                //return DeviceManager.Device.FastBootTransport.FlashingLock(); // TODO: error handling here, always returns true rn ofc
+                DeviceManager.Device.FastBootTransport.FlashingLock();
                 dialog.Hide();
             };
+
             dialog.CloseButtonText = "Cancel";
+
             if (frameHost != null)
             {
                 dialog.XamlRoot = frameHost.XamlRoot;
             }
+
             _ = dialog.ShowAsync();
+
             return true;
         }
 
         public static async Task<bool> BootTWRP()
         {
-            if (DeviceManager.Device.Product == Device.DeviceProduct.Epsilon)
+            if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
             {
                 StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON, true);
                 return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
             }
-            else if (DeviceManager.Device.Product == Device.DeviceProduct.Zeta)
+            else if (DeviceManager.Device.Product == DeviceProduct.Zeta)
             {
                 StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA, true);
                 return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
@@ -131,7 +155,7 @@ namespace WOADeviceManager.Helpers
 
         public static async Task<bool> BootUEFI()
         {
-            if (DeviceManager.Device.Product == Device.DeviceProduct.Epsilon)
+            if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
             {
                 StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON, true);
                 if (uefi == null)
@@ -144,7 +168,7 @@ namespace WOADeviceManager.Helpers
 
                 return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo (1st Gen) UEFI (Fast Boot)\\uefi.img");
             }
-            else if (DeviceManager.Device.Product == Device.DeviceProduct.Zeta)
+            else if (DeviceManager.Device.Product == DeviceProduct.Zeta)
             {
                 StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_ZETA, true);
                 if (uefi == null)

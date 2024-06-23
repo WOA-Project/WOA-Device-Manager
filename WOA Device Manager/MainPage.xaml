@@ -65,10 +65,42 @@
             </NavigationView.MenuItems>
             <Grid>
                 <Grid Margin="0,40,20,20" CornerRadius="4" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" Opacity="0.65" />
-                <Frame x:Name="MainNavigationFrame" BorderThickness="1" BorderBrush="#4C8E8E8E" Margin="0,40,20,20" CornerRadius="4" />
-                <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
-                <Grid x:Name="ProgressOverlay" Margin="0,40,20,20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
-                    <controls:BusyControl x:Name="BusyControl" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+                <Grid Margin="0,40,20,20" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    
+                    <InfoBar x:Name="AllowADBInfoBar"
+                             Grid.Row="0"
+                             IsOpen="{x:Bind device.IsADBDisabled}"
+                             Visibility="{x:Bind device.IsADBDisabled}"
+                             IsClosable="False"
+                             Severity="Warning"
+                             Title="Check your phone!"
+                             Message="Your phone should be showing a dialog asking your permission to allow this computer to connect. The tool needs the connection to be allowed in order to communicate with your device. Please tap allow. If you do not get a popup, tap retry below.">
+                        <InfoBar.ActionButton>
+                            <Button Content="Retry" Click="RetryButton_Click" />
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+
+                    <InfoBar x:Name="EnableUSBDebuggingInfoBar"
+                             Grid.Row="0"
+                             IsOpen="{x:Bind device.IsUSBDebuggingDisabled}"
+                             Visibility="{x:Bind device.IsUSBDebuggingDisabled}"
+                             IsClosable="False"
+                             Severity="Error"
+                             Title="You need to enable USB Debugging!"
+                             Message="Your phone currently has USB Debugging turned off in Developer Options. The tools needs USB Debugging in order to communicate with your device. Go to Settings, About, Tap the Build number field 7 times, go back into Settings, go to System, Developer options, Scroll all the way down til you see USB debugging, Turn USB debugging on." />
+
+                    <Grid Grid.Row="1">
+                        <Frame x:Name="MainNavigationFrame"   />
+                        <!-- TODO: Animated Windows 11 OOBE-style bokeh background animation during the progress overlay -->
+                        <Grid x:Name="ProgressOverlay" Padding="16" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="Collapsed" Opacity="0">
+                            <controls:BusyControl x:Name="BusyControl" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </NavigationView>

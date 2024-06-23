@@ -11,17 +11,17 @@
     <Grid>
         <StackPanel Padding="16" Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsADBConnected}">🔄️ Reboot to Bootloader</Button>
-                <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected}">🔄️ Reboot to Android</Button>
-                <Button Click="BootTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected}">🔄️ Reboot to TWRP</Button>
+                <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsADBEnabled}">🔄️ Reboot to Bootloader</Button>
+                <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInBootloader}">🔄️ Reboot to Android</Button>
+                <Button Click="BootTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInBootloader}">🔄️ Reboot to TWRP</Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Click="FlashUnlock_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected}">🔓 Flash Unlock ⚠️</Button>
-                <Button Click="FlashLock_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected}">🔒 Flash Lock ⚠️</Button>
+                <Button Click="FlashUnlock_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInBootloader}">🔓 Flash Unlock ⚠️</Button>
+                <Button Click="FlashLock_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInBootloader}">🔒 Flash Lock ⚠️</Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Click="PushParted_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.TWRPConnected}">📲 Push parted</Button>
-                <Button Click="MassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.TWRPConnected}">📲 Enable Mass Storage Mode</Button>
+                <Button Click="PushParted_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInTWRP}">📲 Push parted</Button>
+                <Button Click="MassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInTWRP}">📲 Enable Mass Storage Mode</Button>
             </StackPanel>
             <TextBlock x:Name="DebugInfo" TextWrapping="Wrap"></TextBlock>
         </StackPanel>

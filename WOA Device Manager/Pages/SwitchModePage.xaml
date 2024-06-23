@@ -12,12 +12,6 @@
 
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
         <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
-            <InfoBar x:Name="AllowADBInfoBar"
-                     IsOpen="{x:Bind manager:DeviceManager.Device.IsADBDisconnected}"
-                     Severity="Warning"
-                     Title="Check your phone!"
-                     Message="Your phone should be showing a dialog asking your permission to allow this computer to connect. The tool needs the connection to be allowed in order to communicate with your device. Please tap allow." />
-            
             <StackPanel Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <TextBlock Text="Switch mode" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
 
@@ -27,67 +21,67 @@
                 </TextBlock>
 
                 <StackPanel Spacing="16">
-                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.AndroidConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInAndroid.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Android-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Android OS."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.BootloaderConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToBootloader_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInBootloader.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Bootloader-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This is the interface that can be used to switch to additional operating modes. It can also be used to retrieve additional info and security status."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToFastBootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.FastBootDConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToFastBootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInFastBootD.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to FastBoot-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This is the interface that can be used to flash a new ROM image. It can also be used to retrieve additional info and security status."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToMassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.MassStorageConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToMassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInMassStorage.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Mass-Storage-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the phone."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToRecovery_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.RecoveryConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToRecovery_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInRecovery.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Recovery-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Android Recovery."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.TWRPConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToTWRP_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInTWRP.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to TWRP-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to TWRP Recovery."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToWindows_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.WindowsConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToWindows_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInWindows.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Windows-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Windows OS."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="Shutdown_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="Shutdown_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Shutdown the phone (UFP)"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will shutdown your phone. After selecting this option, you'll need to unplug your phone from your computer."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="Reboot_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="Reboot_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Reboot the phone (UFP)"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will reboot your phone."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="Continue_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="Continue_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Continue to Windows (UFP)"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will continue to Windows OS."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="MassStorage_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.UFPConnected}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="MassStorage_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Mass-Storage-mode (UFP)"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the phone."/>

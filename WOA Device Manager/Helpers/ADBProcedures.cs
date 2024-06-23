@@ -57,6 +57,16 @@ namespace WOADeviceManager.Helpers
             DeviceManager.Device.AndroidDebugBridgeTransport.RebootRecovery();
         }
 
+        public static bool IsUnlocked()
+        {
+            return DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("ro.boot.flash.locked") == "0";
+        }
+
+        public static bool CanUnlock()
+        {
+            return DeviceManager.Device.AndroidDebugBridgeTransport.GetVariableValue("sys.oem_unlock_allowed") == "1";
+        }
+
         public static async Task<bool> PushParted()
         {
             /*StorageFile parted = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.PARTED);

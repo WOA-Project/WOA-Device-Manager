@@ -11,6 +11,7 @@ using UnifiedFlashingPlatform;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using WOADeviceManager.Managers;
+using WOADeviceManager.Managers.Connectivity;
 
 namespace WOADeviceManager.Pages
 {
@@ -85,12 +86,12 @@ namespace WOADeviceManager.Pages
 
                 MainPage.SetStatus("Rebooting Phone...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
 
-                while (DeviceManager.Device.State == Device.DeviceStateEnum.UFP || DeviceManager.Device.State == Device.DeviceStateEnum.DISCONNECTED)
+                while (DeviceManager.Device.State == DeviceState.UFP || DeviceManager.Device.State == DeviceState.DISCONNECTED)
                 {
                     await Task.Delay(1000);
                 }
 
-                if (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+                if (DeviceManager.Device.State == DeviceState.BOOTLOADER)
                 {
                     MainPage.SetStatus("Escaping Bootloader Menu...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
 
@@ -98,14 +99,14 @@ namespace WOADeviceManager.Pages
                     DeviceManager.Device.FastBootTransport.SetActiveOther();
                     DeviceManager.Device.FastBootTransport.ContinueBoot();
 
-                    while (DeviceManager.Device.State == Device.DeviceStateEnum.BOOTLOADER)
+                    while (DeviceManager.Device.State == DeviceState.BOOTLOADER)
                     {
                         await Task.Delay(1000);
                     }
 
                     MainPage.SetStatus("Booting Phone...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
 
-                    while (DeviceManager.Device.State == Device.DeviceStateEnum.DISCONNECTED)
+                    while (DeviceManager.Device.State == DeviceState.DISCONNECTED)
                     {
                         await Task.Delay(1000);
                     }

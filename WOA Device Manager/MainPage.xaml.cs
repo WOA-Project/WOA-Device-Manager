@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using UnifiedFlashingPlatform;
 using WOADeviceManager.Managers;
+using WOADeviceManager.Managers.Connectivity;
 using WOADeviceManager.Pages;
 
 namespace WOADeviceManager
@@ -201,6 +202,14 @@ namespace WOADeviceManager
         {
             DeviceManager.DeviceConnectedEvent -= DeviceManager_DeviceConnectedEvent;
             DeviceManager.DeviceDisconnectedEvent -= Instance_DeviceDisconnectedEvent;
+        }
+
+        private void RetryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DeviceManager.Device.AndroidDebugBridgeTransport != null)
+            {
+                DeviceManager.Device.AndroidDebugBridgeTransport.Connect();
+            }
         }
     }
 }

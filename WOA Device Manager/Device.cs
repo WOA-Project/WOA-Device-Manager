@@ -9,7 +9,7 @@ namespace WOADeviceManager
     {
         public enum DeviceStateEnum
         {
-            ANDROID, ANDROID_ADB_ENABLED, BOOTLOADER, RECOVERY, SIDELOAD, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, OFFLINE_CHARGING, DISCONNECTED
+            ANDROID, ANDROID_ADB_ENABLED, ANDROID_ADB_DISABLED, BOOTLOADER, RECOVERY, SIDELOAD, FASTBOOTD, TWRP, TWRP_MASS_STORAGE, UFP, WINDOWS, OFFLINE_CHARGING, DISCONNECTED
         }
 
         public enum OEMUnlockStateEnum
@@ -65,6 +65,7 @@ namespace WOADeviceManager
         {
             DeviceStateEnum.ANDROID => "Android",
             DeviceStateEnum.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
+            DeviceStateEnum.ANDROID_ADB_DISABLED => "Android (ADB Disconnected)",
             DeviceStateEnum.WINDOWS => "Windows",
             DeviceStateEnum.BOOTLOADER => "Bootloader",
             DeviceStateEnum.FASTBOOTD => "Fastboot",

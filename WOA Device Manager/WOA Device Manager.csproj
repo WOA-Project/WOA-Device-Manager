@@ -35,6 +35,7 @@
     <None Remove="Pages\BusyControl.xaml" />
     <None Remove="Pages\DevicePage.xaml" />
     <None Remove="Pages\FlashPage.xaml" />
+    <None Remove="Pages\LockBootloaderPage.xaml" />
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\PartitionsPage.xaml" />
     <None Remove="Pages\SwitchModePage.xaml" />
@@ -111,6 +112,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\LockBootloaderPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\UnlockBootloaderPage.xaml">

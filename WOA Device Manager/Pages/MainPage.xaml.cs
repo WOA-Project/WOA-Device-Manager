@@ -143,7 +143,7 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        public static UnifiedFlashingPlatformTransport.ProgressUpdater GetProgressUpdater(ulong MaxValue, string Message, string? SubMessage = null, string? Title = null, string? SubTitle = null, string? Emoji = null)
+        public static ProgressUpdater GetProgressUpdater(ulong MaxValue, string Message, string? SubMessage = null, string? Title = null, string? SubTitle = null, string? Emoji = null)
         {
             return new(MaxValue, (percentage, eta) =>
             {

@@ -76,7 +76,7 @@ namespace WOADeviceManager.Pages
 
             FFUStream.Seek(0, SeekOrigin.Begin);
 
-            UnifiedFlashingPlatformTransport.ProgressUpdater updater = MainPage.GetProgressUpdater(totalChunkCount, $"Flashing {Path.GetFileName(SelectedFFUPath)}...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
+            ProgressUpdater updater = MainPage.GetProgressUpdater(totalChunkCount, $"Flashing {Path.GetFileName(SelectedFFUPath)}...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
 
             ThreadPool.QueueUserWorkItem(async (o) =>
             {

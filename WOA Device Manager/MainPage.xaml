@@ -53,7 +53,7 @@
                 <NavigationViewItem Icon="CellPhone" Content="Info" Margin="0,60,0,0" Tag="status" IsSelected="True" />
                 <NavigationViewItem Icon="Refresh" Content="Manual mode" Tag="manualmode" />
                 <NavigationViewItemSeparator />
-                <NavigationViewItem Icon="Document" Content="Unlock bootloader" Tag="unlockbootloader" IsEnabled="False" />
+                <NavigationViewItem Icon="Document" Content="Unlock bootloader" Tag="unlockbootloader" />
                 <NavigationViewItem Icon="ProtectedDocument" Content="Restore bootloader" Tag="restorebootloader" IsEnabled="False" />
                 <NavigationViewItem Icon="Document" Content="Enable dual boot" Tag="enabledualboot" IsEnabled="False" />
                 <NavigationViewItem Icon="ProtectedDocument" Content="Disable dual boot" Tag="disabledualboot" IsEnabled="False" />

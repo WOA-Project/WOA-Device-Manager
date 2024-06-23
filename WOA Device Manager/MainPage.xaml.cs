@@ -71,6 +71,8 @@ namespace WOADeviceManager
                         _ = MainNavigationFrame.Navigate(typeof(FlashPage));
                         break;
                     case "unlockbootloader":
+                        _ = MainNavigationFrame.Navigate(typeof(UnlockBootloaderPage));
+                        break;
                     case "restorebootloader":
                     case "enabledualboot":
                     case "disabledualboot":

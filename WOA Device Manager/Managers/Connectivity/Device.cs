@@ -39,6 +39,14 @@ namespace WOADeviceManager.Managers.Connectivity
             IsFastBootEnabled ? FastBootProcedures.IsUnlocked() ? OEMUnlockState.UNLOCKED : OEMUnlockState.LOCKED : 
             OEMUnlockState.UNKNOWN;
 
+        public bool IsUnlocked => OEMUnlock == OEMUnlockState.UNLOCKED;
+        public bool IsLocked => OEMUnlock == OEMUnlockState.LOCKED;
+        public bool IsUnknownLockState => OEMUnlock == OEMUnlockState.UNKNOWN;
+
+        public bool CanUnlock => JustDisconnected ? false :
+            IsADBEnabled ? ADBProcedures.CanUnlock() :
+            IsFastBootEnabled ? FastBootProcedures.CanUnlock() :
+            false;
 
         public string BatteryLevel => JustDisconnected ? null : IsADBEnabled
                     ? ADBProcedures.GetDeviceBatteryLevel()

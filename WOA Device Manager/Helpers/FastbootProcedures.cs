@@ -1,7 +1,6 @@
 ﻿using FastBoot;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Diagnostics;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -41,7 +40,7 @@ namespace WOADeviceManager.Helpers
         public static bool IsUnlocked()
         {
             bool result = DeviceManager.Device.FastBootTransport.GetVariable("unlocked", out string unlockedVariable);
-            if (result)
+            if (!result)
             {
                 return false;
             }
@@ -52,7 +51,7 @@ namespace WOADeviceManager.Helpers
         public static bool CanUnlock()
         {
             bool result = DeviceManager.Device.FastBootTransport.FlashingGetUnlockAbility(out bool canUnlock);
-            if (result)
+            if (!result)
             {
                 return false;
             }

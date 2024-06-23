@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WOADeviceManager.Pages.UnlockBootloaderPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:managers="using:WOADeviceManager.Managers"
+    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
+
+    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+            <StackPanel x:Name="PhoneUnlockedPanel" Visibility="{x:Bind device.IsUnlocked}">
+                <InfoBar x:Name="PhoneAlreadyUnlocked"
+                             IsOpen="{x:Bind device.IsUnlocked}"
+                             IsClosable="False"
+                             Severity="Success"
+                             Title="Your phone is already unlocked"
+                             Message="Your phone bootloader is already unlocked and there is nothing you need to do.">
+                    <InfoBar.ActionButton>
+                        <Button Content="Refresh" Click="RefreshButton_Click" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
+            </StackPanel>
+
+            <StackPanel x:Name="PhoneLockedPanel" Visibility="{x:Bind device.IsLocked}">
+                <InfoBar x:Name="AllowOEMUnlocking"
+                             IsOpen="{x:Bind device.CanUnlock.Equals(x:False)}"
+                             IsClosable="False"
+                             Severity="Warning"
+                             Title="Check your phone!"
+                             Message="Your phone does not allow OEM Unlocking currently. In order to allow OEM unlocking, go to Android, go to Settings, System, Developer options, Scroll all the way down til you see OEM unlocking, Turn OEM unlocking on. Click Refresh once done!">
+                    <InfoBar.ActionButton>
+                        <Button Content="Refresh" Click="RefreshButton_Click" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
+
+                <StackPanel x:Name="UnlockPanel" Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="{x:Bind device.CanUnlock}">
+                    <TextBlock Text="Unlock Device Bootloader" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
+
+                    <RichTextBlock>
+                        <Paragraph>
+                            <Run Text="Unlocking your device bootloader allows booting and instaling custom operating system software on your phone. It is mandatory to have your bootloader unlocked to boot Windows on your device."/>
+                            <LineBreak />
+                            <LineBreak />
+                            <Run Text="When you unlock your device bootloader, the phone will be restored to its original configuration. All unlocks, apps and data will be removed from the phone!"/>
+                            <LineBreak/>
+                            <LineBreak/>
+                            <Run x:Name="StatusText" Text="Continuing will erase all of your Data! Backup before proceeding!" />
+                        </Paragraph>
+                    </RichTextBlock>
+
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <Button x:Name="UnlockBootloaderButton" Content="Unlock Bootloader" Click="UnlockBootloaderButton_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="UnknownStatePanel" Visibility="{x:Bind device.IsUnknownLockState}">
+                <InfoBar x:Name="UnknownUnlockState"
+                             IsOpen="{x:Bind device.IsUnknownLockState}"
+                             IsClosable="False"
+                             Severity="Error"
+                             Title="Cannot check device lock state"
+                             Message="Your phone is not in a mode currently that allows WOA Device Manager to verify its lock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!">
+                    <InfoBar.ActionButton>
+                        <Button Content="Refresh" Click="RefreshButton_Click" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

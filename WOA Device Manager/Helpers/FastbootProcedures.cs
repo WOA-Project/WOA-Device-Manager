@@ -9,7 +9,7 @@ using WOADeviceManager.Managers;
 
 namespace WOADeviceManager.Helpers
 {
-    internal class FastbootProcedures
+    internal class FastBootProcedures
     {
         public static string GetProduct()
         {
@@ -32,7 +32,7 @@ namespace WOADeviceManager.Helpers
             _ = DeviceManager.Device.FastBootTransport.RebootRecovery();
         }
 
-        public static void RebootFastbootD()
+        public static void RebootFastBootD()
         {
             _ = DeviceManager.Device.FastBootTransport.RebootFastBootD();
         }

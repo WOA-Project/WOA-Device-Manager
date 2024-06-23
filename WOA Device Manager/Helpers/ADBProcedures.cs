@@ -47,7 +47,7 @@ namespace WOADeviceManager.Helpers
             DeviceManager.Device.AndroidDebugBridgeTransport.Reboot();
         }
 
-        public static void RebootToFastbootD()
+        public static void RebootToFastBootD()
         {
             DeviceManager.Device.AndroidDebugBridgeTransport.RebootFastBootD();
         }

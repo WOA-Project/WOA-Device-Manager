@@ -34,12 +34,12 @@ namespace WOADeviceManager.Pages
             MainPage.ToggleLoadingScreen(false);
         }
 
-        private async void RebootToFastbootd_Click(object sender, RoutedEventArgs e)
+        private async void RebootToFastBootd_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.SetStatus("Rebooting phone to Fastbootd mode...", Emoji: "🔄️");
+            MainPage.SetStatus("Rebooting phone to FastBootd mode...", Emoji: "🔄️");
             try
             {
-                await DeviceRebootHelper.RebootToFastbootDAndWait();
+                await DeviceRebootHelper.RebootToFastBootDAndWait();
             }
             catch { }
             MainPage.ToggleLoadingScreen(false);

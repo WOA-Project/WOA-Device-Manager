@@ -75,12 +75,11 @@ namespace WOADeviceManager
             get; set;
         }
 
-        public bool IsADBCompatible => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.TWRP_ADB_ENABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceStateEnum.RECOVERY_ADB_ENABLED or DeviceStateEnum.SIDELOAD_ADB_ENABLED;
-        public bool IsFastBootCompatible => State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER;
 
-        public string BatteryLevel => IsADBCompatible
+        public string BatteryLevel => JustDisconnected ? null : (IsADBEnabled
                     ? ADBProcedures.GetDeviceBatteryLevel()
-                    : IsFastBootCompatible ? FastbootProcedures.GetDeviceBatteryLevel() : null;
+                    : IsFastBootEnabled ? FastBootProcedures.GetDeviceBatteryLevel() : null);
+
 
         public string DeviceStateLocalized => State switch
         {
@@ -88,7 +87,7 @@ namespace WOADeviceManager
             DeviceStateEnum.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
             DeviceStateEnum.ANDROID => "Android",
             DeviceStateEnum.BOOTLOADER => "Bootloader",
-            DeviceStateEnum.FASTBOOTD => "Fastboot",
+            DeviceStateEnum.FASTBOOTD => "FastBoot",
             DeviceStateEnum.OFFLINE_CHARGING => "Offline Charging",
             DeviceStateEnum.RECOVERY_ADB_DISABLED => "Recovery (ADB Disconnected)",
             DeviceStateEnum.RECOVERY_ADB_ENABLED => "Recovery (ADB Connected)",
@@ -104,6 +103,7 @@ namespace WOADeviceManager
             _ => null,
         };
 
+
         public bool JustDisconnected = false;
 
         public bool IsConnected => State switch
@@ -114,27 +114,32 @@ namespace WOADeviceManager
 
         public bool IsDisconnected => !IsConnected;
 
-        public bool IsADBDisconnected => State == DeviceStateEnum.ANDROID_ADB_DISABLED || State == DeviceStateEnum.RECOVERY_ADB_DISABLED || State == DeviceStateEnum.SIDELOAD_ADB_DISABLED || State == DeviceStateEnum.TWRP_ADB_DISABLED || State == DeviceStateEnum.TWRP_MASS_STORAGE_ADB_DISABLED;
 
-        public bool IsADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED || State == DeviceStateEnum.RECOVERY_ADB_ENABLED || State == DeviceStateEnum.SIDELOAD_ADB_ENABLED || State == DeviceStateEnum.TWRP_ADB_ENABLED || State == DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
+        public bool IsFastBootEnabled => State is DeviceStateEnum.FASTBOOTD or DeviceStateEnum.BOOTLOADER;
 
-        public bool AndroidADBConnected => State == DeviceStateEnum.ANDROID_ADB_ENABLED;
+        public bool IsADBDisabled => State is DeviceStateEnum.ANDROID_ADB_DISABLED or DeviceStateEnum.RECOVERY_ADB_DISABLED or DeviceStateEnum.SIDELOAD_ADB_DISABLED or DeviceStateEnum.TWRP_ADB_DISABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_DISABLED;
 
-        public bool TWRPConnected => State == DeviceStateEnum.TWRP_ADB_ENABLED;
+        public bool IsADBEnabled => State is DeviceStateEnum.ANDROID_ADB_ENABLED or DeviceStateEnum.RECOVERY_ADB_ENABLED or DeviceStateEnum.SIDELOAD_ADB_ENABLED or DeviceStateEnum.TWRP_ADB_ENABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
 
-        public bool MassStorageConnected => State == DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
 
-        public bool FastBootDConnected => State == DeviceStateEnum.FASTBOOTD;
+        public bool IsInAndroid => State is DeviceStateEnum.ANDROID or DeviceStateEnum.ANDROID_ADB_DISABLED or DeviceStateEnum.ANDROID_ADB_ENABLED;
 
-        public bool RecoveryConnected => State == DeviceStateEnum.RECOVERY_ADB_ENABLED;
+        public bool IsInTWRP => State is DeviceStateEnum.TWRP_ADB_DISABLED or DeviceStateEnum.TWRP_ADB_ENABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
 
-        public bool SideloadConnected => State == DeviceStateEnum.SIDELOAD_ADB_ENABLED;
+        public bool IsInMassStorage => State is DeviceStateEnum.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceStateEnum.TWRP_MASS_STORAGE_ADB_ENABLED;
 
-        public bool BootloaderConnected => State == DeviceStateEnum.BOOTLOADER;
+        public bool IsInRecovery => State is DeviceStateEnum.RECOVERY_ADB_DISABLED or DeviceStateEnum.RECOVERY_ADB_ENABLED;
 
-        public bool WindowsConnected => State == DeviceStateEnum.WINDOWS;
+        public bool IsInSideload => State is DeviceStateEnum.SIDELOAD_ADB_DISABLED or DeviceStateEnum.SIDELOAD_ADB_ENABLED;
 
-        public bool UFPConnected => State == DeviceStateEnum.UFP;
+        public bool IsInFastBootD => State == DeviceStateEnum.FASTBOOTD;
+
+        public bool IsInBootloader => State == DeviceStateEnum.BOOTLOADER;
+
+        public bool IsInWindows => State == DeviceStateEnum.WINDOWS;
+
+        public bool IsInUFP => State == DeviceStateEnum.UFP;
+
 
         public FastBootTransport FastBootTransport
         {

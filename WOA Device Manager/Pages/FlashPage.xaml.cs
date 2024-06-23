@@ -50,7 +50,7 @@ namespace WOADeviceManager.Pages
             else
             {
                 SelectRun.Text = "Change";
-                FlashFFUImageButton.IsEnabled = DeviceManager.Device.UFPConnected;
+                FlashFFUImageButton.IsEnabled = DeviceManager.Device.IsInUFP;
             }
 
             Bindings.Update();
@@ -128,10 +128,10 @@ namespace WOADeviceManager.Pages
                 else
                 {
                     SelectRun.Text = "Change";
-                    FlashFFUImageButton.IsEnabled = device.UFPConnected;
+                    FlashFFUImageButton.IsEnabled = device.IsInUFP;
                 }
 
-                if (device.UFPConnected)
+                if (device.IsInUFP)
                 {
                     StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
                 }
@@ -157,10 +157,10 @@ namespace WOADeviceManager.Pages
                 else
                 {
                     SelectRun.Text = "Change";
-                    FlashFFUImageButton.IsEnabled = device.UFPConnected;
+                    FlashFFUImageButton.IsEnabled = device.IsInUFP;
                 }
 
-                if (device.UFPConnected)
+                if (device.IsInUFP)
                 {
                     StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
                 }
@@ -175,7 +175,7 @@ namespace WOADeviceManager.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (DeviceManager.Device.UFPConnected)
+            if (DeviceManager.Device.IsInUFP)
             {
                 StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
             }

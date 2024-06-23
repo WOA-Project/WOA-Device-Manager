@@ -27,7 +27,7 @@
                 </TextBlock>
 
                 <StackPanel Spacing="16">
-                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.AndroidADBConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToAndroid_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.AndroidConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Android-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Android OS."/>
@@ -39,9 +39,9 @@
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This is the interface that can be used to switch to additional operating modes. It can also be used to retrieve additional info and security status."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToFastbootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.FastBootDConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToFastBootd_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.FastBootDConnected.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
-                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Fastboot-mode"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to FastBoot-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This is the interface that can be used to flash a new ROM image. It can also be used to retrieve additional info and security status."/>
                         </StackPanel>
                     </Button>

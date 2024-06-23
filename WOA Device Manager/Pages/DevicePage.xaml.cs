@@ -43,7 +43,7 @@ namespace WOADeviceManager.Pages
             {
                 if (!device.JustDisconnected)
                 {
-                    if (device.IsADBCompatible && device.AndroidDebugBridgeTransport != null)
+                    if (device.IsADBEnabled && device.AndroidDebugBridgeTransport != null)
                     {
                         (string variableName, string variableValue)[] allVariables = device.AndroidDebugBridgeTransport.GetAllVariables();
 
@@ -52,14 +52,14 @@ namespace WOADeviceManager.Pages
                             deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
                         }
                     }
-                    else if (device.IsFastBootCompatible && device.FastBootTransport != null)
+                    else if (device.IsFastBootEnabled && device.FastBootTransport != null)
                     {
                         if (device.FastBootTransport.GetAllVariables(out (string variableName, string variableValue)[] allVariables))
                         {
                             deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
                         }
                     }
-                    else if (device.UFPConnected && device.UnifiedFlashingPlatformTransport != null)
+                    else if (device.IsInUFP && device.UnifiedFlashingPlatformTransport != null)
                     {
                         string PlatformID = device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
                         string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadProcessorManufacturer();

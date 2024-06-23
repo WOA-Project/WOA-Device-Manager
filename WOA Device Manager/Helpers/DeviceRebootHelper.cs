@@ -13,13 +13,13 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsADBCompatible)
+            if (DeviceManager.Device.IsADBEnabled)
             {
                 ADBProcedures.RebootToBootloader();
             }
-            else if (DeviceManager.Device.IsFastBootCompatible)
+            else if (DeviceManager.Device.IsFastBootEnabled)
             {
-                FastbootProcedures.RebootBootloader();
+                FastBootProcedures.RebootBootloader();
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID)
             {
@@ -42,11 +42,11 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsFastBootCompatible)
+            if (DeviceManager.Device.IsFastBootEnabled)
             {
-                FastbootProcedures.Reboot();
+                FastBootProcedures.Reboot();
             }
-            else if (DeviceManager.Device.IsADBCompatible)
+            else if (DeviceManager.Device.IsADBEnabled)
             {
                 ADBProcedures.RebootToAndroid();
             }
@@ -74,7 +74,7 @@ namespace WOADeviceManager.Helpers
 
             if (DeviceManager.Device.State is Device.DeviceStateEnum.BOOTLOADER)
             {
-                _ = await FastbootProcedures.BootTWRP();
+                _ = await FastBootProcedures.BootTWRP();
 
                 while (DeviceManager.Device.State != Device.DeviceStateEnum.TWRP_ADB_ENABLED)
                 {
@@ -97,7 +97,7 @@ namespace WOADeviceManager.Helpers
 
             if (DeviceManager.Device.State is Device.DeviceStateEnum.BOOTLOADER)
             {
-                _ = await FastbootProcedures.BootUEFI();
+                _ = await FastBootProcedures.BootUEFI();
 
                 /*while (DeviceManager.Device.State != Device.DeviceStateEnum.WINDOWS)
                 {
@@ -136,13 +136,13 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsADBCompatible)
+            if (DeviceManager.Device.IsADBEnabled)
             {
                 ADBProcedures.RebootToRecovery();
             }
-            else if (DeviceManager.Device.IsFastBootCompatible)
+            else if (DeviceManager.Device.IsFastBootEnabled)
             {
-                FastbootProcedures.RebootRecovery();
+                FastBootProcedures.RebootRecovery();
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID)
             {
@@ -159,20 +159,20 @@ namespace WOADeviceManager.Helpers
             }
         }
 
-        public static async Task RebootToFastbootDAndWait()
+        public static async Task RebootToFastBootDAndWait()
         {
             if (DeviceManager.Device.State is Device.DeviceStateEnum.FASTBOOTD)
             {
                 return;
             }
 
-            if (DeviceManager.Device.IsADBCompatible)
+            if (DeviceManager.Device.IsADBEnabled)
             {
-                ADBProcedures.RebootToFastbootD();
+                ADBProcedures.RebootToFastBootD();
             }
-            else if (DeviceManager.Device.IsFastBootCompatible)
+            else if (DeviceManager.Device.IsFastBootEnabled)
             {
-                FastbootProcedures.RebootFastbootD();
+                FastBootProcedures.RebootFastBootD();
             }
             else if (DeviceManager.Device.State == Device.DeviceStateEnum.ANDROID)
             {

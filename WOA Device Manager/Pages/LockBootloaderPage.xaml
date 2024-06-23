@@ -62,17 +62,18 @@
                 </StackPanel>
             </StackPanel>
 
-            <StackPanel x:Name="UnknownStatePanel" Visibility="{x:Bind device.IsUnknownLockState}">
-                <InfoBar x:Name="UnknownLockState"
-                             IsOpen="{x:Bind device.IsUnknownLockState}"
-                             IsClosable="False"
-                             Severity="Error"
-                             Title="Cannot check device lock state"
-                             Message="Your phone is not in a mode currently that allows WOA Device Manager to verify its lock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!">
-                    <InfoBar.ActionButton>
-                        <Button Content="Refresh" Click="RefreshButton_Click" />
-                    </InfoBar.ActionButton>
-                </InfoBar>
+            <StackPanel x:Name="UnknownLockState" Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" Visibility="{x:Bind device.IsUnknownLockState}">
+                <TextBlock Text="Cannot check device lock state" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
+
+                <RichTextBlock>
+                    <Paragraph>
+                        <Run Text="Your phone is not in a mode currently that allows WOA Device Manager to verify its lock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!"/>
+                    </Paragraph>
+                </RichTextBlock>
+
+                <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <Button Content="Refresh" Click="RefreshButton_Click" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

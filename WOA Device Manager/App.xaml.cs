@@ -17,23 +17,7 @@ namespace WOADeviceManager
         public App()
         {
             InitializeComponent();
-            KillAnyADBInstance();
             DeviceManager = DeviceManager.Instance;
-        }
-
-        private static void KillAnyADBInstance()
-        {
-            Process proc = new()
-            {
-                StartInfo = new("taskkill.exe", "/IM adb.exe /F")
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WindowStyle = ProcessWindowStyle.Hidden
-                }
-            };
-            proc.Start();
-            proc.WaitForExit();
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)

@@ -21,22 +21,9 @@ namespace WOADeviceManager.Pages
             Bindings.Update();
         }
 
-        private async void LockBootloaderButton_Click(object sender, RoutedEventArgs e)
+        private void LockBootloaderButton_Click(object sender, RoutedEventArgs e)
         {
-            while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
-            {
-                MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
-
-                try
-                {
-                    await DeviceRebootHelper.RebootToBootloaderAndWait();
-                }
-                catch { }
-
-                MainPage.ToggleLoadingScreen(false);
-            }
-
-            if (FastBootProcedures.CanUnlock())
+            if (DeviceManager.Device.CanUnlock)
             {
                 FastBootProcedures.FlashLock(this);
             }

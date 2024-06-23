@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO.Compression;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using WOADeviceManager.Managers;
@@ -59,32 +60,59 @@ namespace WOADeviceManager.Helpers
             return canUnlock;
         }
 
-        public static bool FlashUnlock(Control frameHost = null)
+        public static async void FlashUnlock(Control frameHost = null)
         {
-            if (CanUnlock())
+            if (DeviceManager.Device.CanUnlock)
             {
                 ContentDialog dialog = new()
                 {
                     Title = "⚠️ EVERYTHING WILL BE FORMATTED",
                     Content = "Flash unlocking requires everything to be formatted. MAKE SURE YOU HAVE MADE A COPY OF EVERYTHING. We're not responsible for data loss.",
-                    PrimaryButtonText = "⚠️ Proceed"
+                    PrimaryButtonText = "⚠️ Proceed",
+                    CloseButtonText = "Cancel"
                 };
-
-                dialog.PrimaryButtonClick += (ContentDialog dialog, ContentDialogButtonClickEventArgs args) =>
-                {
-                    DeviceManager.Device.FastBootTransport.FlashingUnlock();
-                    dialog.Hide();
-                };
-
-                dialog.CloseButtonText = "Cancel";
 
                 if (frameHost != null)
                 {
                     dialog.XamlRoot = frameHost.XamlRoot;
                 }
-                _ = dialog.ShowAsync();
 
-                return true;
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    new Task(async () =>
+                    {
+                        MainPage.SetStatus("Initializing...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+
+                        while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
+                        {
+                            MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+
+                            try
+                            {
+                                await DeviceRebootHelper.RebootToBootloaderAndWait();
+                            }
+                            catch { }
+                        }
+
+                        MainPage.SetStatus("Waiting for User to accept the prompt on the phone.", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Use your volume buttons to go up and down, and your power button to confirm.");
+
+                        bool result = DeviceManager.Device.FastBootTransport.FlashingUnlock();
+
+                        while (DeviceManager.Device.State == DeviceState.BOOTLOADER)
+                        {
+                            Thread.Sleep(300);
+                        }
+
+                        MainPage.SetStatus("Device is going to reboot in a moment...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+
+                        while (DeviceManager.Device.State == DeviceState.DISCONNECTED)
+                        {
+                            Thread.Sleep(300);
+                        }
+
+                        MainPage.SetStatus();
+                    }).Start();
+                }
             }
             else
             {
@@ -100,38 +128,62 @@ namespace WOADeviceManager.Helpers
                     dialog.XamlRoot = frameHost.XamlRoot;
                 }
 
-                _ = dialog.ShowAsync();
-
-                return false;
+                await dialog.ShowAsync();
             }
         }
 
-        public static bool FlashLock(Control frameHost = null)
+        public static async void FlashLock(Control frameHost = null)
         {
             // TODO: Check that the device doesn't have Windows installed
             ContentDialog dialog = new()
             {
                 Title = "⚠️ Your bootloader will be locked",
                 Content = "This procedure will lock your bootloader. You usually don't want to do this unless you have to sell your device.",
-                PrimaryButtonText = "⚠️ Proceed"
+                PrimaryButtonText = "⚠️ Proceed",
+                CloseButtonText = "Cancel"
             };
-
-            dialog.PrimaryButtonClick += (ContentDialog dialog, ContentDialogButtonClickEventArgs args) =>
-            {
-                DeviceManager.Device.FastBootTransport.FlashingLock();
-                dialog.Hide();
-            };
-
-            dialog.CloseButtonText = "Cancel";
 
             if (frameHost != null)
             {
                 dialog.XamlRoot = frameHost.XamlRoot;
             }
 
-            _ = dialog.ShowAsync();
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                new Task(async () =>
+                {
+                    MainPage.SetStatus("Initializing...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
-            return true;
+                    while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
+                    {
+                        MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+
+                        try
+                        {
+                            await DeviceRebootHelper.RebootToBootloaderAndWait();
+                        }
+                        catch { }
+                    }
+
+                    MainPage.SetStatus("Waiting for User to accept the prompt on the phone.", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Use your volume buttons to go up and down, and your power button to confirm.");
+
+                    bool result = DeviceManager.Device.FastBootTransport.FlashingLock();
+
+                    while (DeviceManager.Device.State == DeviceState.BOOTLOADER)
+                    {
+                        Thread.Sleep(300);
+                    }
+
+                    MainPage.SetStatus("Device is going to reboot in a moment...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+
+                    while (DeviceManager.Device.State == DeviceState.DISCONNECTED)
+                    {
+                        Thread.Sleep(300);
+                    }
+
+                    MainPage.SetStatus();
+                }).Start();
+            }
         }
 
         public static async Task<bool> BootTWRP()

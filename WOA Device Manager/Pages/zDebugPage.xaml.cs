@@ -27,12 +27,12 @@ namespace WOADeviceManager.Pages
 
         private void FlashUnlock_Click(object sender, RoutedEventArgs e)
         {
-            _ = FastBootProcedures.FlashUnlock(this);
+            FastBootProcedures.FlashUnlock(this);
         }
 
         private void FlashLock_Click(object sender, RoutedEventArgs e)
         {
-            _ = FastBootProcedures.FlashLock(this);
+            FastBootProcedures.FlashLock(this);
         }
 
         private async void BootTWRP_Click(object sender, RoutedEventArgs e)

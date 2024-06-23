@@ -11,7 +11,7 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <UseWindowsForms>False</UseWindowsForms>
-    <PackageCertificateKeyFile>E:\a\ID1\Duo\SecureBoot\Certs\private\OEMA0-UMCI.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>WOA Device Manager_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>

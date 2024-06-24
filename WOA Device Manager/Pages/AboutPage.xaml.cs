@@ -12,7 +12,7 @@ namespace WOADeviceManager.Pages
 
         private void Page_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            VersionRun.Text = string.Format("Version {0}.{1}.{2}.{3}", Package.Current.Id.Version.Major, Package.Current.Id.Version.Minor, Package.Current.Id.Version.Build, Package.Current.Id.Version.Revision);
+            VersionRun.Text = $"Version {Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}.{Package.Current.Id.Version.Revision}";
         }
     }
 }

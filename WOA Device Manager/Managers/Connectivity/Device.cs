@@ -129,5 +129,10 @@ namespace WOADeviceManager.Managers.Connectivity
         {
             get; internal set;
         }
+
+        public MassStorage MassStorage
+        {
+            get; internal set;
+        }
     }
 }

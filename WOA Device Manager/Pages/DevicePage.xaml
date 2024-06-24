@@ -36,6 +36,29 @@
                 </Grid>
             </StackPanel>
 
+            <StackPanel x:Name="MassStoragePanel" Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" x:Load="{x:Bind device.IsInMassStorage, Mode=OneWay}">
+                <TextBlock Text="Mass Storage mode" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
+
+                <RichTextBlock>
+                    <Paragraph>
+                        <Run Text="You can now access the file-system of the phone from your PC at drive " />
+                        <Run Text="{x:Bind device.MassStorage.Drive, Mode=OneTime}" FontWeight="Bold" />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="Warning 1: " Foreground="Red" FontWeight="Bold"/>
+                        <Run Text="Be very careful with altering files. You can easily brick your phone, when you make invalid changes to the file-system of the phone." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="Warning 2: " Foreground="Red" FontWeight="Bold"/>
+                        <Run Text="If you try to access a partition and it cannot be accessed, then DO NOT FORMAT IT! Also when you are asked to format it, DON'T DO THAT!" />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="Warning 3: " Foreground="Red" FontWeight="Bold"/>
+                        <Run Text="Never format or delete the boot-partitions! Take special care with the SFPD, Persist, FRP, Modem EFS partitions. Do not format or delete these partitions, because there is no known method to recover the phone after that (except with special equipment to access UFS directly)." />
+                    </Paragraph>
+                </RichTextBlock>
+            </StackPanel>
+
             <StackPanel Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch">
                     <Expander.Header>

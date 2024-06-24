@@ -123,6 +123,8 @@ namespace WOADeviceManager.Managers
                     }
 
                     Device.MassStorageID = null;
+                    Device.MassStorage.Dispose();
+                    Device.MassStorage = null;
 
                     NotifyDeviceArrival();
                 }
@@ -235,6 +237,7 @@ namespace WOADeviceManager.Managers
                 Device.Product = DeviceProduct.Epsilon;
                 Device.Name = OEMEP_FRIENDLY_NAME;
                 Device.Variant = "N/A";
+                Device.MassStorage = new Helpers.MassStorage(ID);
 
                 NotifyDeviceArrival();
                 return;
@@ -260,6 +263,7 @@ namespace WOADeviceManager.Managers
                 Device.Product = DeviceProduct.Zeta;
                 Device.Name = OEMZE_FRIENDLY_NAME;
                 Device.Variant = "N/A";
+                Device.MassStorage = new Helpers.MassStorage(ID);
 
                 NotifyDeviceArrival();
                 return;

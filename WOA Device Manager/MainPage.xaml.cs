@@ -2,10 +2,16 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using UnifiedFlashingPlatform;
+using Windows.ApplicationModel;
+using Windows.System;
+using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
 using WOADeviceManager.Managers.Connectivity;
 using WOADeviceManager.Pages;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WOADeviceManager
 {
@@ -206,6 +212,20 @@ namespace WOADeviceManager
 
             DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
             DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
+
+            new Task(async () =>
+            {
+                string LatestApplicationVersion = await HttpsUtils.GetLatestWOADeviceManagerVersion();
+                string CurrentApplicationVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}.{Package.Current.Id.Version.Revision}";
+
+                if (LatestApplicationVersion != CurrentApplicationVersion)
+                {
+                    _ = _mainPage.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                    {
+                        ANewUpdateIsAvailableInfoBar.IsOpen = true;
+                    });
+                }
+            }).Start();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -220,6 +240,11 @@ namespace WOADeviceManager
             {
                 DeviceManager.Device.AndroidDebugBridgeTransport.Connect();
             }
+        }
+
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/WOA-Project/WOA-Device-Manager/releases/latest"));
         }
     }
 }

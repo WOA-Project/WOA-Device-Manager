@@ -190,13 +190,13 @@ namespace WOADeviceManager.Helpers
         {
             if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
             {
-                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON, true);
-                return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
+                StorageFile TWRP = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON, true);
+                return TWRP != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(TWRP.Path);
             }
             else if (DeviceManager.Device.Product == DeviceProduct.Zeta)
             {
-                StorageFile twrp = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA, true);
-                return twrp != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(twrp.Path);
+                StorageFile TWRP = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA, true);
+                return TWRP != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(TWRP.Path);
             }
             else
             {
@@ -204,38 +204,43 @@ namespace WOADeviceManager.Helpers
             }
         }
 
-        public static async Task<bool> BootUEFI()
+        public static async Task<bool> BootUEFI(string UEFIFile = null)
         {
-            if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
+            if (string.IsNullOrEmpty(UEFIFile))
             {
-                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON, true);
-                if (uefi == null)
+                if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
                 {
-                    return false;
+                    StorageFile UEFI = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON, true);
+                    if (UEFI == null)
+                    {
+                        return false;
+                    }
+
+                    string destinationPath = (await UEFI.GetParentAsync()).Path;
+                    ZipFile.ExtractToDirectory(UEFI.Path, destinationPath, true);
+
+                    UEFIFile = $"{destinationPath}\\Surface Duo (1st Gen) UEFI (Fast Boot)\\uefi.img";
                 }
-
-                string destinationPath = (await uefi.GetParentAsync()).Path;
-                ZipFile.ExtractToDirectory(uefi.Path, destinationPath, true);
-
-                return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo (1st Gen) UEFI (Fast Boot)\\uefi.img");
-            }
-            else if (DeviceManager.Device.Product == DeviceProduct.Zeta)
-            {
-                StorageFile uefi = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_ZETA, true);
-                if (uefi == null)
+                else if (DeviceManager.Device.Product == DeviceProduct.Zeta)
                 {
-                    return false;
+                    StorageFile UEFI = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_ZETA, true);
+                    if (UEFI == null)
+                    {
+                        return false;
+                    }
+
+                    string destinationPath = (await UEFI.GetParentAsync()).Path;
+                    ZipFile.ExtractToDirectory(UEFI.Path, destinationPath, true);
+
+                    UEFIFile = $"{destinationPath}\\Surface Duo 2 UEFI (Fast Boot)\\uefi.img";
                 }
-
-                string destinationPath = (await uefi.GetParentAsync()).Path;
-                ZipFile.ExtractToDirectory(uefi.Path, destinationPath, true);
-
-                return DeviceManager.Device.FastBootTransport.BootImageIntoRam($"{destinationPath}\\Surface Duo 2 UEFI (Fast Boot)\\uefi.img");
+                else
+                {
+                    throw new Exception("Unknown device product");
+                }
             }
-            else
-            {
-                throw new Exception("Unknown device product");
-            }
+
+            return DeviceManager.Device.FastBootTransport.BootImageIntoRam(UEFIFile);
         }
 
         public static string GetDeviceBatteryLevel()

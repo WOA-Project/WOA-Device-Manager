@@ -1,5 +1,10 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
+using System.IO;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
 using WOADeviceManager.Managers.Connectivity;
@@ -82,11 +87,39 @@ namespace WOADeviceManager.Pages
         private async void RebootToWindows_Click(object sender, RoutedEventArgs e)
         {
             MainPage.SetStatus("Rebooting phone to Windows mode...", Emoji: "🔄️");
+
+            string UEFIFile = null;
+
+            if (InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift) is Windows.UI.Core.CoreVirtualKeyStates.Down)
+            {
+                FileOpenPicker picker = new()
+                {
+                    ViewMode = PickerViewMode.List,
+                    SuggestedStartLocation = PickerLocationId.Downloads,
+                    FileTypeFilter = { ".img" }
+                };
+
+                nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
+                InitializeWithWindow.Initialize(picker, windowHandle);
+
+                Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+                if (file != null && File.Exists(file.Path))
+                {
+                    UEFIFile = file.Path;
+                }
+                else
+                {
+                    MainPage.ToggleLoadingScreen(false);
+                    return;
+                }
+            }
+
             try
             {
-                await DeviceRebootHelper.RebootToUEFIAndWait();
+                await DeviceRebootHelper.RebootToUEFIAndWait(UEFIFile);
             }
             catch { }
+
             MainPage.ToggleLoadingScreen(false);
         }
 

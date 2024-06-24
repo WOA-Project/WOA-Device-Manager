@@ -9,7 +9,7 @@
   <Identity
     Name="DuoWOA.DeviceManager"
     Publisher="CN=DuoWOA"
-    Version="1.0.3.0" />
+    Version="1.0.4.0" />
 
   <Properties>
     <DisplayName>WOA Device Manager</DisplayName>
@@ -51,5 +51,6 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+	<rescap:Capability Name="allowElevation" /> 
   </Capabilities>
 </Package>

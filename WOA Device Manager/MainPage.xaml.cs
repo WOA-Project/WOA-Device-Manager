@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using UnifiedFlashingPlatform;
 using Windows.ApplicationModel;
 using Windows.System;
@@ -11,7 +10,6 @@ using WOADeviceManager.Helpers;
 using WOADeviceManager.Managers;
 using WOADeviceManager.Managers.Connectivity;
 using WOADeviceManager.Pages;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace WOADeviceManager
 {
@@ -86,6 +84,8 @@ namespace WOADeviceManager
                     case "disabledualboot":
                     case "backupwindows":
                     case "updatewindows":
+                        _ = MainNavigationFrame.Navigate(typeof(UpdateWindowsPage), null, e.RecommendedNavigationTransitionInfo);
+                        break;
                     case "downloadwindows":
                         break;
                     case "partitions":
@@ -95,10 +95,10 @@ namespace WOADeviceManager
                         _ = MainNavigationFrame.Navigate(typeof(AboutPage), null, e.RecommendedNavigationTransitionInfo);
                         break;
                     case "guides":
-                        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/WOA-Project/SurfaceDuo-Guides/blob/main/README.md"));
+                        await Launcher.LaunchUriAsync(new Uri("https://github.com/WOA-Project/SurfaceDuo-Guides/blob/main/README.md"));
                         break;
                     case "downloadffu":
-                        await Windows.System.Launcher.LaunchUriAsync(new Uri("https://fullflash.pvabel.net/DuoWOA/"));
+                        await Launcher.LaunchUriAsync(new Uri("https://fullflash.pvabel.net/DuoWOA/"));
                         break;
                 }
             }

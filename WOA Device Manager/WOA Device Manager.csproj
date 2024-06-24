@@ -42,6 +42,7 @@
     <None Remove="Pages\PartitionsPage.xaml" />
     <None Remove="Pages\SwitchModePage.xaml" />
     <None Remove="Pages\UnlockBootloaderPage.xaml" />
+    <None Remove="Pages\UpdateWindowsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +58,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
     <Manifest Include="$(ApplicationManifest)" />
+    <PackageReference Include="SharpCompress" Version="0.37.2" />
     <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
@@ -112,6 +114,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Remove="Pages\BusyControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\UpdateWindowsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\NavigationViewWindowControl.xaml">

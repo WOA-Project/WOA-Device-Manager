@@ -4,16 +4,17 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  IgnorableNamespaces="uap rescap mp">
 
   <Identity
-    Name="DuoWOA.DeviceManager"
-    Publisher="CN=DuoWOA"
-    Version="1.0.4.0" />
+    Name="48791GustaveMonce.WOADeviceManager"
+    Publisher="CN=E642D271-5A63-42B0-AEFA-6FF52F1D7343"
+    Version="1.0.5.0" />
 
   <Properties>
     <DisplayName>WOA Device Manager</DisplayName>
-    <PublisherDisplayName>DuoWOA</PublisherDisplayName>
+    <PublisherDisplayName>Gustave Monce</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -44,7 +45,6 @@
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badgeAndTileText"/>
       </uap:VisualElements>
     </Application>
   </Applications>
@@ -53,4 +53,6 @@
     <rescap:Capability Name="runFullTrust" />
 	<rescap:Capability Name="allowElevation" /> 
   </Capabilities>
+
+  <mp:PhoneIdentity PhoneProductId="f539eeeb-894b-48fd-8682-629aa34cc3c5" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
 </Package>

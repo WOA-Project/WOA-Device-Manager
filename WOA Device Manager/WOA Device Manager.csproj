@@ -11,16 +11,16 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <UseWindowsForms>False</UseWindowsForms>
-    <PackageCertificateKeyFile>WOA Device Manager_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Always</AppxBundle>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
+    <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\BadgeLogo.scale-100.png" />
@@ -56,7 +56,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
     <Manifest Include="$(ApplicationManifest)" />
     <PackageReference Include="SharpCompress" Version="0.37.2" />
     <PackageReference Include="System.Management" Version="8.0.0" />

@@ -1,0 +1,61 @@
+<Page
+    x:Class="WOADeviceManager.Pages.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
+
+    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+            <StackPanel Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Source="ms-appx:///Assets/AppTiles/StoreLogo.png" Margin="-10,0,0,0" />
+                    <RichTextBlock Grid.Column="1" Margin="20,0,0,0">
+                        <Paragraph>
+                            <Run Text="WOA Device Manager" FontSize="24" FontWeight="SemiBold" />
+                            <LineBreak />
+                            <Run x:Name="VersionRun" Text="Version {0}.{1}.{2}.{3}" />
+                            <LineBreak />
+                            <Run Text="Copyright © 2023 - 2024, WOA Project" />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run Text="This software uses the following libraries:" />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run Text="WinUSBNet by Thomas Bleeker (" />
+                            <Hyperlink NavigateUri="http://opensource.org/licenses/mit-license.php">license</Hyperlink>
+                            <Run Text=")" />
+                            <LineBreak />
+                            <Run Text="DiscUtils by Kenneth Bell (" />
+                            <Hyperlink NavigateUri="https://github.com/DiscUtils/DiscUtils/blob/master/LICENSE.txt">license</Hyperlink>
+                            <Run Text=")" />
+                            <LineBreak />
+                            <Run Text="WPinternals by Heathcliff74 (" />
+                            <Hyperlink NavigateUri="https://github.com/ReneLergner/WPinternals/blob/master/LICENSE">license</Hyperlink>
+                            <Run Text=")" />
+                            <LineBreak />
+                            <Run Text="AndroidDebugBridge by WOA Project (" />
+                            <Hyperlink NavigateUri="https://github.com/WOA-Project/AndroidDebugBridge/blob/main/LICENSE">license</Hyperlink>
+                            <Run Text=")" />
+                            <LineBreak />
+                            <Run Text="FastBoot by WOA Project (" />
+                            <Hyperlink NavigateUri="https://github.com/WOA-Project/FastBoot/blob/main/LICENSE">license</Hyperlink>
+                            <Run Text=")" />
+                            <LineBreak />
+                            <Run Text="UnifiedFlashingPlatform by WOA Project (" />
+                            <Hyperlink NavigateUri="https://github.com/WOA-Project/UnifiedFlashingPlatform/blob/main/LICENSE">license</Hyperlink>
+                            <Run Text=")" />
+                        </Paragraph>
+                    </RichTextBlock>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

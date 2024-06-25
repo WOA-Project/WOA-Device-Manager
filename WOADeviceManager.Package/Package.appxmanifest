@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  IgnorableNamespaces="uap rescap mp">
+
+  <mp:PhoneIdentity PhoneProductId="f539eeeb-894b-48fd-8682-629aa34cc3c5" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+
+  <Identity
+    Name="48791GustaveMonce.WOADeviceManager"
+    Publisher="CN=E642D271-5A63-42B0-AEFA-6FF52F1D7343"
+    Version="1.0.6.0" />
+
+  <Properties>
+    <DisplayName>WOA Device Manager</DisplayName>
+    <PublisherDisplayName>Gustave Monce</PublisherDisplayName>
+    <Logo>Assets\AppTiles\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+	  <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="WOA Device Manager"
+        Description="This application helps you manage your WOA Project devices"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\AppTiles\Square150x150Logo.png"
+        Square44x44Logo="Assets\AppTiles\Square44x44Logo.png">
+		  <uap:DefaultTile Wide310x150Logo="Assets\AppTiles\Wide310x150Logo.png"  ShortName="WOA Device Manager" Square71x71Logo="Assets\AppTiles\SmallTile.png" Square310x310Logo="Assets\AppTiles\LargeTile.png">
+			  <uap:ShowNameOnTiles>
+				  <uap:ShowOn Tile="square150x150Logo"/>
+				  <uap:ShowOn Tile="wide310x150Logo"/>
+				  <uap:ShowOn Tile="square310x310Logo"/>
+			  </uap:ShowNameOnTiles>
+		  </uap:DefaultTile >
+		  <uap:SplashScreen Image="Assets\AppTiles\SplashScreen.png" />
+	  </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>826db2ef-e3db-4e16-856b-460d50afdf8f</ProjectGuid>
+    <TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <AssetTargetFallback>net8.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+    <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
+    <DisableXbfLineInfo>False</DisableXbfLineInfo>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundleAutoResourcePackageQualifiers>Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
+    <AppxDefaultResourceQualifiers>Language=en-US</AppxDefaultResourceQualifiers>
+    <UapAppxPackageBuildMode>StoreUpload</UapAppxPackageBuildMode>
+    <HoursBetweenUpdateChecks>255</HoursBetweenUpdateChecks>
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '17.0'">
+    <VisualStudioVersion>17.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|arm64">
+      <Configuration>Debug</Configuration>
+      <Platform>arm64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|arm64">
+      <Configuration>Release</Configuration>
+      <Platform>arm64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup>
+    <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
+    <PathToXAMLWinRTImplementations>WOADeviceManager\</PathToXAMLWinRTImplementations>
+    <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <EntryPointProjectUniqueName>..\WOADeviceManager\WOADeviceManager.csproj</EntryPointProjectUniqueName>
+  </PropertyGroup>
+  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <Content Include="Assets\AppTiles\**" />
+    <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" IncludeAssets="build" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" IncludeAssets="build" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WOADeviceManager\WOADeviceManager.csproj" />
+  </ItemGroup>
+  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+</Project>

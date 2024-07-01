@@ -90,7 +90,12 @@ namespace WOADeviceManager.Pages
 
             string UEFIFile = null;
 
-            if (InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift) is Windows.UI.Core.CoreVirtualKeyStates.Down)
+            if (InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
+                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftShift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
+                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightShift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
+                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
+                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftControl) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
+                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightControl) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked)
             {
                 FileOpenPicker picker = new()
                 {

@@ -53,6 +53,8 @@
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <EntryPointProjectUniqueName>..\WOADeviceManager\WOADeviceManager.csproj</EntryPointProjectUniqueName>
+    <PackageCertificateKeyFile>WOADeviceManager.Package_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
   <ItemGroup>
@@ -60,6 +62,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <Content Include="Assets\AppTiles\**" />
+    <None Include="WOADeviceManager.Package_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />

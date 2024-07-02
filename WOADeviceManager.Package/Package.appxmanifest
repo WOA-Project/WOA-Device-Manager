@@ -10,13 +10,13 @@
   <mp:PhoneIdentity PhoneProductId="f539eeeb-894b-48fd-8682-629aa34cc3c5" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
 
   <Identity
-    Name="DuoWOA.DeviceManager"
-    Publisher="CN=DuoWOA"
+    Name="48791GustaveMonce.WOADeviceManager"
+    Publisher="CN=E642D271-5A63-42B0-AEFA-6FF52F1D7343"
     Version="1.0.6.0" />
 
   <Properties>
     <DisplayName>WOA Device Manager</DisplayName>
-    <PublisherDisplayName>DuoWOA</PublisherDisplayName>
+    <PublisherDisplayName>Gustave Monce</PublisherDisplayName>
     <Logo>Assets\AppTiles\StoreLogo.png</Logo>
   </Properties>
 

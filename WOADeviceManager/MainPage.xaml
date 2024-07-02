@@ -109,7 +109,7 @@
                                  Title="You need to enable USB Debugging!"
                                  Message="Your phone currently has USB Debugging turned off in Developer Options. The tools needs USB Debugging in order to communicate with your device. Go to Settings, About, Tap the Build number field 7 times, go back into Settings, go to System, Developer options, Scroll all the way down til you see USB debugging, Turn USB debugging on." />
 
-                        <InfoBar x:Name="ANewUpdateIsAvailableInfoBar"
+                        <!--<InfoBar x:Name="ANewUpdateIsAvailableInfoBar"
                                  IsOpen="False"
                                  Severity="Informational"
                                  Title="A new version of WOA Device Manager is available!"
@@ -117,7 +117,7 @@
                             <InfoBar.ActionButton>
                                 <Button x:Name="UpdateButton" Click="UpdateButton_Click" Content="Learn More" />
                             </InfoBar.ActionButton>
-                        </InfoBar>
+                        </InfoBar>-->
                     </StackPanel>
                     
                     <Grid Grid.Row="1">

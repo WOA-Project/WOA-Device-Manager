@@ -16,7 +16,7 @@
                         <ColumnDefinition Width="150"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Source="ms-appx:///Assets/AppTiles/StoreLogo.png" Margin="-10,0,0,0" />
+                    <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Source="ms-appx:///Assets/AppTiles/AppLogo.png" Margin="-10,-12,0,0" Width="140" />
                     <RichTextBlock Grid.Column="1" Margin="20,0,0,0">
                         <Paragraph>
                             <Run Text="WOA Device Manager" FontSize="24" FontWeight="SemiBold" />

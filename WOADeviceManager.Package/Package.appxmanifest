@@ -35,7 +35,7 @@
       <uap:VisualElements
         DisplayName="WOA Device Manager"
         Description="This application helps you manage your WOA Project devices"
-        BackgroundColor="transparent"
+        BackgroundColor="#b4b2b4"
         Square150x150Logo="Assets\AppTiles\Square150x150Logo.png"
         Square44x44Logo="Assets\AppTiles\Square44x44Logo.png">
 		  <uap:DefaultTile Wide310x150Logo="Assets\AppTiles\Wide310x150Logo.png"  ShortName="WOA Device Manager" Square71x71Logo="Assets\AppTiles\SmallTile.png" Square310x310Logo="Assets\AppTiles\LargeTile.png">
@@ -45,7 +45,7 @@
 				  <uap:ShowOn Tile="square310x310Logo"/>
 			  </uap:ShowNameOnTiles>
 		  </uap:DefaultTile >
-		  <uap:SplashScreen Image="Assets\AppTiles\SplashScreen.png" />
+		  <uap:SplashScreen Image="Assets\AppTiles\SplashScreen.png"  BackgroundColor="#b4b2b4"/>
 	  </uap:VisualElements>
     </Application>
   </Applications>

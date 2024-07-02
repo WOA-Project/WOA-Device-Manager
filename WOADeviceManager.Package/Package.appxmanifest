@@ -12,7 +12,7 @@
   <Identity
     Name="48791GustaveMonce.WOADeviceManager"
     Publisher="CN=E642D271-5A63-42B0-AEFA-6FF52F1D7343"
-    Version="1.0.6.0" />
+    Version="1.0.7.0" />
 
   <Properties>
     <DisplayName>WOA Device Manager</DisplayName>

@@ -23,9 +23,9 @@ namespace WOADeviceManager.Managers
         private const string OEMEP_TWRP_USBID = "USB#VID_05C6&PID_9039";
         private const string OEMZE_TWRP_USBID = "USB#VID_18D1&PID_D001";
 
-        private const string OEMEP_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo.1930";
-        private const string OEMZE_NR_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo 2.1968";
-        private const string OEMZE_MMWAVE_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo 2.1995";
+        public const string OEMEP_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo.1930";
+        public const string OEMZE_NR_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo 2.1968";
+        public const string OEMZE_MMWAVE_PLATFORMID = "Microsoft Corporation.Surface.Surface Duo 2.1995";
 
         private const string OEMEP_FRIENDLY_NAME = "Surface Duo";
         private const string OEMZE_FRIENDLY_NAME = "Surface Duo 2";

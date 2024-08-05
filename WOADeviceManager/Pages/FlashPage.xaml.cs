@@ -25,6 +25,152 @@ namespace WOADeviceManager.Pages
             InitializeComponent();
         }
 
+        private static string GetPlatformID()
+        {
+            string PlatformID = "UNKNOWN.UNKNOWN.UNKNOWN.UNKNOWN";
+
+            switch (DeviceManager.Device.Product)
+            {
+                case DeviceProduct.Epsilon:
+                    {
+                        PlatformID = DeviceManager.OEMEP_PLATFORMID;
+                        break;
+                    }
+                case DeviceProduct.Zeta:
+                    {
+                        PlatformID = DeviceManager.OEMZE_MMWAVE_PLATFORMID;
+                        break;
+                    }
+            }
+
+            if (DeviceManager.Device.IsInUFP)
+            {
+                PlatformID = DeviceManager.Device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
+            }
+
+            return PlatformID;
+        }
+
+        private static string[] GetFFUPlatformIDs(string SelectedFFUPath)
+        {
+            using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
+            SignedImage signedImage = new(FFUStream);
+            return signedImage.Image.Stores[0].PlatformIDs.ToArray();
+        }
+
+        private static bool IsCompatible(string SelectedFFUPath)
+        {
+            bool compatible = false;
+
+            string DevicePlatformID = GetPlatformID();
+            string[] DevicePlatformIDParts = DevicePlatformID.Split(".");
+
+            string[] FFUPlatformIDs = GetFFUPlatformIDs(SelectedFFUPath);
+
+            foreach (string FFUPlatformID in FFUPlatformIDs)
+            {
+                string[] FFUPlatformIDParts = FFUPlatformID.Split(".");
+
+                if (FFUPlatformIDParts.Length <= DevicePlatformIDParts.Length)
+                {
+                    bool isMatching = true;
+
+                    for (int i = 0; i < FFUPlatformIDParts.Length; i++)
+                    {
+                        string FFUPlatformIDPart = FFUPlatformIDParts[i];
+                        string DevicePlatformIDPart = DevicePlatformIDParts[i];
+
+                        if (FFUPlatformIDPart == "*")
+                        {
+                            continue;
+                        }
+
+                        if (FFUPlatformIDPart != DevicePlatformIDPart)
+                        {
+                            isMatching = false;
+                            break;
+                        }
+                    }
+
+                    if (isMatching)
+                    {
+                        compatible = true;
+                        break;
+                    }
+                }
+            }
+
+            return compatible;
+        }
+
+        private void RefreshStatus(string FFUPath, Device device)
+        {
+            bool DeviceConnected = device.IsInUFP || device.IsADBEnabled || device.IsFastBootEnabled;
+
+            if (!File.Exists(FFUPath))
+            {
+                FFUPath = "";
+                SelectRun.Text = "Select the FFU-file to flash to the phone...";
+                FlashFFUImageButton.IsEnabled = false;
+            }
+            else
+            {
+                SelectRun.Text = "Change";
+                FlashFFUImageButton.IsEnabled = DeviceConnected;
+            }
+
+            if (device.IsInUFP)
+            {
+                StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
+            }
+            else if (device.IsADBEnabled)
+            {
+                StatusText.Text = "The phone is in Android mode. You can continue to flash the FFU image.";
+            }
+            else if (device.IsFastBootEnabled)
+            {
+                StatusText.Text = "The phone is in Fastboot mode. You can continue to flash the FFU image.";
+            }
+            else
+            {
+                StatusText.Text = "You have to connect your phone before you can continue.";
+            }
+
+            if (File.Exists(FFUPath) && DeviceConnected)
+            {
+                FlashFFUImageButton.IsEnabled = false;
+
+                ThreadPool.QueueUserWorkItem((o) =>
+                {
+                    try
+                    {
+                        bool compatible = IsCompatible(FFUPath);
+
+                        _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+                        {
+                            if (!compatible)
+                            {
+                                StatusText.Text = $"The FFU file you selected is not intended for this device (FFU Platform ID(s): {string.Join(";", GetFFUPlatformIDs(FFUPath))}, Device Platform ID: {GetPlatformID()}). Please specify a compatible FFU file.";
+                                FlashFFUImageButton.IsEnabled = false;
+                            }
+                            else
+                            {
+                                FlashFFUImageButton.IsEnabled = true;
+                            }
+                        });
+                    }
+                    catch
+                    {
+                        _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+                        {
+                            StatusText.Text = "The FFU file you selected is either invalid, corrupt, or not intended for this device. Please specify a compatible FFU file.";
+                            FlashFFUImageButton.IsEnabled = false;
+                        });
+                    }
+                });
+            }
+        }
+
         private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
         {
             FileOpenPicker picker = new()
@@ -43,17 +189,7 @@ namespace WOADeviceManager.Pages
                 SelectedFFUPath = file.Path;
             }
 
-            if (!File.Exists(SelectedFFUPath))
-            {
-                SelectedFFUPath = "";
-                SelectRun.Text = "Select the FFU-file to flash to the phone...";
-                FlashFFUImageButton.IsEnabled = false;
-            }
-            else
-            {
-                SelectRun.Text = "Change";
-                FlashFFUImageButton.IsEnabled = DeviceManager.Device.IsInUFP || DeviceManager.Device.IsADBEnabled || DeviceManager.Device.IsFastBootEnabled;
-            }
+            RefreshStatus(SelectedFFUPath, DeviceManager.Device);
 
             Bindings.Update();
         }
@@ -153,35 +289,7 @@ namespace WOADeviceManager.Pages
         {
             _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
             {
-                if (!File.Exists(SelectedFFUPath))
-                {
-                    SelectedFFUPath = "";
-                    SelectRun.Text = "Select the FFU-file to flash to the phone...";
-                    FlashFFUImageButton.IsEnabled = false;
-                }
-                else
-                {
-                    SelectRun.Text = "Change";
-                    FlashFFUImageButton.IsEnabled = device.IsInUFP || device.IsADBEnabled || device.IsFastBootEnabled;
-                }
-
-                if (device.IsInUFP)
-                {
-                    StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
-                }
-                else if (device.IsADBEnabled)
-                {
-                    StatusText.Text = "The phone is in Android mode. You can continue to flash the FFU image.";
-                }
-                else if (device.IsFastBootEnabled)
-                {
-                    StatusText.Text = "The phone is in Fastboot mode. You can continue to flash the FFU image.";
-                }
-                else
-                {
-                    StatusText.Text = "You have to connect your phone before you can continue.";
-                }
-
+                RefreshStatus(SelectedFFUPath, device);
                 Bindings.Update();
             });
         }
@@ -190,35 +298,7 @@ namespace WOADeviceManager.Pages
         {
             _ = DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
             {
-                if (!File.Exists(SelectedFFUPath))
-                {
-                    SelectedFFUPath = "";
-                    SelectRun.Text = "Select the FFU-file to flash to the phone...";
-                    FlashFFUImageButton.IsEnabled = false;
-                }
-                else
-                {
-                    SelectRun.Text = "Change";
-                    FlashFFUImageButton.IsEnabled = device.IsInUFP || device.IsADBEnabled || device.IsFastBootEnabled;
-                }
-
-                if (device.IsInUFP)
-                {
-                    StatusText.Text = "The phone is in Flash mode. You can continue to flash the FFU image.";
-                }
-                else if (device.IsADBEnabled)
-                {
-                    StatusText.Text = "The phone is in Android mode. You can continue to flash the FFU image.";
-                }
-                else if (device.IsFastBootEnabled)
-                {
-                    StatusText.Text = "The phone is in Fastboot mode. You can continue to flash the FFU image.";
-                }
-                else
-                {
-                    StatusText.Text = "You have to connect your phone before you can continue.";
-                }
-
+                RefreshStatus(SelectedFFUPath, device);
                 Bindings.Update();
             });
         }

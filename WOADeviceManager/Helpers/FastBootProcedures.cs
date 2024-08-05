@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO.Compression;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -188,6 +189,15 @@ namespace WOADeviceManager.Helpers
 
         public static async Task<bool> BootTWRP()
         {
+            try
+            {
+                await new HttpClient().GetAsync("https://github.com");
+            }
+            catch
+            {
+                throw new Exception("Your computer is offline! We need to be able to reach the internet in order to download the TWRP image.");
+            }
+
             MainPage.SetStatus("Downloading TWRP...", Emoji: "⬇️");
 
             StorageFile? TWRP = null;
@@ -219,6 +229,15 @@ namespace WOADeviceManager.Helpers
         {
             if (string.IsNullOrEmpty(UEFIFile))
             {
+                try
+                {
+                    await new HttpClient().GetAsync("https://github.com");
+                }
+                catch
+                {
+                    throw new Exception("Your computer is offline! We need to be able to reach the internet in order to download the UEFI.");
+                }
+
                 MainPage.SetStatus("Downloading UEFI...", Emoji: "⬇️");
 
                 if (DeviceManager.Device.Product == DeviceProduct.Epsilon)

@@ -85,7 +85,10 @@ namespace WOADeviceManager.Pages
                 {
                     await DeviceRebootHelper.RebootToMSCAndWait();
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    MainPage.ShowDialog(ex.Message);
+                }
 
                 MainPage.ToggleLoadingScreen(false);
             });
@@ -214,6 +217,7 @@ namespace WOADeviceManager.Pages
             ThreadPool.QueueUserWorkItem((o) =>
             {
                 MainPage.SetStatus("Rebooting the device (UFP)...", Emoji: "🔄️");
+
                 try
                 {
                     UFPProcedures.Reboot();
@@ -222,6 +226,7 @@ namespace WOADeviceManager.Pages
                 {
                     MainPage.ShowDialog(ex.Message);
                 }
+
                 MainPage.ToggleLoadingScreen(false);
             });
         }
@@ -231,6 +236,7 @@ namespace WOADeviceManager.Pages
             ThreadPool.QueueUserWorkItem((o) =>
             {
                 MainPage.SetStatus("Continuing Boot (UFP)...", Emoji: "🔄️");
+
                 try
                 {
                     UFPProcedures.ContinueBoot();
@@ -239,6 +245,7 @@ namespace WOADeviceManager.Pages
                 {
                     MainPage.ShowDialog(ex.Message);
                 }
+
                 MainPage.ToggleLoadingScreen(false);
             });
         }
@@ -248,11 +255,16 @@ namespace WOADeviceManager.Pages
             ThreadPool.QueueUserWorkItem((o) =>
             {
                 MainPage.SetStatus("Rebooting the device to Mass Storage mode (UFP)...", Emoji: "🔄️");
+
                 try
                 {
                     UFPProcedures.MassStorage();
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    MainPage.ShowDialog(ex.Message);
+                }
+
                 MainPage.ToggleLoadingScreen(false);
             });
         }

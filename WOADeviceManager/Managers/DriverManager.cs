@@ -3,6 +3,7 @@ using SharpCompress.Archives.SevenZip;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using WOADeviceManager.Managers.Connectivity;
@@ -22,6 +23,15 @@ namespace WOADeviceManager.Managers
 
             if (string.IsNullOrEmpty(DriverRepo))
             {
+                try
+                {
+                    await new HttpClient().GetAsync("https://github.com");
+                }
+                catch
+                {
+                    throw new Exception("Your computer is offline! We need to be able to reach the internet in order to download the Drivers.");
+                }
+
                 MainPage.SetStatus("Downloading latest Driver Package for your device...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
                 if (DeviceManager.Device.Product == DeviceProduct.Epsilon)

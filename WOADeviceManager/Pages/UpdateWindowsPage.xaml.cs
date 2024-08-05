@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
@@ -21,20 +22,26 @@ namespace WOADeviceManager.Pages
 
         private async void ServiceWindowsDriversButton_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.SetStatus("Rebooting the device to Mass Storage mode...", Emoji: "🔄️");
-
-            try
+            ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                await DeviceRebootHelper.RebootToMSCAndWait();
-            }
-            catch { }
+                MainPage.SetStatus("First rebooting the device to Mass Storage mode...", Emoji: "🔄️", SubMessage: "Servicing Windows Drivers");
 
-            new Task(async () => await DriverManager.UpdateDrivers()).Start();
+                try
+                {
+                    await DeviceRebootHelper.RebootToMSCAndWait();
+                    await DriverManager.UpdateDrivers();
+                }
+                catch (Exception ex)
+                {
+                    MainPage.ToggleLoadingScreen(false);
+                    MainPage.ShowDialog(ex.Message);
+                }
+            });
         }
 
         private async void ServiceWindowsDriversButton_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
         {
-            MainPage.SetStatus("Rebooting the device to Mass Storage mode...", Emoji: "🔄️");
+            MainPage.SetStatus("First rebooting the device to Mass Storage mode...", Emoji: "🔄️", SubMessage: "Servicing Windows Drivers");
 
             string? DriverRepo = null;
 
@@ -58,13 +65,19 @@ namespace WOADeviceManager.Pages
                 return;
             }
 
-            try
+            ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                await DeviceRebootHelper.RebootToMSCAndWait();
-            }
-            catch { }
-
-            new Task(async () => await DriverManager.UpdateDrivers(DriverRepo)).Start();
+                try
+                {
+                    await DeviceRebootHelper.RebootToMSCAndWait();
+                    await DriverManager.UpdateDrivers(DriverRepo);
+                }
+                catch (Exception ex)
+                {
+                    MainPage.ToggleLoadingScreen(false);
+                    MainPage.ShowDialog(ex.Message);
+                }
+            });
         }
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)

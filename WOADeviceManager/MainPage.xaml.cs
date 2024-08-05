@@ -226,7 +226,7 @@ namespace WOADeviceManager
             DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
             DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
 
-            new Task(async () =>
+            /*new Task(async () =>
             {
                 string LatestApplicationVersion = await HttpsUtils.GetLatestWOADeviceManagerVersion();
                 string CurrentApplicationVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}.{Package.Current.Id.Version.Revision}";
@@ -238,7 +238,7 @@ namespace WOADeviceManager
                         ANewUpdateIsAvailableInfoBar.IsOpen = true;
                     });
                 }
-            }).Start();
+            }).Start();*/
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -255,9 +255,9 @@ namespace WOADeviceManager
             }
         }
 
-        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        /*private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri("https://github.com/WOA-Project/WOA-Device-Manager/releases/latest"));
-        }
+        }*/
     }
 }

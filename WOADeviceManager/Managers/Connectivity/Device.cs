@@ -59,6 +59,7 @@ namespace WOADeviceManager.Managers.Connectivity
             DeviceState.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
             DeviceState.ANDROID => "Android",
             DeviceState.BOOTLOADER => "Bootloader",
+            DeviceState.UEFI => "UEFI",
             DeviceState.FASTBOOTD => "FastBoot",
             DeviceState.OFFLINE_CHARGING => "Offline Charging",
             DeviceState.RECOVERY_ADB_DISABLED => "Recovery (ADB Disconnected)",
@@ -87,7 +88,7 @@ namespace WOADeviceManager.Managers.Connectivity
         public bool IsDisconnected => !IsConnected;
 
 
-        public bool IsFastBootEnabled => State is DeviceState.FASTBOOTD or DeviceState.BOOTLOADER;
+        public bool IsFastBootEnabled => State is DeviceState.FASTBOOTD or DeviceState.BOOTLOADER or DeviceState.UEFI;
 
         public bool IsADBDisabled => State is DeviceState.ANDROID_ADB_DISABLED or DeviceState.RECOVERY_ADB_DISABLED or DeviceState.SIDELOAD_ADB_DISABLED or DeviceState.TWRP_ADB_DISABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED;
 
@@ -107,6 +108,8 @@ namespace WOADeviceManager.Managers.Connectivity
         public bool IsInSideload => State is DeviceState.SIDELOAD_ADB_DISABLED or DeviceState.SIDELOAD_ADB_ENABLED;
 
         public bool IsInFastBootD => State == DeviceState.FASTBOOTD;
+
+        public bool IsInUEFI => State == DeviceState.UEFI;
 
         public bool IsInBootloader => State == DeviceState.BOOTLOADER;
 

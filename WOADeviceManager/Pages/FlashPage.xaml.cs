@@ -194,53 +194,56 @@ namespace WOADeviceManager.Pages
             Bindings.Update();
         }
 
-        private void FlashFFUImageButton_Click(object sender, RoutedEventArgs e)
+        private static async Task SwitchToUFPAsync()
         {
-            if (!File.Exists(SelectedFFUPath))
+            if (DeviceManager.Device.IsADBEnabled)
             {
-                SelectedFFUPath = "";
-                SelectRun.Text = "Select the FFU-file to flash to the phone...";
-                FlashFFUImageButton.IsEnabled = false;
-                Bindings.Update();
+                await DeviceRebootHelper.RebootToBootloaderAndWait();
+            }
+
+            if (DeviceManager.Device.IsFastBootEnabled)
+            {
+                DeviceManager.Device.FastBootTransport.GetVariable("partition-type:esp", out string espPartitionType);
+
+                if (!DeviceManager.Device.FastBootTransport.ErasePartition("esp"))
+                {
+                    throw new Exception("Unable to erase ESP partition!");
+                }
+
+                await DeviceRebootHelper.RebootToUEFI();
+
+                while (DeviceManager.Device.State is not DeviceState.UFP)
+                {
+                    await Task.Delay(1000);
+                }
+            }
+        }
+
+        private static void FlashFFUImageWithUI(string FFUPath)
+        {
+            if (!File.Exists(FFUPath))
+            {
                 return;
             }
 
             MainPage.SetStatus("Initializing...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
 
-            using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
+            using FileStream FFUStream = File.OpenRead(FFUPath);
             SignedImage signedImage = new(FFUStream);
             int chunkSize = signedImage.ChunkSize;
             ulong totalChunkCount = (ulong)FFUStream.Length / (ulong)chunkSize;
 
             FFUStream.Seek(0, SeekOrigin.Begin);
 
-            ProgressUpdater updater = MainPage.GetProgressUpdater(totalChunkCount, $"Flashing {Path.GetFileName(SelectedFFUPath)}...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
+            ProgressUpdater updater = MainPage.GetProgressUpdater(totalChunkCount, $"Flashing {Path.GetFileName(FFUPath)}...", Title: "Flashing FFU", SubTitle: "WOA Device Manager is currently flashing your device with the FFU file you previously selected. Make sure your phone remains plugged in throughout the entire process, that your computer does not go to sleep, nor that this window gets closed. This may take a while.", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.", Emoji: "🔧");
 
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                using FileStream FFUStream = File.OpenRead(SelectedFFUPath);
+                using FileStream FFUStream = File.OpenRead(FFUPath);
 
                 try
                 {
-                    if (DeviceManager.Device.IsADBEnabled)
-                    {
-                        await DeviceRebootHelper.RebootToBootloaderAndWait();
-                    }
-                    
-                    if (DeviceManager.Device.IsFastBootEnabled)
-                    {
-                        if (!DeviceManager.Device.FastBootTransport.ErasePartition("esp"))
-                        {
-                            throw new Exception("Unable to erase ESP partition!");
-                        }
-
-                        await DeviceRebootHelper.RebootToUEFI();
-
-                        while (DeviceManager.Device.State is not DeviceState.UFP)
-                        {
-                            await Task.Delay(1000);
-                        }
-                    }
+                    await SwitchToUFPAsync();
 
                     DeviceManager.Device.UnifiedFlashingPlatformTransport.FlashFFU(FFUStream, updater);
 
@@ -283,6 +286,20 @@ namespace WOADeviceManager.Pages
 
                 MainPage.SetStatus();
             });
+        }
+
+        private void FlashFFUImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!File.Exists(SelectedFFUPath))
+            {
+                SelectedFFUPath = "";
+                SelectRun.Text = "Select the FFU-file to flash to the phone...";
+                FlashFFUImageButton.IsEnabled = false;
+                Bindings.Update();
+                return;
+            }
+
+            FlashFFUImageWithUI(SelectedFFUPath);
         }
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)

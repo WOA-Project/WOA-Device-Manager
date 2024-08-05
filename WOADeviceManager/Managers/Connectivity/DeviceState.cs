@@ -6,6 +6,7 @@
         ANDROID_ADB_ENABLED,
         ANDROID,
         BOOTLOADER,
+        UEFI,
         FASTBOOTD,
         OFFLINE_CHARGING,
         RECOVERY_ADB_DISABLED,

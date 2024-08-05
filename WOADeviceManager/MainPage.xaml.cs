@@ -220,7 +220,7 @@ namespace WOADeviceManager
             if (DeviceManager.Device.IsDisconnected)
             {
                 DeviceNeededOverlayShown = true;
-                SetStatus(Emoji: "📱", Title: "Connect a compatible device", SubTitle: "WOA Device Manager helps you install, update and manage Windows on your Android device. Please connect a compatible device.", Message: "Checking for new connected devices...");
+                SetStatus(Emoji: "📱", Title: "Connect a compatible device", SubTitle: "WOA Device Manager helps you install, update and manage Windows on your Android device. Please connect a compatible device.", Message: "Checking for any connected device...");
             }
 
             DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;

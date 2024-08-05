@@ -88,40 +88,45 @@ namespace WOADeviceManager.Pages
         {
             MainPage.SetStatus("Rebooting phone to Windows mode...", Emoji: "🔄️");
 
-            string UEFIFile = null;
-
-            if (InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftShift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightShift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftControl) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightControl) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked)
+            try
             {
-                FileOpenPicker picker = new()
-                {
-                    ViewMode = PickerViewMode.List,
-                    SuggestedStartLocation = PickerLocationId.Downloads,
-                    FileTypeFilter = { ".img" }
-                };
+                await DeviceRebootHelper.RebootToUEFI();
+            }
+            catch { }
 
-                nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
-                InitializeWithWindow.Initialize(picker, windowHandle);
+            MainPage.ToggleLoadingScreen(false);
+        }
 
-                Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
-                if (file != null && File.Exists(file.Path))
-                {
-                    UEFIFile = file.Path;
-                }
-                else
-                {
-                    MainPage.ToggleLoadingScreen(false);
-                    return;
-                }
+        private async void RebootToWindows_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+        {
+            MainPage.SetStatus("Rebooting phone to Windows mode...", Emoji: "🔄️");
+
+            string? UEFIFile = null;
+
+            FileOpenPicker picker = new()
+            {
+                ViewMode = PickerViewMode.List,
+                SuggestedStartLocation = PickerLocationId.Downloads,
+                FileTypeFilter = { ".img" }
+            };
+
+            nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
+            InitializeWithWindow.Initialize(picker, windowHandle);
+
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null && File.Exists(file.Path))
+            {
+                UEFIFile = file.Path;
+            }
+            else
+            {
+                MainPage.ToggleLoadingScreen(false);
+                return;
             }
 
             try
             {
-                await DeviceRebootHelper.RebootToUEFIAndWait(UEFIFile);
+                await DeviceRebootHelper.RebootToUEFI(UEFIFile);
             }
             catch { }
 

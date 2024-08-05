@@ -158,6 +158,22 @@ namespace WOADeviceManager
             });
         }
 
+        public static void ShowDialog(string? Title = null, string? Description = null)
+        {
+            _ = _mainPage.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, async () =>
+            {
+                ContentDialog dialog = new()
+                {
+                    Title = Title,
+                    Content = Description,
+                    CloseButtonText = "OK",
+                    XamlRoot = _mainPage.XamlRoot
+                };
+
+                await dialog.ShowAsync();
+            });
+        }
+
         public static ProgressUpdater GetProgressUpdater(ulong MaxValue, string Message, string? SubMessage = null, string? Title = null, string? SubTitle = null, string? Emoji = null)
         {
             return new(MaxValue, (percentage, eta) =>

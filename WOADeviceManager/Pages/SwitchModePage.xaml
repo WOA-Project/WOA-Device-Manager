@@ -57,7 +57,7 @@
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to TWRP Recovery."/>
                         </StackPanel>
                     </Button>
-                    <Button Click="RebootToWindows_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInWindows.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                    <Button Click="RebootToWindows_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInWindows.Equals(x:False)}" RightTapped="RebootToWindows_RightTapped" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Windows-mode"/>
                             <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will switch back to Windows OS."/>

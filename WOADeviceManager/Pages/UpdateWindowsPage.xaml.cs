@@ -24,34 +24,39 @@ namespace WOADeviceManager.Pages
         {
             MainPage.SetStatus("Rebooting phone to Mass Storage mode...", Emoji: "🔄️");
 
-            string DriverRepo = null;
-
-            if (InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftShift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightShift) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftControl) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked ||
-                InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightControl) is Windows.UI.Core.CoreVirtualKeyStates.Down or Windows.UI.Core.CoreVirtualKeyStates.Locked)
+            try
             {
-                FolderPicker picker = new()
-                {
-                    ViewMode = PickerViewMode.List,
-                    SuggestedStartLocation = PickerLocationId.Downloads
-                };
+                await DeviceRebootHelper.RebootToMSCAndWait();
+            }
+            catch { }
 
-                nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
-                InitializeWithWindow.Initialize(picker, windowHandle);
+            new Task(async () => await DriverManager.UpdateDrivers()).Start();
+        }
 
-                Windows.Storage.StorageFolder folder = await picker.PickSingleFolderAsync();
-                if (folder != null && Directory.Exists(folder.Path))
-                {
-                    DriverRepo = folder.Path;
-                }
-                else
-                {
-                    MainPage.ToggleLoadingScreen(false);
-                    return;
-                }
+        private async void ServiceWindowsDriversButton_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+        {
+            MainPage.SetStatus("Rebooting phone to Mass Storage mode...", Emoji: "🔄️");
+
+            string? DriverRepo = null;
+
+            FolderPicker picker = new()
+            {
+                ViewMode = PickerViewMode.List,
+                SuggestedStartLocation = PickerLocationId.Downloads
+            };
+
+            nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
+            InitializeWithWindow.Initialize(picker, windowHandle);
+
+            Windows.Storage.StorageFolder folder = await picker.PickSingleFolderAsync();
+            if (folder != null && Directory.Exists(folder.Path))
+            {
+                DriverRepo = folder.Path;
+            }
+            else
+            {
+                MainPage.ToggleLoadingScreen(false);
+                return;
             }
 
             try
@@ -61,7 +66,6 @@ namespace WOADeviceManager.Pages
             catch { }
 
             new Task(async () => await DriverManager.UpdateDrivers(DriverRepo)).Start();
-            
         }
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)

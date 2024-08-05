@@ -30,6 +30,7 @@ namespace WOADeviceManager.Helpers
             {
                 throw new Exception("Rebooting from Windows to the bootloader is still unsupported.");
             }
+
             while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
             {
                 await Task.Delay(1000);
@@ -89,7 +90,7 @@ namespace WOADeviceManager.Helpers
             }
         }
 
-        public static async Task RebootToUEFIAndWait(string UEFIFile = null)
+        public static async Task RebootToUEFI(string UEFIFile = null)
         {
             if (DeviceManager.Device.State is DeviceState.WINDOWS or DeviceState.UFP)
             {
@@ -105,10 +106,10 @@ namespace WOADeviceManager.Helpers
             {
                 _ = await FastBootProcedures.BootUEFI(UEFIFile);
 
-                while (DeviceManager.Device.State is not DeviceState.WINDOWS and not DeviceState.UFP)
+                /*while (DeviceManager.Device.State is not DeviceState.WINDOWS and not DeviceState.UFP)
                 {
                     await Task.Delay(1000);
-                }
+                }*/
             }
         }
 

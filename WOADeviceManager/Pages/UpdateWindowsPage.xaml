@@ -27,7 +27,7 @@
                 </RichTextBlock>
 
                 <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                    <Button x:Name="ServiceWindowsDriversButton" Content="Service Windows Drivers" Click="ServiceWindowsDriversButton_Click" IsEnabled="False"/>
+                    <Button x:Name="ServiceWindowsDriversButton" Content="Service Windows Drivers" Click="ServiceWindowsDriversButton_Click" RightTapped="ServiceWindowsDriversButton_RightTapped" IsEnabled="False"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

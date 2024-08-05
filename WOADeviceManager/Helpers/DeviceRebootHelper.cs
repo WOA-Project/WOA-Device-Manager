@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FastBoot;
+using System;
 using System.Threading.Tasks;
 using WOADeviceManager.Managers;
 using WOADeviceManager.Managers.Connectivity;
@@ -7,6 +8,41 @@ namespace WOADeviceManager.Helpers
 {
     public class DeviceRebootHelper
     {
+        private static void EnsureBootability()
+        {
+            bool result = DeviceManager.Device.FastBootTransport.GetVariable("current-slot", out string currentSlot);
+            if (!result)
+            {
+                // Device may not have slot support, ignore then.
+                //throw new Exception("Error while getting current slot.");
+            }
+            else
+            {
+                result = DeviceManager.Device.FastBootTransport.GetVariable("slot-successful:" + currentSlot, out string successSlotStr);
+                if (!result)
+                {
+                    throw new Exception("Error while getting slot " + currentSlot + " successful state.");
+                }
+
+                bool successSlot = successSlotStr == "yes";
+
+                if (!successSlot)
+                {
+                    result = DeviceManager.Device.FastBootTransport.SetActiveOther();
+                    if (!result)
+                    {
+                        throw new Exception("Error while setting other slot active state.");
+                    }
+
+                    result = DeviceManager.Device.FastBootTransport.SetActiveOther();
+                    if (!result)
+                    {
+                        throw new Exception("Error while setting current slot active state.");
+                    }
+                }
+            }
+        }
+
         public static async Task RebootToBootloaderAndWait()
         {
             if (DeviceManager.Device.State == DeviceState.BOOTLOADER)
@@ -14,21 +50,71 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsADBEnabled)
+            switch (DeviceManager.Device.State)
             {
-                ADBProcedures.RebootToBootloader();
-            }
-            else if (DeviceManager.Device.IsFastBootEnabled)
-            {
-                FastBootProcedures.RebootBootloader();
-            }
-            else if (DeviceManager.Device.State == DeviceState.ANDROID)
-            {
-                throw new Exception("Unauthorized ADB devices can't be rebooted to bootloader.");
-            }
-            else if (DeviceManager.Device.State == DeviceState.WINDOWS)
-            {
-                throw new Exception("Rebooting from Windows to the bootloader is still unsupported.");
+                case DeviceState.UEFI:
+                case DeviceState.FASTBOOTD:
+                    {
+                        EnsureBootability();
+
+                        bool result = DeviceManager.Device.FastBootTransport.RebootBootloader();
+                        if (!result)
+                        {
+                            throw new Exception("Error while rebooting.");
+                        }
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.UFP:
+                    {
+                        UFPProcedures.Reboot();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToBootloaderAndWait();
+
+                        return;
+                    }
+                case DeviceState.SIDELOAD_ADB_ENABLED:
+                case DeviceState.TWRP_ADB_ENABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
+                case DeviceState.RECOVERY_ADB_ENABLED:
+                case DeviceState.ANDROID_ADB_ENABLED:
+                    {
+                        DeviceManager.Device.AndroidDebugBridgeTransport.RebootBootloader();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.ANDROID_ADB_DISABLED:
+                case DeviceState.ANDROID:
+                case DeviceState.BOOTLOADER:
+                case DeviceState.OFFLINE_CHARGING:
+                case DeviceState.RECOVERY_ADB_DISABLED:
+                case DeviceState.SIDELOAD_ADB_DISABLED:
+                case DeviceState.TWRP_ADB_DISABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED:
+                case DeviceState.WINDOWS:
+                case DeviceState.DISCONNECTED:
+                    {
+                        throw new Exception($"Rebooting from {DeviceManager.Device.DeviceStateLocalized} to bootloader is still unsupported.");
+                    }
             }
 
             while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
@@ -44,21 +130,85 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsFastBootEnabled)
+            switch (DeviceManager.Device.State)
             {
-                FastBootProcedures.Reboot();
-            }
-            else if (DeviceManager.Device.IsADBEnabled)
-            {
-                ADBProcedures.RebootToAndroid();
-            }
-            else if (DeviceManager.Device.IsInUFP)
-            {
-                UFPProcedures.Reboot();
-            }
-            else if (DeviceManager.Device.State == DeviceState.WINDOWS)
-            {
-                throw new Exception("Rebooting from Windows to Android is still unsupported.");
+                case DeviceState.BOOTLOADER:
+                    {
+                        EnsureBootability();
+
+                        bool result = DeviceManager.Device.FastBootTransport.ContinueBoot();
+                        if (!result)
+                        {
+                            throw new Exception("Error while continuing the boot process.");
+                        }
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.UEFI:
+                case DeviceState.FASTBOOTD:
+                    {
+                        EnsureBootability();
+
+                        bool result = DeviceManager.Device.FastBootTransport.Reboot();
+                        if (!result)
+                        {
+                            throw new Exception("Error while rebooting.");
+                        }
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.UFP:
+                    {
+                        UFPProcedures.Reboot();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.SIDELOAD_ADB_ENABLED:
+                case DeviceState.TWRP_ADB_ENABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
+                case DeviceState.RECOVERY_ADB_ENABLED:
+                    {
+                        DeviceManager.Device.AndroidDebugBridgeTransport.Reboot();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.ANDROID_ADB_DISABLED:
+                case DeviceState.ANDROID_ADB_ENABLED:
+                case DeviceState.ANDROID:
+                case DeviceState.OFFLINE_CHARGING:
+                case DeviceState.RECOVERY_ADB_DISABLED:
+                case DeviceState.SIDELOAD_ADB_DISABLED:
+                case DeviceState.TWRP_ADB_DISABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED:
+                case DeviceState.WINDOWS:
+                case DeviceState.DISCONNECTED:
+                    {
+                        throw new Exception($"Rebooting from {DeviceManager.Device.DeviceStateLocalized} to bootloader is still unsupported.");
+                    }
             }
 
             while (DeviceManager.Device.State is not DeviceState.ANDROID_ADB_ENABLED and not DeviceState.ANDROID and not DeviceState.ANDROID_ADB_DISABLED)
@@ -145,21 +295,159 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsADBEnabled)
+            switch (DeviceManager.Device.State)
             {
-                ADBProcedures.RebootToRecovery();
+                case DeviceState.UEFI:
+                case DeviceState.FASTBOOTD:
+                case DeviceState.BOOTLOADER:
+                    {
+                        EnsureBootability();
+
+                        bool result = DeviceManager.Device.FastBootTransport.RebootRecovery();
+                        if (!result)
+                        {
+                            throw new Exception("Error while rebooting.");
+                        }
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.UFP:
+                    {
+                        UFPProcedures.Reboot();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToRecoveryAndWait();
+
+                        return;
+                    }
+                case DeviceState.SIDELOAD_ADB_ENABLED:
+                case DeviceState.ANDROID_ADB_ENABLED:
+                    {
+                        DeviceManager.Device.AndroidDebugBridgeTransport.RebootRecovery();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.TWRP_ADB_ENABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
+                    {
+                        // We cant switch to many things from TWRP, go to Bootloader first.
+                        await RebootToBootloaderAndWait();
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToRecoveryAndWait();
+
+                        return;
+                    }
+                case DeviceState.ANDROID_ADB_DISABLED:
+                case DeviceState.ANDROID:
+                case DeviceState.OFFLINE_CHARGING:
+                case DeviceState.RECOVERY_ADB_DISABLED:
+                case DeviceState.RECOVERY_ADB_ENABLED:
+                case DeviceState.SIDELOAD_ADB_DISABLED:
+                case DeviceState.TWRP_ADB_DISABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED:
+                case DeviceState.WINDOWS:
+                case DeviceState.DISCONNECTED:
+                    {
+                        throw new Exception($"Rebooting from {DeviceManager.Device.DeviceStateLocalized} to bootloader is still unsupported.");
+                    }
             }
-            else if (DeviceManager.Device.IsFastBootEnabled)
+
+            while (DeviceManager.Device.State is not DeviceState.RECOVERY_ADB_ENABLED and not DeviceState.RECOVERY_ADB_DISABLED and not DeviceState.SIDELOAD_ADB_ENABLED and not DeviceState.SIDELOAD_ADB_DISABLED)
             {
-                FastBootProcedures.RebootRecovery();
+                await Task.Delay(1000);
             }
-            else if (DeviceManager.Device.State == DeviceState.ANDROID)
+        }
+
+        public static async Task RebootToSideloadAndWait()
+        {
+            if (DeviceManager.Device.State is DeviceState.SIDELOAD_ADB_DISABLED or DeviceState.SIDELOAD_ADB_ENABLED)
             {
-                throw new Exception("Unauthorized ADB devices can't be rebooted to bootloader.");
+                return;
             }
-            else if (DeviceManager.Device.State == DeviceState.WINDOWS)
+
+            switch (DeviceManager.Device.State)
             {
-                throw new Exception("Rebooting from Windows to the bootloader is still unsupported.");
+                case DeviceState.UEFI:
+                case DeviceState.FASTBOOTD:
+                    {
+                        await RebootToAndroidAndWait();
+
+                        await RebootToSideloadAndWait();
+
+                        return;
+                    }
+                case DeviceState.UFP:
+                    {
+                        UFPProcedures.Reboot();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToSideloadAndWait();
+
+                        return;
+                    }
+                case DeviceState.RECOVERY_ADB_ENABLED:
+                case DeviceState.ANDROID_ADB_ENABLED:
+                    {
+                        DeviceManager.Device.AndroidDebugBridgeTransport.RebootSideload();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.TWRP_ADB_ENABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
+                    {
+                        // We cant switch to many things from TWRP, go to Bootloader first.
+                        await RebootToBootloaderAndWait();
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToSideloadAndWait();
+
+                        return;
+                    }
+                case DeviceState.ANDROID_ADB_DISABLED:
+                case DeviceState.ANDROID:
+                case DeviceState.BOOTLOADER:
+                case DeviceState.OFFLINE_CHARGING:
+                case DeviceState.RECOVERY_ADB_DISABLED:
+                case DeviceState.SIDELOAD_ADB_DISABLED:
+                case DeviceState.SIDELOAD_ADB_ENABLED:
+                case DeviceState.TWRP_ADB_DISABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED:
+                case DeviceState.WINDOWS:
+                case DeviceState.DISCONNECTED:
+                    {
+                        throw new Exception($"Rebooting from {DeviceManager.Device.DeviceStateLocalized} to bootloader is still unsupported.");
+                    }
             }
 
             while (DeviceManager.Device.State is not DeviceState.RECOVERY_ADB_ENABLED and not DeviceState.RECOVERY_ADB_DISABLED and not DeviceState.SIDELOAD_ADB_ENABLED and not DeviceState.SIDELOAD_ADB_DISABLED)
@@ -175,21 +463,80 @@ namespace WOADeviceManager.Helpers
                 return;
             }
 
-            if (DeviceManager.Device.IsADBEnabled)
+            switch (DeviceManager.Device.State)
             {
-                ADBProcedures.RebootToFastBootD();
-            }
-            else if (DeviceManager.Device.IsFastBootEnabled)
-            {
-                FastBootProcedures.RebootFastBootD();
-            }
-            else if (DeviceManager.Device.State is DeviceState.ANDROID or DeviceState.ANDROID_ADB_DISABLED)
-            {
-                throw new Exception("Unauthorized ADB devices can't be rebooted to fastbootd.");
-            }
-            else if (DeviceManager.Device.State == DeviceState.WINDOWS)
-            {
-                throw new Exception("Rebooting from Windows to the fastbootd is still unsupported.");
+                case DeviceState.UEFI:
+                case DeviceState.BOOTLOADER:
+                    {
+                        EnsureBootability();
+
+                        bool result = DeviceManager.Device.FastBootTransport.RebootFastBootD();
+                        if (!result)
+                        {
+                            throw new Exception("Error while rebooting.");
+                        }
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.UFP:
+                    {
+                        UFPProcedures.Reboot();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToFastBootDAndWait();
+
+                        return;
+                    }
+                case DeviceState.RECOVERY_ADB_ENABLED:
+                case DeviceState.SIDELOAD_ADB_ENABLED:
+                case DeviceState.ANDROID_ADB_ENABLED:
+                    {
+                        DeviceManager.Device.AndroidDebugBridgeTransport.RebootFastBootD();
+
+                        // We are meant to disconnect immediately, if not, wait.
+                        while (DeviceManager.Device.State != DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        break;
+                    }
+                case DeviceState.TWRP_ADB_ENABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
+                    {
+                        // We cant switch to many things from TWRP, go to Bootloader first.
+                        await RebootToBootloaderAndWait();
+
+                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        await RebootToFastBootDAndWait();
+
+                        return;
+                    }
+                case DeviceState.ANDROID_ADB_DISABLED:
+                case DeviceState.ANDROID:
+                case DeviceState.FASTBOOTD:
+                case DeviceState.OFFLINE_CHARGING:
+                case DeviceState.RECOVERY_ADB_DISABLED:
+                case DeviceState.SIDELOAD_ADB_DISABLED:
+                case DeviceState.TWRP_ADB_DISABLED:
+                case DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED:
+                case DeviceState.WINDOWS:
+                case DeviceState.DISCONNECTED:
+                    {
+                        throw new Exception($"Rebooting from {DeviceManager.Device.DeviceStateLocalized} to bootloader is still unsupported.");
+                    }
             }
 
             while (DeviceManager.Device.State != DeviceState.FASTBOOTD)

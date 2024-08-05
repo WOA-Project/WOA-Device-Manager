@@ -203,11 +203,17 @@ namespace WOADeviceManager.Pages
 
             if (DeviceManager.Device.IsFastBootEnabled)
             {
-                DeviceManager.Device.FastBootTransport.GetVariable("partition-type:esp", out string espPartitionType);
-
-                if (!DeviceManager.Device.FastBootTransport.ErasePartition("esp"))
+                bool result = DeviceManager.Device.FastBootTransport.GetVariable("partition-type:esp", out string espPartitionType);
+                if (result)
                 {
-                    throw new Exception("Unable to erase ESP partition!");
+                    if (!string.IsNullOrEmpty(espPartitionType))
+                    {
+                        result = DeviceManager.Device.FastBootTransport.ErasePartition("esp");
+                        if (!result)
+                        {
+                            throw new Exception("Unable to erase ESP partition!");
+                        }
+                    }
                 }
 
                 await DeviceRebootHelper.RebootToUEFI();

@@ -1,5 +1,4 @@
 ﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -22,7 +21,7 @@ namespace WOADeviceManager.Pages
 
         private async void ServiceWindowsDriversButton_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.SetStatus("Rebooting phone to Mass Storage mode...", Emoji: "🔄️");
+            MainPage.SetStatus("Rebooting the device to Mass Storage mode...", Emoji: "🔄️");
 
             try
             {
@@ -35,7 +34,7 @@ namespace WOADeviceManager.Pages
 
         private async void ServiceWindowsDriversButton_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
         {
-            MainPage.SetStatus("Rebooting phone to Mass Storage mode...", Emoji: "🔄️");
+            MainPage.SetStatus("Rebooting the device to Mass Storage mode...", Emoji: "🔄️");
 
             string? DriverRepo = null;
 
@@ -75,12 +74,12 @@ namespace WOADeviceManager.Pages
                 bool isInCompatibleMode = DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceState.BOOTLOADER or DeviceState.ANDROID_ADB_ENABLED;
                 if (isInCompatibleMode)
                 {
-                    StatusText.Text = "The phone is in a supported mode. You can continue to service the Windows drivers.";
+                    StatusText.Text = "The device is in a supported mode. You can continue to service the Windows drivers.";
                     ServiceWindowsDriversButton.IsEnabled = true;
                 }
                 else
                 {
-                    StatusText.Text = "You have to connect your phone in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
+                    StatusText.Text = "You have to connect your device in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
                     ServiceWindowsDriversButton.IsEnabled = false;
                 }
             });
@@ -93,12 +92,12 @@ namespace WOADeviceManager.Pages
                 bool isInCompatibleMode = DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceState.BOOTLOADER or DeviceState.ANDROID_ADB_ENABLED;
                 if (isInCompatibleMode)
                 {
-                    StatusText.Text = "The phone is in a supported mode. You can continue to service the Windows drivers.";
+                    StatusText.Text = "The device is in a supported mode. You can continue to service the Windows drivers.";
                     ServiceWindowsDriversButton.IsEnabled = true;
                 }
                 else
                 {
-                    StatusText.Text = "You have to connect your phone in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
+                    StatusText.Text = "You have to connect your device in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
                     ServiceWindowsDriversButton.IsEnabled = false;
                 }
             });
@@ -109,12 +108,12 @@ namespace WOADeviceManager.Pages
             bool isInCompatibleMode = DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceState.BOOTLOADER or DeviceState.ANDROID_ADB_ENABLED;
             if (isInCompatibleMode)
             {
-                StatusText.Text = "The phone is in a supported mode. You can continue to service the Windows drivers.";
+                StatusText.Text = "The device is in a supported mode. You can continue to service the Windows drivers.";
                 ServiceWindowsDriversButton.IsEnabled = true;
             }
             else
             {
-                StatusText.Text = "You have to connect your phone in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
+                StatusText.Text = "You have to connect your device in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
                 ServiceWindowsDriversButton.IsEnabled = false;
             }
 

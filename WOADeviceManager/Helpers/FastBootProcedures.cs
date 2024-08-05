@@ -81,11 +81,11 @@ namespace WOADeviceManager.Helpers
                 {
                     new Task(async () =>
                     {
-                        MainPage.SetStatus("Initializing...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+                        MainPage.SetStatus("Initializing...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your device bootloader", SubMessage: "Your device may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
                         while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
                         {
-                            MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+                            MainPage.SetStatus("Rebooting the device to Bootloader mode...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your device bootloader", SubMessage: "Your device may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
                             try
                             {
@@ -94,7 +94,7 @@ namespace WOADeviceManager.Helpers
                             catch { }
                         }
 
-                        MainPage.SetStatus("Waiting for User to accept the prompt on the phone.", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Use your volume buttons to go up and down, and your power button to confirm.");
+                        MainPage.SetStatus("Waiting for User to accept the prompt on the device.", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your device bootloader", SubMessage: "Use your volume buttons to go up and down, and your power button to confirm.");
 
                         bool result = DeviceManager.Device.FastBootTransport.FlashingUnlock();
 
@@ -103,7 +103,7 @@ namespace WOADeviceManager.Helpers
                             Thread.Sleep(300);
                         }
 
-                        MainPage.SetStatus("Device is going to reboot in a moment...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+                        MainPage.SetStatus("Device is going to reboot in a moment...", Emoji: "🔓", Title: "Unlocking Bootloader", SubTitle: "WOA Device Manager is preparing to unlock your device bootloader", SubMessage: "Your device may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
                         while (DeviceManager.Device.State == DeviceState.DISCONNECTED)
                         {
@@ -152,11 +152,11 @@ namespace WOADeviceManager.Helpers
             {
                 new Task(async () =>
                 {
-                    MainPage.SetStatus("Initializing...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+                    MainPage.SetStatus("Initializing...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your device bootloader", SubMessage: "Your device may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
                     while (DeviceManager.Device.State != DeviceState.BOOTLOADER)
                     {
-                        MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+                        MainPage.SetStatus("Rebooting the device to Bootloader mode...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your device bootloader", SubMessage: "Your device may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
                         try
                         {
@@ -165,7 +165,7 @@ namespace WOADeviceManager.Helpers
                         catch { }
                     }
 
-                    MainPage.SetStatus("Waiting for User to accept the prompt on the phone.", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Use your volume buttons to go up and down, and your power button to confirm.");
+                    MainPage.SetStatus("Waiting for User to accept the prompt on the device.", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your device bootloader", SubMessage: "Use your volume buttons to go up and down, and your power button to confirm.");
 
                     bool result = DeviceManager.Device.FastBootTransport.FlashingLock();
 
@@ -174,7 +174,7 @@ namespace WOADeviceManager.Helpers
                         Thread.Sleep(300);
                     }
 
-                    MainPage.SetStatus("Device is going to reboot in a moment...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your phone bootloader", SubMessage: "Your phone may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
+                    MainPage.SetStatus("Device is going to reboot in a moment...", Emoji: "🔒", Title: "Locking Bootloader", SubTitle: "WOA Device Manager is preparing to lock your device bootloader", SubMessage: "Your device may reboot into different operating modes. This is expected behavior. Do not interfere with this process.");
 
                     while (DeviceManager.Device.State == DeviceState.DISCONNECTED)
                     {
@@ -188,26 +188,39 @@ namespace WOADeviceManager.Helpers
 
         public static async Task<bool> BootTWRP()
         {
+            MainPage.SetStatus("Downloading TWRP...", Emoji: "⬇️");
+
+            StorageFile? TWRP = null;
+
             if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
             {
-                StorageFile TWRP = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON, true);
-                return TWRP != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(TWRP.Path);
+                TWRP = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_EPSILON, true);
             }
             else if (DeviceManager.Device.Product == DeviceProduct.Zeta)
             {
-                StorageFile TWRP = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA, true);
-                return TWRP != null && DeviceManager.Device.FastBootTransport.BootImageIntoRam(TWRP.Path);
+                TWRP = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.TWRP_ZETA, true);
             }
             else
             {
                 throw new Exception("Unknown device product");
             }
+
+            if (TWRP == null)
+            {
+                throw new Exception("Unknown file path");
+            }
+
+            MainPage.SetStatus("Rebooting the device to TWRP mode...", Emoji: "🔄️");
+
+            return DeviceManager.Device.FastBootTransport.BootImageIntoRam(TWRP.Path);
         }
 
-        public static async Task<bool> BootUEFI(string UEFIFile = null)
+        public static async Task<bool> BootUEFI(string? UEFIFile = null)
         {
             if (string.IsNullOrEmpty(UEFIFile))
             {
+                MainPage.SetStatus("Downloading UEFI...", Emoji: "⬇️");
+
                 if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
                 {
                     StorageFile UEFI = await ResourcesManager.RetrieveFile(ResourcesManager.DownloadableComponent.UEFI_EPSILON, true);
@@ -238,12 +251,14 @@ namespace WOADeviceManager.Helpers
                 {
                     throw new Exception("Unknown device product");
                 }
+
+                MainPage.SetStatus("Rebooting the device to Windows mode...", Emoji: "🔄️");
             }
 
             return DeviceManager.Device.FastBootTransport.BootImageIntoRam(UEFIFile);
         }
 
-        public static string GetDeviceBatteryLevel()
+        public static string? GetDeviceBatteryLevel()
         {
             bool result = DeviceManager.Device.FastBootTransport.GetVariable("battery-level", out string batteryLevel);
             return result ? batteryLevel : null;

@@ -17,8 +17,8 @@
                              IsOpen="{x:Bind device.IsUnlocked}"
                              IsClosable="False"
                              Severity="Success"
-                             Title="Your phone is already unlocked"
-                             Message="Your phone bootloader is already unlocked and there is nothing you need to do.">
+                             Title="Your device is already unlocked"
+                             Message="Your device bootloader is already unlocked and there is nothing you need to do.">
                     <InfoBar.ActionButton>
                         <Button Content="Refresh" Click="RefreshButton_Click" />
                     </InfoBar.ActionButton>
@@ -30,8 +30,8 @@
                              IsOpen="{x:Bind device.CanUnlock.Equals(x:False)}"
                              IsClosable="False"
                              Severity="Warning"
-                             Title="Check your phone!"
-                             Message="Your phone does not allow OEM Unlocking currently. In order to allow OEM unlocking, go to Android, go to Settings, System, Developer options, Scroll all the way down til you see OEM unlocking, Turn OEM unlocking on. Click Refresh once done!">
+                             Title="Check your device!"
+                             Message="Your device does not allow OEM Unlocking currently. In order to allow OEM unlocking, go to Android, go to Settings, System, Developer options, Scroll all the way down til you see OEM unlocking, Turn OEM unlocking on. Click Refresh once done!">
                     <InfoBar.ActionButton>
                         <Button Content="Refresh" Click="RefreshButton_Click" />
                     </InfoBar.ActionButton>
@@ -42,10 +42,10 @@
 
                     <RichTextBlock>
                         <Paragraph>
-                            <Run Text="Unlocking your device bootloader allows booting and instaling custom operating system software on your phone. It is mandatory to have your bootloader unlocked to boot Windows on your device."/>
+                            <Run Text="Unlocking your device bootloader allows booting and instaling custom operating system software on your device. It is mandatory to have your bootloader unlocked to boot Windows on your device."/>
                             <LineBreak />
                             <LineBreak />
-                            <Run Text="When you unlock your device bootloader, the phone will be restored to its original configuration. All unlocks, apps and data will be removed from the phone!"/>
+                            <Run Text="When you unlock your device bootloader, the device will be restored to its original configuration. All unlocks, apps and data will be removed from the device!"/>
                             <LineBreak/>
                             <LineBreak/>
                             <Run x:Name="StatusText" Text="Continuing will erase all of your Data! Backup before proceeding!" />
@@ -63,7 +63,7 @@
 
                 <RichTextBlock>
                     <Paragraph>
-                        <Run Text="Your phone is not in a mode currently that allows WOA Device Manager to verify its unlock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!"/>
+                        <Run Text="Your device is not in a mode currently that allows WOA Device Manager to verify its unlock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!"/>
                     </Paragraph>
                 </RichTextBlock>
 

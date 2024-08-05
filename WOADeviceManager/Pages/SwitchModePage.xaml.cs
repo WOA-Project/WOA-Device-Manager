@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Input;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO;
@@ -23,7 +22,7 @@ namespace WOADeviceManager.Pages
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to Android mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to Android mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -38,11 +37,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToBootloader_Click(object sender, RoutedEventArgs e)
+        private void RebootToBootloader_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to Bootloader mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to Bootloader mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -57,11 +56,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToFastBootd_Click(object sender, RoutedEventArgs e)
+        private void RebootToFastBootd_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to FastBootd mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to FastBootd mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -76,11 +75,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToMassStorageMode_Click(object sender, RoutedEventArgs e)
+        private void RebootToMassStorageMode_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to Mass Storage mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to Mass Storage mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -92,11 +91,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToRecovery_Click(object sender, RoutedEventArgs e)
+        private void RebootToRecovery_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to Recovery mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to Recovery mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -111,11 +110,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToTWRP_Click(object sender, RoutedEventArgs e)
+        private void RebootToTWRP_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to TWRP mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to TWRP mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -130,11 +129,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToWindows_Click(object sender, RoutedEventArgs e)
+        private void RebootToWindows_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to Windows mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to Windows mode...", Emoji: "🔄️");
 
                 try
                 {
@@ -149,11 +148,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void RebootToWindows_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+        private void RebootToWindows_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("Rebooting phone to Windows mode...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device to Windows mode...", Emoji: "🔄️");
 
                 string? UEFIFile = null;
 
@@ -193,9 +192,9 @@ namespace WOADeviceManager.Pages
 
         private void Shutdown_Click(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(async (o) =>
+            ThreadPool.QueueUserWorkItem((o) =>
             {
-                MainPage.SetStatus("Shutting Down Phone (UFP)...", SubMessage: "Please disconnect your phone now in order to shut it down!", Emoji: "🔄️");
+                MainPage.SetStatus("Shutting Down Device (UFP)...", SubMessage: "Please disconnect your device now in order to shut it down!", Emoji: "🔄️");
 
                 try
                 {
@@ -212,9 +211,9 @@ namespace WOADeviceManager.Pages
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(async (o) =>
+            ThreadPool.QueueUserWorkItem((o) =>
             {
-                MainPage.SetStatus("Rebooting phone (UFP)...", Emoji: "🔄️");
+                MainPage.SetStatus("Rebooting the device (UFP)...", Emoji: "🔄️");
                 try
                 {
                     UFPProcedures.Reboot();
@@ -229,7 +228,7 @@ namespace WOADeviceManager.Pages
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(async (o) =>
+            ThreadPool.QueueUserWorkItem((o) =>
             {
                 MainPage.SetStatus("Continuing Boot (UFP)...", Emoji: "🔄️");
                 try
@@ -246,42 +245,44 @@ namespace WOADeviceManager.Pages
 
         private void MassStorage_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.SetStatus("Rebooting phone to Mass Storage mode (UFP)...", Emoji: "🔄️");
-            try
+            ThreadPool.QueueUserWorkItem((o) =>
             {
-                UFPProcedures.MassStorage();
-            }
-            catch { }
-            MainPage.ToggleLoadingScreen(false);
-        });
+                MainPage.SetStatus("Rebooting the device to Mass Storage mode (UFP)...", Emoji: "🔄️");
+                try
+                {
+                    UFPProcedures.MassStorage();
+                }
+                catch { }
+                MainPage.ToggleLoadingScreen(false);
+            });
         }
 
-    private void Instance_DeviceDisconnectedEvent(object sender, Device device)
-    {
-        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+        private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
-            Bindings.Update();
-        });
-    }
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
+                Bindings.Update();
+            });
+        }
 
-    private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
-    {
-        _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+        private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
         {
-            Bindings.Update();
-        });
-    }
+            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            {
+                Bindings.Update();
+            });
+        }
 
-    private void Page_Loaded(object sender, RoutedEventArgs e)
-    {
-        DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
-        DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
-    }
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent += Instance_DeviceDisconnectedEvent;
+        }
 
-    private void Page_Unloaded(object sender, RoutedEventArgs e)
-    {
-        DeviceManager.DeviceConnectedEvent -= DeviceManager_DeviceConnectedEvent;
-        DeviceManager.DeviceDisconnectedEvent -= Instance_DeviceDisconnectedEvent;
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            DeviceManager.DeviceConnectedEvent -= DeviceManager_DeviceConnectedEvent;
+            DeviceManager.DeviceDisconnectedEvent -= Instance_DeviceDisconnectedEvent;
+        }
     }
-}
 }

@@ -1,6 +1,4 @@
-﻿using AndroidDebugBridge;
-
-namespace Playground
+﻿namespace Playground
 {
     internal class Debug
     {

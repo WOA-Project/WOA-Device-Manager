@@ -20,17 +20,17 @@
                         <Hyperlink NavigateUri="https://fullflash.pvabel.net/DuoWOA/">
                             <Run Text="FFU" />
                         </Hyperlink>
-                            <Run Text=", the phone will be restored to its original configuration. All unlocks, apps and data will be removed from the phone!"/>
+                        <Run Text=", the device will be restored to its original configuration. All unlocks, apps and data will be removed from the device!"/>
                         <LineBreak />
                         <LineBreak />
                         <Run>FFU:</Run>
                         <Run x:Name="FFUPathRun" FontWeight="Bold" Text="{x:Bind SelectedFFUPath, Mode=OneWay}" />
                         <Hyperlink Click="HyperlinkButton_Click">
-                            <Run x:Name="SelectRun">Select the FFU-file to flash to the phone...</Run>
+                            <Run x:Name="SelectRun">Select the FFU-file to flash to the device...</Run>
                         </Hyperlink>
                         <LineBreak/>
                         <LineBreak/>
-                        <Run x:Name="StatusText" Text="You have to connect your phone before you can continue." />
+                        <Run x:Name="StatusText" Text="You have to connect your device before you can continue." />
                     </Paragraph>
                 </RichTextBlock>
 

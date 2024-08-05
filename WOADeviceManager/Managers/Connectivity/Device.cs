@@ -7,22 +7,22 @@ namespace WOADeviceManager.Managers.Connectivity
 {
     public partial class Device
     {
-        public string ID
+        public string? ID
         {
             get; set;
         }
 
-        public string MassStorageID
+        public string? MassStorageID
         {
             get; set;
         }
 
-        public string Name
+        public string? Name
         {
             get; set;
         }
 
-        public string Variant
+        public string? Variant
         {
             get; set;
         }
@@ -48,12 +48,12 @@ namespace WOADeviceManager.Managers.Connectivity
             IsFastBootEnabled ? FastBootProcedures.CanUnlock() :
             false;
 
-        public string BatteryLevel => JustDisconnected ? null : IsADBEnabled
+        public string? BatteryLevel => JustDisconnected ? null : IsADBEnabled
                     ? ADBProcedures.GetDeviceBatteryLevel()
                     : IsFastBootEnabled ? FastBootProcedures.GetDeviceBatteryLevel() : null;
 
 
-        public string DeviceStateLocalized => State switch
+        public string? DeviceStateLocalized => State switch
         {
             DeviceState.ANDROID_ADB_DISABLED => "Android (ADB Disconnected)",
             DeviceState.ANDROID_ADB_ENABLED => "Android (ADB Connected)",
@@ -118,22 +118,22 @@ namespace WOADeviceManager.Managers.Connectivity
         public bool IsInUFP => State == DeviceState.UFP;
 
 
-        public FastBootTransport FastBootTransport
+        public FastBootTransport? FastBootTransport
         {
             get; internal set;
         }
 
-        public AndroidDebugBridgeTransport AndroidDebugBridgeTransport
+        public AndroidDebugBridgeTransport? AndroidDebugBridgeTransport
         {
             get; internal set;
         }
 
-        public UnifiedFlashingPlatformTransport UnifiedFlashingPlatformTransport
+        public UnifiedFlashingPlatformTransport? UnifiedFlashingPlatformTransport
         {
             get; internal set;
         }
 
-        public MassStorage MassStorage
+        public MassStorage? MassStorage
         {
             get; internal set;
         }

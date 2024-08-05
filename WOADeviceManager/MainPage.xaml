@@ -94,8 +94,8 @@
                                  Visibility="{x:Bind device.IsADBDisabled}"
                                  IsClosable="False"
                                  Severity="Warning"
-                                 Title="Check your phone!"
-                                 Message="Your phone should be showing a dialog asking your permission to allow this computer to connect. The tool needs the connection to be allowed in order to communicate with your device. Please tap allow. If you do not get a popup, tap retry below.">
+                                 Title="Check your device!"
+                                 Message="Your device should be showing a dialog asking your permission to allow this computer to connect. The tool needs the connection to be allowed in order to communicate with your device. Please tap allow. If you do not get a popup, tap retry below.">
                             <InfoBar.ActionButton>
                                 <Button Content="Retry" Click="RetryButton_Click" />
                             </InfoBar.ActionButton>
@@ -107,7 +107,7 @@
                                  IsClosable="False"
                                  Severity="Error"
                                  Title="You need to enable USB Debugging!"
-                                 Message="Your phone currently has USB Debugging turned off in Developer Options. The tools needs USB Debugging in order to communicate with your device. Go to Settings, About, Tap the Build number field 7 times, go back into Settings, go to System, Developer options, Scroll all the way down til you see USB debugging, Turn USB debugging on." />
+                                 Message="Your device currently has USB Debugging turned off in Developer Options. The tools needs USB Debugging in order to communicate with your device. Go to Settings, About, Tap the Build number field 7 times, go back into Settings, go to System, Developer options, Scroll all the way down til you see USB debugging, Turn USB debugging on." />
 
                         <InfoBar x:Name="ANewUpdateIsAvailableInfoBar"
                                  IsOpen="False"

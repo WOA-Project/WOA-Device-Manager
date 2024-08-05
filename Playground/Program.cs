@@ -1,6 +1,4 @@
-﻿using AndroidDebugBridge;
-using System.Text;
-using UnifiedFlashingPlatform;
+﻿using UnifiedFlashingPlatform;
 
 namespace Playground
 {

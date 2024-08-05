@@ -73,6 +73,8 @@ namespace WOADeviceManager.Helpers
                     }
                 case DeviceState.UFP:
                     {
+                        MainPage.SetStatus("First rebooting the device from UFP mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Bootloader mode...");
+
                         UFPProcedures.Reboot();
 
                         // We are meant to disconnect immediately, if not, wait.
@@ -82,6 +84,21 @@ namespace WOADeviceManager.Helpers
                         }
 
                         // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        while (DeviceManager.Device.State is DeviceState.ANDROID_ADB_DISABLED
+                                                            or DeviceState.ANDROID
+                                                            or DeviceState.OFFLINE_CHARGING
+                                                            or DeviceState.RECOVERY_ADB_DISABLED
+                                                            or DeviceState.SIDELOAD_ADB_DISABLED
+                                                            or DeviceState.TWRP_ADB_DISABLED
+                                                            or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED
+                                                            or DeviceState.WINDOWS
+                                                            or DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        MainPage.SetStatus("Now rebooting the device to Bootloader mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Bootloader mode...");
+
                         await RebootToBootloaderAndWait();
 
                         return;
@@ -226,7 +243,11 @@ namespace WOADeviceManager.Helpers
 
             if (DeviceManager.Device.State != DeviceState.BOOTLOADER)
             {
+                MainPage.SetStatus("First rebooting the device to Bootloader mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to TWRP mode...");
+
                 await RebootToBootloaderAndWait();
+
+                MainPage.SetStatus("Now rebooting the device to TWRP mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to TWRP mode...");
             }
 
             if (DeviceManager.Device.State is DeviceState.BOOTLOADER)
@@ -249,7 +270,11 @@ namespace WOADeviceManager.Helpers
 
             if (DeviceManager.Device.State != DeviceState.BOOTLOADER)
             {
+                MainPage.SetStatus("First rebooting the device to Bootloader mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Windows mode...");
+
                 await RebootToBootloaderAndWait();
+
+                MainPage.SetStatus("Now rebooting the device to Windows mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Windows mode...");
             }
 
             if (DeviceManager.Device.State is DeviceState.BOOTLOADER)
@@ -319,6 +344,8 @@ namespace WOADeviceManager.Helpers
                     }
                 case DeviceState.UFP:
                     {
+                        MainPage.SetStatus("Now rebooting the device from UFP mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Recovery mode...");
+
                         UFPProcedures.Reboot();
 
                         // We are meant to disconnect immediately, if not, wait.
@@ -328,6 +355,20 @@ namespace WOADeviceManager.Helpers
                         }
 
                         // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        while (DeviceManager.Device.State is DeviceState.ANDROID_ADB_DISABLED
+                                                            or DeviceState.ANDROID
+                                                            or DeviceState.OFFLINE_CHARGING
+                                                            or DeviceState.SIDELOAD_ADB_DISABLED
+                                                            or DeviceState.TWRP_ADB_DISABLED
+                                                            or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED
+                                                            or DeviceState.WINDOWS
+                                                            or DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        MainPage.SetStatus("Now rebooting the device to Recovery mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Recovery mode...");
+
                         await RebootToRecoveryAndWait();
 
                         return;
@@ -348,10 +389,13 @@ namespace WOADeviceManager.Helpers
                 case DeviceState.TWRP_ADB_ENABLED:
                 case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
                     {
+                        MainPage.SetStatus("First rebooting the device to Bootloader mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Recovery mode...");
+
                         // We cant switch to many things from TWRP, go to Bootloader first.
                         await RebootToBootloaderAndWait();
 
-                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        MainPage.SetStatus("Now rebooting the device to Recovery mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Recovery mode...");
+
                         await RebootToRecoveryAndWait();
 
                         return;
@@ -389,7 +433,11 @@ namespace WOADeviceManager.Helpers
                 case DeviceState.UEFI:
                 case DeviceState.FASTBOOTD:
                     {
+                        MainPage.SetStatus("First rebooting the device to Android mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Sideload mode...");
+
                         await RebootToAndroidAndWait();
+
+                        MainPage.SetStatus("Now rebooting the device to Sideload mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Sideload mode...");
 
                         await RebootToSideloadAndWait();
 
@@ -397,6 +445,8 @@ namespace WOADeviceManager.Helpers
                     }
                 case DeviceState.UFP:
                     {
+                        MainPage.SetStatus("First rebooting the device from UFP mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Sideload mode...");
+
                         UFPProcedures.Reboot();
 
                         // We are meant to disconnect immediately, if not, wait.
@@ -406,6 +456,21 @@ namespace WOADeviceManager.Helpers
                         }
 
                         // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        while (DeviceManager.Device.State is DeviceState.ANDROID_ADB_DISABLED
+                                                            or DeviceState.ANDROID
+                                                            or DeviceState.BOOTLOADER
+                                                            or DeviceState.OFFLINE_CHARGING
+                                                            or DeviceState.RECOVERY_ADB_DISABLED
+                                                            or DeviceState.TWRP_ADB_DISABLED
+                                                            or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED
+                                                            or DeviceState.WINDOWS
+                                                            or DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        MainPage.SetStatus("Now rebooting the device to Sideload mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Sideload mode...");
+
                         await RebootToSideloadAndWait();
 
                         return;
@@ -426,10 +491,13 @@ namespace WOADeviceManager.Helpers
                 case DeviceState.TWRP_ADB_ENABLED:
                 case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
                     {
+                        MainPage.SetStatus("First rebooting the device to Bootloader mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Sideload mode...");
+
                         // We cant switch to many things from TWRP, go to Bootloader first.
                         await RebootToBootloaderAndWait();
 
-                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        MainPage.SetStatus("Now rebooting the device to Sideload mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to Sideload mode...");
+
                         await RebootToSideloadAndWait();
 
                         return;
@@ -486,6 +554,8 @@ namespace WOADeviceManager.Helpers
                     }
                 case DeviceState.UFP:
                     {
+                        MainPage.SetStatus("First rebooting the device from UFP mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to FastBootD mode...");
+
                         UFPProcedures.Reboot();
 
                         // We are meant to disconnect immediately, if not, wait.
@@ -495,6 +565,21 @@ namespace WOADeviceManager.Helpers
                         }
 
                         // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        while (DeviceManager.Device.State is DeviceState.ANDROID_ADB_DISABLED
+                                                            or DeviceState.ANDROID
+                                                            or DeviceState.OFFLINE_CHARGING
+                                                            or DeviceState.RECOVERY_ADB_DISABLED
+                                                            or DeviceState.SIDELOAD_ADB_DISABLED
+                                                            or DeviceState.TWRP_ADB_DISABLED
+                                                            or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED
+                                                            or DeviceState.WINDOWS
+                                                            or DeviceState.DISCONNECTED)
+                        {
+                            await Task.Delay(1000);
+                        }
+
+                        MainPage.SetStatus("Now rebooting the device to FastBootD mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to FastBootD mode...");
+
                         await RebootToFastBootDAndWait();
 
                         return;
@@ -516,10 +601,13 @@ namespace WOADeviceManager.Helpers
                 case DeviceState.TWRP_ADB_ENABLED:
                 case DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED:
                     {
+                        MainPage.SetStatus("First rebooting the device to Bootloader mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to FastBootD mode...");
+
                         // We cant switch to many things from TWRP, go to Bootloader first.
                         await RebootToBootloaderAndWait();
 
-                        // We will then end up in one state, so call us again (we cant directly go from UFP to something else here).
+                        MainPage.SetStatus("Now rebooting the device to FastBootD mode...", Emoji: "🔄️", SubMessage: "Rebooting the device to FastBootD mode...");
+
                         await RebootToFastBootDAndWait();
 
                         return;

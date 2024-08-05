@@ -42,7 +42,7 @@
                     <Button Click="RebootToMassStorageMode_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInMassStorage.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Mass-Storage-mode"/>
-                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the phone."/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the device."/>
                         </StackPanel>
                     </Button>
                     <Button Click="RebootToRecovery_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInRecovery.Equals(x:False)}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
@@ -65,14 +65,14 @@
                     </Button>
                     <Button Click="Shutdown_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
-                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Shutdown the phone (UFP)"/>
-                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will shutdown your phone. After selecting this option, you'll need to unplug your phone from your computer."/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Shutdown the device (UFP)"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will shutdown your device. After selecting this option, you'll need to unplug your device from your computer."/>
                         </StackPanel>
                     </Button>
                     <Button Click="Reboot_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
-                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Reboot the phone (UFP)"/>
-                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will reboot your phone."/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Reboot the device (UFP)"/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This will reboot your device."/>
                         </StackPanel>
                     </Button>
                     <Button Click="Continue_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
@@ -84,7 +84,7 @@
                     <Button Click="MassStorage_Click" IsEnabled="{x:Bind manager:DeviceManager.Device.IsInUFP}" Padding="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="SemiBold" Text="➡️ Switch to Mass-Storage-mode (UFP)"/>
-                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the phone."/>
+                            <TextBlock TextWrapping="Wrap" Margin="32,0,0,0" Text="This mode allows you to access the complete file-system of the device."/>
                         </StackPanel>
                     </Button>
                 </StackPanel>

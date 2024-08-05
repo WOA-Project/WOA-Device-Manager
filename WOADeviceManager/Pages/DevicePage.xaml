@@ -41,12 +41,12 @@
 
                 <RichTextBlock>
                     <Paragraph>
-                        <Run Text="You can now access the file-system of the phone from your PC at drive " />
+                        <Run Text="You can now access the file-system of the device from your PC at drive " />
                         <Run Text="{x:Bind device.MassStorage.Drive, Mode=OneTime}" FontWeight="Bold" />
                         <LineBreak />
                         <LineBreak />
                         <Run Text="Warning 1: " Foreground="Red" FontWeight="Bold"/>
-                        <Run Text="Be very careful with altering files. You can easily brick your phone, when you make invalid changes to the file-system of the phone." />
+                        <Run Text="Be very careful with altering files. You can easily brick your device, when you make invalid changes to the file-system of the device." />
                         <LineBreak />
                         <LineBreak />
                         <Run Text="Warning 2: " Foreground="Red" FontWeight="Bold"/>
@@ -54,7 +54,7 @@
                         <LineBreak />
                         <LineBreak />
                         <Run Text="Warning 3: " Foreground="Red" FontWeight="Bold"/>
-                        <Run Text="Never format or delete the boot-partitions! Take special care with the SFPD, Persist, FRP, Modem EFS partitions. Do not format or delete these partitions, because there is no known method to recover the phone after that (except with special equipment to access UFS directly)." />
+                        <Run Text="Never format or delete the boot-partitions! Take special care with the SFPD, Persist, FRP, Modem EFS partitions. Do not format or delete these partitions, because there is no known method to recover the device after that (except with special equipment to access UFS directly)." />
                     </Paragraph>
                 </RichTextBlock>
             </StackPanel>
@@ -62,7 +62,7 @@
             <StackPanel Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch">
                     <Expander.Header>
-                        <TextBlock Text="Phone Identity" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="16,32"/>
+                        <TextBlock Text="Device Identity" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="16,32"/>
                     </Expander.Header>
 
                     <TextBlock Opacity="0.8" TextWrapping="Wrap" Text="{x:Bind DeviceIdentityString}" />

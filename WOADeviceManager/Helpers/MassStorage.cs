@@ -134,7 +134,7 @@ namespace WOADeviceManager.Helpers
             if (WriteAccess)
             {
                 // Unmounting the volume does not have the desired effect.
-                // It does not unmount the mountpoints on the phone.
+                // It does not unmount the mountpoints on the device.
                 // So the sectors of the filesystems of EFIESP, Data, etc cannot be written.
                 // Unmounting the mounting points would alter the NTFS structure, which is also an undesired effect.
                 // Restoring partitions with file-systems can better be done using Flash mode!
@@ -269,7 +269,7 @@ namespace WOADeviceManager.Helpers
 
             if (Result == null)
             {
-                throw new Exception("Failed to read from phone");
+                throw new Exception("Failed to read from device");
             }
 
             return Result;

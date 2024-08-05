@@ -18,11 +18,11 @@ namespace WOADeviceManager.Managers
                 return false;
             }
 
-            MainPage.SetStatus("Initializing", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
+            MainPage.SetStatus("Initializing", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
             if (string.IsNullOrEmpty(DriverRepo))
             {
-                MainPage.SetStatus("Downloading latest Driver Package for your device...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
+                MainPage.SetStatus("Downloading latest Driver Package for your device...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
                 if (DeviceManager.Device.Product == DeviceProduct.Epsilon)
                 {
@@ -33,7 +33,7 @@ namespace WOADeviceManager.Managers
                         return false;
                     }
 
-                    MainPage.SetStatus("Preparing to extract Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
+                    MainPage.SetStatus("Preparing to extract Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
                     string destinationPath = Path.Combine((await driverPackage.GetParentAsync()).Path, Path.GetFileNameWithoutExtension(driverPackage.Name));
                     if (Directory.Exists(destinationPath))
@@ -54,7 +54,7 @@ namespace WOADeviceManager.Managers
                         return false;
                     }
 
-                    MainPage.SetStatus("Preparing to extract Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
+                    MainPage.SetStatus("Preparing to extract Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
                     string destinationPath = Path.Combine((await driverPackage.GetParentAsync()).Path, Path.GetFileNameWithoutExtension(driverPackage.Name));
                     if (Directory.Exists(destinationPath))
@@ -72,7 +72,7 @@ namespace WOADeviceManager.Managers
                 }
             }
 
-            MainPage.SetStatus("Preparing to install Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
+            MainPage.SetStatus("Preparing to install Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
             string DriverDefinitions;
 
@@ -97,7 +97,7 @@ namespace WOADeviceManager.Managers
             process.StartInfo.Verb = "runas";
             process.StartInfo.Arguments = $"-r \"{DriverRepo}\" -d \"{DriverDefinitions}\" -p {DeviceManager.Device.MassStorage.Drive}";
 
-            MainPage.SetStatus("Installing Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
+            MainPage.SetStatus("Installing Driver Package...", Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟");
 
             try
             {
@@ -121,7 +121,7 @@ namespace WOADeviceManager.Managers
             archive.ExtractToDirectory(destinationDirectoryName, (double Percentage) =>
             {
                 uint SanePercentage = (uint)Math.Floor(Percentage * 100);
-                MainPage.SetStatus("Extracting Driver Package", SanePercentage, Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your phone to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟", SubMessage: $"Progress: {SanePercentage}%");
+                MainPage.SetStatus("Extracting Driver Package", SanePercentage, Title: "Servicing Windows Drivers", SubTitle: "WOA Device Manager is preparing your device to be serviced with the latest drivers available for it. This may take a while.", Emoji: "🪟", SubMessage: $"Progress: {SanePercentage}%");
             });
         }
     }

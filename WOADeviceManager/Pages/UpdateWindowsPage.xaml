@@ -22,7 +22,7 @@
                         <Run Text="Sometimes, your device may also run into issues, and reinstalling drivers can fix the problem."/>
                         <LineBreak/>
                         <LineBreak/>
-                        <Run x:Name="StatusText" Text="You have to connect your phone before you can continue." />
+                        <Run x:Name="StatusText" Text="You have to connect your device before you can continue." />
                     </Paragraph>
                 </RichTextBlock>
 

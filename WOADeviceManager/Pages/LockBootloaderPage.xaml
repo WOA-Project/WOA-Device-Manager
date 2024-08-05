@@ -17,8 +17,8 @@
                              IsOpen="{x:Bind device.IsLocked}"
                              IsClosable="False"
                              Severity="Success"
-                             Title="Your phone is already locked"
-                             Message="Your phone bootloader is already locked and there is nothing you need to do.">
+                             Title="Your device is already locked"
+                             Message="Your device bootloader is already locked and there is nothing you need to do.">
                     <InfoBar.ActionButton>
                         <Button Content="Refresh" Click="RefreshButton_Click" />
                     </InfoBar.ActionButton>
@@ -30,8 +30,8 @@
                              IsOpen="{x:Bind device.CanUnlock.Equals(x:False)}"
                              IsClosable="False"
                              Severity="Warning"
-                             Title="Check your phone!"
-                             Message="Your phone does not allow OEM Unlocking currently. In order to allow OEM locking, go to Android, go to Settings, System, Developer options, Scroll all the way down til you see OEM unlocking, Turn OEM unlocking on. Click Refresh once done!">
+                             Title="Check your device!"
+                             Message="Your device does not allow OEM Unlocking currently. In order to allow OEM locking, go to Android, go to Settings, System, Developer options, Scroll all the way down til you see OEM unlocking, Turn OEM unlocking on. Click Refresh once done!">
                     <InfoBar.ActionButton>
                         <Button Content="Refresh" Click="RefreshButton_Click" />
                     </InfoBar.ActionButton>
@@ -42,14 +42,14 @@
 
                     <RichTextBlock>
                         <Paragraph>
-                            <Run Text="Locking your device bootloader forbids booting and instaling custom operating system software on your phone. It is mandatory to have your device reverted to its original settings to lock your bootloader otherwise your device will be bricked and will stop booting. In order to revert changes caused by installing windows, you need to follow the uninstall guide at:"/>
+                            <Run Text="Locking your device bootloader forbids booting and instaling custom operating system software on your device. It is mandatory to have your device reverted to its original settings to lock your bootloader otherwise your device will be bricked and will stop booting. In order to revert changes caused by installing windows, you need to follow the uninstall guide at:"/>
                             <Hyperlink NavigateUri="https://github.com/WOA-Project/SurfaceDuo-Guides">
                                 <Run Text="Surface Duo Guides" />
                             </Hyperlink>
                             <Run Text="Support for automatic uninstallation will be added in a future release."/>
                             <LineBreak />
                             <LineBreak />
-                            <Run Text="When you lock your device bootloader, the phone will be restored to its original configuration. All unlocks, apps and data will be removed from the phone!"/>
+                            <Run Text="When you lock your device bootloader, the device will be restored to its original configuration. All unlocks, apps and data will be removed from the device!"/>
                             <LineBreak/>
                             <LineBreak/>
                             <Run x:Name="StatusText" Text="Continuing will erase all of your Data! Backup before proceeding!" />
@@ -67,7 +67,7 @@
 
                 <RichTextBlock>
                     <Paragraph>
-                        <Run Text="Your phone is not in a mode currently that allows WOA Device Manager to verify its lock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!"/>
+                        <Run Text="Your device is not in a mode currently that allows WOA Device Manager to verify its lock status. Reboot your device into Android or Bootloader or FastBoot in order to check its status!"/>
                     </Paragraph>
                 </RichTextBlock>
 

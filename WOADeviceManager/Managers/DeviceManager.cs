@@ -1,5 +1,6 @@
 ﻿using AndroidDebugBridge;
 using FastBoot;
+using SharpCompress.Common;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace WOADeviceManager.Managers
     {
         private const string OEMEP_MassStorage_LinuxGadget_USBID = "USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0414#";
         private const string OEMZE_MassStorage_LinuxGadget_USBID = "USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0504#";
+        private const string UNKNOWN_MassStorage_LinuxGadget_USBID = "USBSTOR#Disk&Ven_Linux&Prod_File-Stor_Gadget&Rev_0504#";
+
         private const string WINDOWS_USBID = "VID_045E&PID_0C2A&MI_00";
 
         private const string FASTBOOT_USBID = "USB#VID_045E&PID_0C2F#";
@@ -29,6 +32,7 @@ namespace WOADeviceManager.Managers
 
         private const string OEMEP_FRIENDLY_NAME = "Surface Duo";
         private const string OEMZE_FRIENDLY_NAME = "Surface Duo 2";
+        private const string UNKNOWN_FRIENDLY_NAME = "Unknown Device";
 
         private readonly Guid ANDROID_DEVICE_INTERFACE_GUID = new("F72FE0D4-CBCB-407d-8814-9ED673D0DD6B");
         private readonly Guid UFP_DEVICE_INTERFACE_GUID = new("9E3BD5F7-9690-4FCC-8810-3E2650CD6ECC");
@@ -493,9 +497,38 @@ namespace WOADeviceManager.Managers
                             NotifyDeviceArrival();
                             return;
                         }
-                }
+                    default:
+                        {
+                            if (Device.State != DeviceState.DISCONNECTED)
+                            {
+                                NotifyDeviceDeparture();
+                            }
 
-                unifiedFlashingPlatformTransport.Dispose();
+                            Device.State = DeviceState.UFP;
+                            Device.ID = ID;
+                            Device.Name = UNKNOWN_FRIENDLY_NAME;
+                            Device.Variant = UNKNOWN_FRIENDLY_NAME;
+                            Device.Product = DeviceProduct.Unknown;
+
+                            if (unifiedFlashingPlatformTransport.ReadDeviceTargetInfo() is DeviceTargetingInfo deviceTargetingInfo)
+                            {
+                                Device.Name = deviceTargetingInfo.ProductName;
+                            }
+
+                            if (Device.UnifiedFlashingPlatformTransport != null && Device.UnifiedFlashingPlatformTransport != unifiedFlashingPlatformTransport)
+                            {
+                                Device.UnifiedFlashingPlatformTransport.Dispose();
+                                Device.UnifiedFlashingPlatformTransport = unifiedFlashingPlatformTransport;
+                            }
+                            else if (Device.UnifiedFlashingPlatformTransport == null)
+                            {
+                                Device.UnifiedFlashingPlatformTransport = unifiedFlashingPlatformTransport;
+                            }
+
+                            NotifyDeviceArrival();
+                            return;
+                        }
+                }
             }
             catch { }
         }
@@ -554,6 +587,32 @@ namespace WOADeviceManager.Managers
                 NotifyDeviceArrival();
                 return;
             }
+            else if (ID.Contains(UNKNOWN_MassStorage_LinuxGadget_USBID))
+            {
+                if (Device.State != DeviceState.DISCONNECTED)
+                {
+                    NotifyDeviceDeparture();
+                }
+
+                if (Device.State == DeviceState.TWRP_ADB_ENABLED)
+                {
+                    Device.State = DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED;
+                }
+                else
+                {
+                    Device.State = DeviceState.OFFLINE_CHARGING;
+                }
+
+                // No ID, to be filled later
+                Device.MassStorageID = ID;
+                Device.Product = DeviceProduct.Unknown;
+                Device.Name = UNKNOWN_FRIENDLY_NAME;
+                Device.Variant = UNKNOWN_FRIENDLY_NAME;
+                Device.MassStorage = new Helpers.MassStorage(ID);
+
+                NotifyDeviceArrival();
+                return;
+            }
             else if (ID.Contains(WINDOWS_USBID))
             {
                 if (Device.State != DeviceState.DISCONNECTED)
@@ -561,11 +620,13 @@ namespace WOADeviceManager.Managers
                     NotifyDeviceDeparture();
                 }
 
+                DeviceProduct deviceProduct = Name.Contains("Duo 2") ? DeviceProduct.Zeta : (Name.Contains("Duo") ? DeviceProduct.Epsilon : DeviceProduct.Unknown);
+
                 Device.State = DeviceState.WINDOWS;
                 Device.ID = ID;
                 Device.Name = Name;
-                Device.Variant = "N/A";
-                Device.Product = Name.Contains("Duo 2") ? DeviceProduct.Zeta : DeviceProduct.Epsilon;
+                Device.Variant = deviceProduct != DeviceProduct.Unknown ? "N/A" : UNKNOWN_FRIENDLY_NAME;
+                Device.Product = deviceProduct;
 
                 NotifyDeviceArrival();
             }
@@ -576,13 +637,209 @@ namespace WOADeviceManager.Managers
                     NotifyDeviceDeparture();
                 }
 
+                DeviceProduct deviceProduct = Name.Contains("Duo 2") ? DeviceProduct.Zeta : (Name.Contains("Duo") ? DeviceProduct.Epsilon : DeviceProduct.Unknown);
+
                 Device.State = DeviceState.ANDROID;
                 Device.ID = ID;
                 Device.Name = Name;
-                Device.Variant = "N/A";
-                Device.Product = Name.Contains("Duo 2") ? DeviceProduct.Zeta : DeviceProduct.Epsilon;
+                Device.Variant = deviceProduct != DeviceProduct.Unknown ? "N/A" : UNKNOWN_FRIENDLY_NAME;
+                Device.Product = deviceProduct;
 
                 NotifyDeviceArrival();
+            }
+        }
+
+        private void HandleFastbootDevice(string ID, string Name)
+        {
+            FastBootTransport fastBootTransport = new(ID);
+
+            bool result = fastBootTransport.GetVariable("product", out string productGetVar);
+            string ProductName = !result ? null : productGetVar;
+            result = fastBootTransport.GetVariable("version-baseband", out string versionBaseBand);
+            bool isUEFI = !result ? false : versionBaseBand == "1.0.0.0";
+            result = fastBootTransport.GetVariable("is-userspace", out productGetVar);
+            string IsUserSpace = !result ? null : productGetVar;
+
+            // Attempt to retrieve the device type in bootloader mode
+            string DeviceVariant = "N/A";
+            if (IsUserSpace != "yes")
+            {
+                (FastBootStatus getBootPropResponseStatus, string getBootPropResponse, byte[] _)[] getBootPropResponses = fastBootTransport.SendCommand("oem get-boot-prop");
+                if (getBootPropResponses.Length > 0 && getBootPropResponses.Last().getBootPropResponseStatus == FastBootStatus.OKAY)
+                {
+                    (FastBootStatus _, DeviceVariant, byte[] _) = getBootPropResponses[0];
+                    DeviceVariant = DeviceVariant.Split('=').Last();
+
+                    switch (DeviceVariant)
+                    {
+                        case "gen":
+                            {
+                                DeviceVariant = "GEN";
+                                break;
+                            }
+                        case "att":
+                            {
+                                DeviceVariant = "ATT";
+                                break;
+                            }
+                        case "eea":
+                            {
+                                DeviceVariant = "EEA";
+                                break;
+                            }
+                    }
+                }
+            }
+
+            switch (ProductName)
+            {
+                case "surfaceduo":
+                case "duo":
+                    {
+                        if (Device.State != DeviceState.DISCONNECTED)
+                        {
+                            NotifyDeviceDeparture();
+                        }
+
+                        if (isUEFI)
+                        {
+                            Device.State = DeviceState.UEFI;
+                        }
+                        else if (IsUserSpace == "yes")
+                        {
+                            Device.State = DeviceState.FASTBOOTD;
+                        }
+                        else
+                        {
+                            Device.State = DeviceState.BOOTLOADER;
+                        }
+
+                        Device.ID = ID;
+                        Device.Name = OEMEP_FRIENDLY_NAME;
+                        Device.Variant = DeviceVariant;
+                        Device.Product = DeviceProduct.Epsilon;
+
+                        if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
+                        {
+                            Device.FastBootTransport.Dispose();
+                            Device.FastBootTransport = fastBootTransport;
+                        }
+                        else if (Device.FastBootTransport == null)
+                        {
+                            Device.FastBootTransport = fastBootTransport;
+                        }
+
+                        NotifyDeviceArrival();
+                        return;
+                    }
+                case "surfaceduo2":
+                case "duo2":
+                    {
+                        if (Device.State != DeviceState.DISCONNECTED)
+                        {
+                            NotifyDeviceDeparture();
+                        }
+
+                        if (isUEFI)
+                        {
+                            Device.State = DeviceState.UEFI;
+                        }
+                        else if (IsUserSpace == "yes")
+                        {
+                            Device.State = DeviceState.FASTBOOTD;
+                        }
+                        else
+                        {
+                            Device.State = DeviceState.BOOTLOADER;
+                        }
+
+                        Device.ID = ID;
+                        Device.Name = OEMZE_FRIENDLY_NAME;
+                        Device.Variant = DeviceVariant;
+                        Device.Product = DeviceProduct.Zeta;
+
+                        if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
+                        {
+                            Device.FastBootTransport.Dispose();
+                            Device.FastBootTransport = fastBootTransport;
+                        }
+                        else if (Device.FastBootTransport == null)
+                        {
+                            Device.FastBootTransport = fastBootTransport;
+                        }
+
+                        NotifyDeviceArrival();
+                        return;
+                    }
+                default:
+                    {
+                        if (Device.State != DeviceState.DISCONNECTED)
+                        {
+                            NotifyDeviceDeparture();
+                        }
+
+                        if (isUEFI)
+                        {
+                            Device.State = DeviceState.UEFI;
+                        }
+                        else if (IsUserSpace == "yes")
+                        {
+                            Device.State = DeviceState.FASTBOOTD;
+                        }
+                        else
+                        {
+                            Device.State = DeviceState.BOOTLOADER;
+                        }
+
+                        Device.ID = ID;
+                        Device.Name = ProductName;
+                        Device.Variant = UNKNOWN_FRIENDLY_NAME;
+                        Device.Product = DeviceProduct.Unknown;
+
+                        if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
+                        {
+                            Device.FastBootTransport.Dispose();
+                            Device.FastBootTransport = fastBootTransport;
+                        }
+                        else if (Device.FastBootTransport == null)
+                        {
+                            Device.FastBootTransport = fastBootTransport;
+                        }
+
+                        NotifyDeviceArrival();
+                        return;
+                    }
+            }
+        }
+
+        private void HandleADBDevice(string ID, string Name)
+        {
+            AndroidDebugBridgeTransport androidDebugBridgeTransport;
+            if (ID == Device.ID && Device.AndroidDebugBridgeTransport != null)
+            {
+                androidDebugBridgeTransport = Device.AndroidDebugBridgeTransport;
+            }
+            else
+            {
+                androidDebugBridgeTransport = new(ID);
+            }
+
+            if (androidDebugBridgeTransport.IsConnected)
+            {
+                HandleADBEnabledDevice(androidDebugBridgeTransport);
+            }
+            else
+            {
+                HandleADBDisabledDevice(androidDebugBridgeTransport);
+
+                // Request a connection
+                androidDebugBridgeTransport.OnConnectionEstablished += AndroidDebugBridgeTransport_OnConnectionEstablished;
+
+                try
+                {
+                    androidDebugBridgeTransport.Connect();
+                }
+                catch { }
             }
         }
 
@@ -592,161 +849,36 @@ namespace WOADeviceManager.Managers
             {
                 try
                 {
-                    FastBootTransport fastBootTransport = new(ID);
+                    HandleFastbootDevice(ID, Name);
+                }
+                catch { }
+            }
+            else if (ID.Contains(ANDROID_USBID))
+            {
+                Thread.Sleep(1000);
 
-                    bool result = fastBootTransport.GetVariable("product", out string productGetVar);
-                    string ProductName = !result ? null : productGetVar;
-                    result = fastBootTransport.GetVariable("version-baseband", out string versionBaseBand);
-                    bool isUEFI = !result ? false : versionBaseBand == "1.0.0.0";
-                    result = fastBootTransport.GetVariable("is-userspace", out productGetVar);
-                    string IsUserSpace = !result ? null : productGetVar;
-
-                    // Attempt to retrieve the device type in bootloader mode
-                    string DeviceVariant = "N/A";
-                    if (IsUserSpace != "yes")
-                    {
-                        (FastBootStatus getBootPropResponseStatus, string getBootPropResponse, byte[] _)[] getBootPropResponses = fastBootTransport.SendCommand("oem get-boot-prop");
-                        if (getBootPropResponses.Length > 0 && getBootPropResponses.Last().getBootPropResponseStatus == FastBootStatus.OKAY)
-                        {
-                            (FastBootStatus _, DeviceVariant, byte[] _) = getBootPropResponses[0];
-                            DeviceVariant = DeviceVariant.Split('=').Last();
-
-                            switch (DeviceVariant)
-                            {
-                                case "gen":
-                                    {
-                                        DeviceVariant = "GEN";
-                                        break;
-                                    }
-                                case "att":
-                                    {
-                                        DeviceVariant = "ATT";
-                                        break;
-                                    }
-                                case "eea":
-                                    {
-                                        DeviceVariant = "EEA";
-                                        break;
-                                    }
-                            }
-                        }
-                    }
-
-                    switch (ProductName)
-                    {
-                        case "surfaceduo":
-                        case "duo":
-                            {
-                                if (Device.State != DeviceState.DISCONNECTED)
-                                {
-                                    NotifyDeviceDeparture();
-                                }
-
-                                if (isUEFI)
-                                {
-                                    Device.State = DeviceState.UEFI;
-                                }
-                                else if (IsUserSpace == "yes")
-                                {
-                                    Device.State = DeviceState.FASTBOOTD;
-                                }
-                                else
-                                {
-                                    Device.State = DeviceState.BOOTLOADER;
-                                }
-
-                                Device.ID = ID;
-                                Device.Name = OEMEP_FRIENDLY_NAME;
-                                Device.Variant = DeviceVariant;
-                                Device.Product = DeviceProduct.Epsilon;
-
-                                if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
-                                {
-                                    Device.FastBootTransport.Dispose();
-                                    Device.FastBootTransport = fastBootTransport;
-                                }
-                                else if (Device.FastBootTransport == null)
-                                {
-                                    Device.FastBootTransport = fastBootTransport;
-                                }
-
-                                NotifyDeviceArrival();
-                                return;
-                            }
-                        case "surfaceduo2":
-                        case "duo2":
-                            {
-                                if (Device.State != DeviceState.DISCONNECTED)
-                                {
-                                    NotifyDeviceDeparture();
-                                }
-
-                                if (isUEFI)
-                                {
-                                    Device.State = DeviceState.UEFI;
-                                }
-                                else if (IsUserSpace == "yes")
-                                {
-                                    Device.State = DeviceState.FASTBOOTD;
-                                }
-                                else
-                                {
-                                    Device.State = DeviceState.BOOTLOADER;
-                                }
-
-                                Device.ID = ID;
-                                Device.Name = OEMZE_FRIENDLY_NAME;
-                                Device.Variant = DeviceVariant;
-                                Device.Product = DeviceProduct.Zeta;
-
-                                if (Device.FastBootTransport != null && Device.FastBootTransport != fastBootTransport)
-                                {
-                                    Device.FastBootTransport.Dispose();
-                                    Device.FastBootTransport = fastBootTransport;
-                                }
-                                else if (Device.FastBootTransport == null)
-                                {
-                                    Device.FastBootTransport = fastBootTransport;
-                                }
-
-                                NotifyDeviceArrival();
-                                return;
-                            }
-                    }
-
-                    fastBootTransport.Dispose();
+                try
+                {
+                    HandleADBDevice(ID, Name);
                 }
                 catch { }
             }
             else
             {
-                Thread.Sleep(1000);
                 try
                 {
-                    AndroidDebugBridgeTransport androidDebugBridgeTransport;
-                    if (ID == Device.ID && Device.AndroidDebugBridgeTransport != null)
-                    {
-                        androidDebugBridgeTransport = Device.AndroidDebugBridgeTransport;
-                    }
-                    else
-                    {
-                        androidDebugBridgeTransport = new(ID);
-                    }
-
-                    if (androidDebugBridgeTransport.IsConnected)
-                    {
-                        HandleADBEnabledDevice(androidDebugBridgeTransport);
-                    }
-                    else
-                    {
-                        HandleADBDisabledDevice(androidDebugBridgeTransport);
-
-                        // Request a connection
-                        androidDebugBridgeTransport.OnConnectionEstablished += AndroidDebugBridgeTransport_OnConnectionEstablished;
-                        androidDebugBridgeTransport.Connect();
-                    }
+                    HandleFastbootDevice(ID, Name);
                 }
-                catch { }
+                catch
+                {
+                    Thread.Sleep(1000);
+
+                    try
+                    {
+                        HandleADBDevice(ID, Name);
+                    }
+                    catch { }
+                }
             }
         }
 
@@ -759,8 +891,8 @@ namespace WOADeviceManager.Managers
 
             string ID = androidDebugBridgeTransport.DevicePath;
 
-            bool isTWRPEnvironment = Device.AndroidDebugBridgeTransport.GetVariableValue("ro.twrp.boot") == "1";
-            string Hardware = Device.AndroidDebugBridgeTransport.GetVariableValue("ro.hardware");
+            bool isTWRPEnvironment = androidDebugBridgeTransport.GetVariableValue("ro.twrp.boot") == "1";
+            string Hardware = androidDebugBridgeTransport.GetVariableValue("ro.hardware");
             if (string.IsNullOrEmpty(Hardware))
             {
                 Hardware = "duo";
@@ -811,7 +943,7 @@ namespace WOADeviceManager.Managers
                             ProductName = androidDebugBridgeTransport.GetPhoneConnectionVariables()["ro.product.name"];
                         }
 
-                        string DeviceVariant = Device.AndroidDebugBridgeTransport.GetVariableValue("ro.boot.product.hardware.sku");
+                        string DeviceVariant = androidDebugBridgeTransport.GetVariableValue("ro.boot.product.hardware.sku");
                         switch (DeviceVariant)
                         {
                             case "gen":
@@ -882,6 +1014,50 @@ namespace WOADeviceManager.Managers
                         Device.Name = OEMZE_FRIENDLY_NAME;
                         Device.Variant = "N/A";
                         Device.Product = DeviceProduct.Zeta;
+
+                        if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
+                        {
+                            Device.AndroidDebugBridgeTransport.Dispose();
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+                        else if (Device.AndroidDebugBridgeTransport == null)
+                        {
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+
+                        NotifyDeviceArrival();
+                        return;
+                    }
+                default:
+                    {
+                        if (isTWRPEnvironment)
+                        {
+                            if (Device.MassStorageID != null)
+                            {
+                                Device.State = DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED;
+                            }
+                            else
+                            {
+                                Device.State = DeviceState.TWRP_ADB_ENABLED;
+                            }
+                        }
+                        else if (androidDebugBridgeTransport.GetPhoneConnectionEnvironment() == "recovery")
+                        {
+                            Device.State = DeviceState.RECOVERY_ADB_ENABLED;
+                        }
+                        else if (androidDebugBridgeTransport.GetPhoneConnectionEnvironment() == "sideload")
+                        {
+                            Device.State = DeviceState.SIDELOAD_ADB_ENABLED;
+                        }
+                        else
+                        {
+                            Device.State = DeviceState.ANDROID_ADB_ENABLED;
+                        }
+
+                        Device.ID = ID;
+                        Device.Name = Hardware;
+                        Device.Variant = UNKNOWN_FRIENDLY_NAME;
+                        Device.Product = DeviceProduct.Unknown;
 
                         if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
                         {
@@ -987,6 +1163,44 @@ namespace WOADeviceManager.Managers
                         Device.Name = OEMZE_FRIENDLY_NAME;
                         Device.Variant = "N/A";
                         Device.Product = DeviceProduct.Zeta;
+
+                        if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
+                        {
+                            Device.AndroidDebugBridgeTransport.Dispose();
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+                        else if (Device.AndroidDebugBridgeTransport == null)
+                        {
+                            Device.AndroidDebugBridgeTransport = androidDebugBridgeTransport;
+                        }
+
+                        NotifyDeviceArrival();
+                        return;
+                    }
+                default:
+                    {
+                        if (isTWRPEnvironment)
+                        {
+                            if (Device.MassStorageID != null)
+                            {
+                                Device.State = DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED;
+                            }
+                            else
+                            {
+                                Device.State = DeviceState.TWRP_ADB_DISABLED;
+                            }
+                        }
+                        else if (Device.State != DeviceState.DISCONNECTED)
+                        {
+                            NotifyDeviceDeparture();
+                        }
+
+                        Device.State = DeviceState.ANDROID_ADB_DISABLED;
+
+                        Device.ID = ID;
+                        Device.Name = Hardware;
+                        Device.Variant = UNKNOWN_FRIENDLY_NAME;
+                        Device.Product = DeviceProduct.Unknown;
 
                         if (Device.AndroidDebugBridgeTransport != null && Device.AndroidDebugBridgeTransport != androidDebugBridgeTransport)
                         {

@@ -234,7 +234,7 @@ namespace WOADeviceManager.Helpers
             }
         }
 
-        public static async Task RebootToTWRPAndWait()
+        public static async Task RebootToTWRPAndWait(string TWRPFile = null)
         {
             if (DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_ADB_DISABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED)
             {
@@ -252,7 +252,7 @@ namespace WOADeviceManager.Helpers
 
             if (DeviceManager.Device.State is DeviceState.BOOTLOADER)
             {
-                _ = await FastBootProcedures.BootTWRP();
+                _ = await FastBootProcedures.BootTWRP(TWRPFile);
 
                 while (DeviceManager.Device.State is not DeviceState.TWRP_ADB_ENABLED and not DeviceState.TWRP_ADB_DISABLED)
                 {

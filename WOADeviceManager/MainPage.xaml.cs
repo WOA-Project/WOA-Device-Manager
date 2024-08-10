@@ -251,7 +251,11 @@ namespace WOADeviceManager
         {
             if (DeviceManager.Device.AndroidDebugBridgeTransport != null)
             {
-                DeviceManager.Device.AndroidDebugBridgeTransport.Connect();
+                try
+                {
+                    DeviceManager.Device.AndroidDebugBridgeTransport.Connect();
+                }
+                catch { }
             }
         }
 

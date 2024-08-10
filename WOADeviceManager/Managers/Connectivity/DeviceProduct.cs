@@ -3,6 +3,7 @@
     public enum DeviceProduct
     {
         Epsilon,
-        Zeta
+        Zeta,
+        Unknown
     }
 }

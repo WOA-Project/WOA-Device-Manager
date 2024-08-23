@@ -59,6 +59,31 @@
                 </RichTextBlock>
             </StackPanel>
 
+            <StackPanel x:Name="UFPPanel" Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" x:Load="{x:Bind device.IsInUFP, Mode=OneWay}">
+                <TextBlock Text="Unified Flashing Platform (UFP) mode" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0,0,0,16"/>
+
+                <RichTextBlock>
+                    <Paragraph>
+                        <Run Text="Your device is in Unified Flashing Platform (UFP) or FFU Loader mode." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="You can now proceed to flash your device using a FFU file, or read device information, or boot to a different mode." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="To flash a FFU file: " FontWeight="Bold"/>
+                        <Run Text="Go to the Flash section." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="To boot to a different mode: " FontWeight="Bold"/>
+                        <Run Text="Go to the Manual mode section." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="To view device information: " FontWeight="Bold"/>
+                        <Run Text="See Device Identity below." />
+                    </Paragraph>
+                </RichTextBlock>
+            </StackPanel>
+
             <StackPanel Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
                 <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch">
                     <Expander.Header>
@@ -66,6 +91,84 @@
                     </Expander.Header>
 
                     <TextBlock Opacity="0.8" TextWrapping="Wrap" Text="{x:Bind DeviceIdentityString}" />
+                </Expander>
+            </StackPanel>
+
+            <StackPanel x:Name="UFPFlashInfoPanel" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" x:Load="{x:Bind device.IsInUFP, Mode=OneWay}">
+                <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch">
+                    <Expander.Header>
+                        <TextBlock Text="Flash Info" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="16,32"/>
+                    </Expander.Header>
+
+                    <TextBlock Opacity="0.8" TextWrapping="Wrap" Text="{x:Bind FlashInfoString}" />
+                </Expander>
+            </StackPanel>
+
+            <StackPanel x:Name="UFPPartitionListPanel" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" x:Load="{x:Bind device.IsInUFP, Mode=OneWay}">
+                <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch" IsExpanded="True">
+                    <Expander.Header>
+                        <TextBlock Text="Boot Devices" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="16,32"/>
+                    </Expander.Header>
+
+                    <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Grid Padding="18,0,18,8" MinWidth="850">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="4*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Name" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="1" Text="Sector Count" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="2" Text="Sector Size" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="3" Text="Flash Type" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="4" Text="Flash Index" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="5" Text="Unknown" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="6" Text="Device Path" TextWrapping="Wrap" FontWeight="SemiBold" />
+                            </Grid>
+
+                            <ListView x:Name="DevicesListView" ItemsSource="{x:Bind BootDevices, Mode=OneWay}" MinWidth="850">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="local:BootDevice">
+                                        <Grid Margin="0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="4*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding SectorCount}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Text="{Binding SectorSize}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="3" Text="{Binding FlashType}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="4" Text="{Binding FlashIndex}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="5" Text="{Binding Unknown}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="6" Text="{Binding DevicePath}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Expander>
+            </StackPanel>
+
+            <StackPanel x:Name="UFPDeviceLogsPanel" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" x:Load="{x:Bind device.IsInUFP, Mode=OneWay}">
+                <Expander HorizontalAlignment="Stretch" Background="Transparent" HorizontalContentAlignment="Stretch">
+                    <Expander.Header>
+                        <TextBlock Text="Device Logs" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="16,32"/>
+                    </Expander.Header>
+
+                    <TextBlock Opacity="0.8" TextWrapping="Wrap" Text="{x:Bind DeviceLogString}" />
                 </Expander>
             </StackPanel>
 

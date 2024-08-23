@@ -20,7 +20,7 @@ namespace WOADeviceManager.Pages
             InitializeComponent();
         }
 
-        private async void ServiceWindowsDriversButton_Click(object sender, RoutedEventArgs e)
+        private void ServiceWindowsDriversButton_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {

@@ -27,6 +27,9 @@
 		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
 		<PublishReadyToRunComposite Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRunComposite>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Pages\BackupWindowsPage.xaml" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
@@ -49,5 +52,11 @@
 		<ProjectReference Include="..\AndroidDebugBridge\AndroidDebugBridge.csproj" />
 		<ProjectReference Include="..\FastBoot\FastBoot.csproj" />
 		<ProjectReference Include="..\UnifiedFlashingPlatform\UnifiedFlashingPlatform.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Pages\BackupWindowsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 </Project>

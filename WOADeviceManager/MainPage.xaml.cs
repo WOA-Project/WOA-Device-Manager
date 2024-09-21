@@ -83,6 +83,8 @@ namespace WOADeviceManager
                     case "enabledualboot":
                     case "disabledualboot":
                     case "backupwindows":
+                        _ = MainNavigationFrame.Navigate(typeof(BackupWindowsPage), null, e.RecommendedNavigationTransitionInfo);
+                        break;
                     case "updatewindows":
                         _ = MainNavigationFrame.Navigate(typeof(UpdateWindowsPage), null, e.RecommendedNavigationTransitionInfo);
                         break;

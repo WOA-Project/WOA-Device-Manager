@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\AndroidDebugBridge\AndroidDebugBridge.csproj" />
-		<ProjectReference Include="..\UnifiedFlashingPlatform\UnifiedFlashingPlatform.csproj" />
+		<ProjectReference Include="..\UnifiedFlashingPlatform\UnifiedFlashingPlatform\UnifiedFlashingPlatform.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,0 +1,35 @@
+<Page
+    x:Class="WOADeviceManager.Pages.BackupWindowsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WOADeviceManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
+
+    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <StackPanel VerticalAlignment="Center" Padding="64" Spacing="32" HorizontalAlignment="Stretch">
+            <StackPanel x:Name="BackupWindowsPanel" Padding="32" Spacing="32" CornerRadius="4" BorderThickness="1" BorderBrush="#4C8E8E8E" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
+                <TextBlock Text="Backup Windows" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Left" />
+
+                <RichTextBlock>
+                    <Paragraph>
+                        <Run Text="You can backup your current Windows Installation present on your device to then be able to restore to it later on with ease."/>
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="The backup will contain both the ESP and the Windows partition as is, and therefore, all of your personal data with it. Be careful with your images as they are going to be tied to your device and using it on other devices may either break them or cause personal data leak."/>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run x:Name="StatusText" Text="You have to connect your device before you can continue." />
+                    </Paragraph>
+                </RichTextBlock>
+
+                <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <Button x:Name="BackupWindowsButton" Content="Backup Windows" Click="BackupWindowsButton_Click" RightTapped="BackupWindowsButton_RightTapped" IsEnabled="False"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

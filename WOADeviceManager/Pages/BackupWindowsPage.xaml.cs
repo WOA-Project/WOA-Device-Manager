@@ -13,23 +13,23 @@ using WOADeviceManager.Managers.Connectivity;
 
 namespace WOADeviceManager.Pages
 {
-    public sealed partial class UpdateWindowsPage : Page
+    public sealed partial class BackupWindowsPage : Page
     {
-        public UpdateWindowsPage()
+        public BackupWindowsPage()
         {
             InitializeComponent();
         }
 
-        private void ServiceWindowsDriversButton_Click(object sender, RoutedEventArgs e)
+        private void BackupWindowsButton_Click(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(async (o) =>
             {
-                MainPage.SetStatus("First rebooting the device to Mass Storage mode...", Emoji: "🔄️", SubMessage: "Servicing Windows Drivers");
+                MainPage.SetStatus("First rebooting the device to Mass Storage mode...", Emoji: "💾", SubMessage: "Backing up Windows");
 
                 try
                 {
                     await DeviceRebootHelper.RebootToMSCAndWait();
-                    await DriverManager.UpdateDrivers();
+                    // TODO!
                 }
                 catch (Exception ex)
                 {
@@ -39,9 +39,9 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private async void ServiceWindowsDriversButton_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+        private async void BackupWindowsButton_RightTapped(object sender, Microsoft.UI.Xaml.Input.RightTappedRoutedEventArgs e)
         {
-            MainPage.SetStatus("First rebooting the device to Mass Storage mode...", Emoji: "🔄️", SubMessage: "Servicing Windows Drivers");
+            MainPage.SetStatus("First rebooting the device to Mass Storage mode...", Emoji: "💾", SubMessage: "Backing up Windows");
 
             string? DriverRepo = null;
 
@@ -70,7 +70,7 @@ namespace WOADeviceManager.Pages
                 try
                 {
                     await DeviceRebootHelper.RebootToMSCAndWait();
-                    await DriverManager.UpdateDrivers(DriverRepo);
+                    // TODO!
                 }
                 catch (Exception ex)
                 {
@@ -87,13 +87,13 @@ namespace WOADeviceManager.Pages
                 bool isInCompatibleMode = DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceState.BOOTLOADER or DeviceState.ANDROID_ADB_ENABLED;
                 if (isInCompatibleMode)
                 {
-                    StatusText.Text = "The device is in a supported mode. You can continue to service the Windows drivers.";
-                    ServiceWindowsDriversButton.IsEnabled = true;
+                    StatusText.Text = "The device is in a supported mode. You can continue to backup your Windows installation.";
+                    BackupWindowsButton.IsEnabled = true;
                 }
                 else
                 {
                     StatusText.Text = "You have to connect your device in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
-                    ServiceWindowsDriversButton.IsEnabled = false;
+                    BackupWindowsButton.IsEnabled = false;
                 }
             });
         }
@@ -105,13 +105,13 @@ namespace WOADeviceManager.Pages
                 bool isInCompatibleMode = DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceState.BOOTLOADER or DeviceState.ANDROID_ADB_ENABLED;
                 if (isInCompatibleMode)
                 {
-                    StatusText.Text = "The device is in a supported mode. You can continue to service the Windows drivers.";
-                    ServiceWindowsDriversButton.IsEnabled = true;
+                    StatusText.Text = "The device is in a supported mode. You can continue to backup your Windows installation.";
+                    BackupWindowsButton.IsEnabled = true;
                 }
                 else
                 {
                     StatusText.Text = "You have to connect your device in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
-                    ServiceWindowsDriversButton.IsEnabled = false;
+                    BackupWindowsButton.IsEnabled = false;
                 }
             });
         }
@@ -121,13 +121,13 @@ namespace WOADeviceManager.Pages
             bool isInCompatibleMode = DeviceManager.Device.State is DeviceState.TWRP_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_ENABLED or DeviceState.TWRP_MASS_STORAGE_ADB_DISABLED or DeviceState.BOOTLOADER or DeviceState.ANDROID_ADB_ENABLED;
             if (isInCompatibleMode)
             {
-                StatusText.Text = "The device is in a supported mode. You can continue to service the Windows drivers.";
-                ServiceWindowsDriversButton.IsEnabled = true;
+                StatusText.Text = "The device is in a supported mode. You can continue to backup your Windows installation.";
+                BackupWindowsButton.IsEnabled = true;
             }
             else
             {
                 StatusText.Text = "You have to connect your device in Mass Storage, TWRP, Bootloader, Android (ADB Connected) before you can continue.";
-                ServiceWindowsDriversButton.IsEnabled = false;
+                BackupWindowsButton.IsEnabled = false;
             }
 
             DeviceManager.DeviceConnectedEvent += DeviceManager_DeviceConnectedEvent;

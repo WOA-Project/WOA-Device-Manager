@@ -1,8 +1,7 @@
-using FastBoot;
 using Microsoft.UI.Xaml.Controls;
-using System.Linq;
 using WOADeviceManager.Managers;
 using WOADeviceManager.Managers.Connectivity;
+using System.Collections.ObjectModel;
 
 namespace WOADeviceManager.Pages
 {
@@ -36,45 +35,11 @@ namespace WOADeviceManager.Pages
             });
         }
 
-        private string GetDeviceIdentityString()
-        {
-            string deviceIdentityString = "N/A";
+        public ObservableCollection<BootDevice> BootDevices => device != null && !device.JustDisconnected ? new(DeviceInfo.GetBootDevices()) : [];
 
-            try
-            {
-                if (!device.JustDisconnected)
-                {
-                    if (device.IsADBEnabled && device.AndroidDebugBridgeTransport != null)
-                    {
-                        (string variableName, string variableValue)[] allVariables = device.AndroidDebugBridgeTransport.GetAllVariables();
-
-                        if (allVariables != null)
-                        {
-                            deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
-                        }
-                    }
-                    else if (device.IsFastBootEnabled && device.FastBootTransport != null)
-                    {
-                        if (device.FastBootTransport.GetAllVariables(out (string variableName, string variableValue)[] allVariables))
-                        {
-                            deviceIdentityString = string.Join("\n", allVariables.Select(t => $"{t.variableName}: {t.variableValue}"));
-                        }
-                    }
-                    else if (device.IsInUFP && device.UnifiedFlashingPlatformTransport != null)
-                    {
-                        string PlatformID = device.UnifiedFlashingPlatformTransport.ReadDevicePlatformID();
-                        string ProcessorManufacturer = device.UnifiedFlashingPlatformTransport.ReadProcessorManufacturer();
-
-                        deviceIdentityString = $"Platform ID: {PlatformID}\nProcessor Manufacturer: {ProcessorManufacturer}";
-                    }
-                }
-            }
-            catch { }
-
-            return deviceIdentityString;
-        }
-
-        private string DeviceIdentityString => device != null && !device.JustDisconnected ? GetDeviceIdentityString() : "Unknown";
+        private string DeviceIdentityString => device != null && !device.JustDisconnected ? DeviceInfo.GetDeviceIdentityString() : "Unknown";
+        private string DeviceLogString => device != null && !device.JustDisconnected ? DeviceInfo.GetDeviceLogString() : "Unknown";
+        private string FlashInfoString => device != null && !device.JustDisconnected ? DeviceInfo.GetFlashInfoString() : "Unknown";
 
         private string BatteryLevelFormatted => device != null && !device.JustDisconnected && device.BatteryLevel != null ? $"Battery level: {device.BatteryLevel}%" : "Battery level: Unknown";
     }

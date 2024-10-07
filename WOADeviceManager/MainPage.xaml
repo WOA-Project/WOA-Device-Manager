@@ -74,7 +74,7 @@
                     <NavigationViewItem Icon="Document" Content="Enable dual boot" Tag="enabledualboot" IsEnabled="False" Visibility="Collapsed" />
                     <NavigationViewItem Icon="ProtectedDocument" Content="Disable dual boot" Tag="disabledualboot" IsEnabled="False" Visibility="Collapsed" />
                     <NavigationViewItemSeparator />
-                    <NavigationViewItem Icon="Save" Content="Backup" Tag="backupwindows" IsEnabled="False" Visibility="Collapsed" />
+                    <NavigationViewItem Icon="Save" Content="Backup" Tag="backupwindows" />
                     <NavigationViewItem Icon="Repair" Content="Flash" Tag="flashwindows" />
                     <NavigationViewItem Icon="PostUpdate" Content="Update" Tag="updatewindows" />
                     <NavigationViewItem Icon="Download" Content="Download" Tag="downloadwindows" IsEnabled="False" Visibility="Collapsed" />

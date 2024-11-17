@@ -19,7 +19,7 @@ namespace WOADeviceManager.Pages
 
         private void Instance_DeviceDisconnectedEvent(object sender, Device device)
         {
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            _ = DispatcherQueue?.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {
                 this.device = device;
                 Bindings.Update();
@@ -28,7 +28,7 @@ namespace WOADeviceManager.Pages
 
         private void DeviceManager_DeviceConnectedEvent(object sender, Device device)
         {
-            _ = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
+            _ = DispatcherQueue?.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {
                 this.device = device;
                 Bindings.Update();
